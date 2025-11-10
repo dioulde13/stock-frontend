@@ -6,6 +6,7 @@ import {
   formatMontant,
   formatMontantSansSigne,
 } from "../components/utils/formatters";
+import { APP_URL } from "../environnement/environnements";
 
 interface Produit {
   id: number;
@@ -209,7 +210,7 @@ export default function ProduitTable({
 
     try {
       const res = await fetch(
-        `http://localhost:3000/api/produit/supprimer/${produit.id}`,
+        `${APP_URL}/api/produit/supprimer/${produit.id}`,
         {
           method: "DELETE",
           headers: {
@@ -259,7 +260,7 @@ export default function ProduitTable({
 
     try {
       const res = await fetch(
-        `http://localhost:3000/api/produit/annuler/${produit.id}`,
+        `${APP_URL}/api/produit/annuler/${produit.id}`,
         {
           method: "PUT",
           headers: {

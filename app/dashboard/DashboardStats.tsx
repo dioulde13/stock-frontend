@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { APP_URL } from "../environnement/environnements";
 
 type Statistiques = {
   ventesTotal: number;
@@ -85,7 +86,7 @@ export default function Home() {
       }
 
       const res = await fetch(
-        `http://localhost:3000/api/dashboard/statistique?dateDebut=${start}&dateFin=${end}`,
+        `${APP_URL}/api/dashboard/statistique?dateDebut=${start}&dateFin=${end}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -112,7 +113,7 @@ export default function Home() {
         return;
       }
 
-      const res = await fetch("http://localhost:3000/api/caisse/listeParRole", {
+      const res = await fetch(`${APP_URL}/api/caisse/listeParRole`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -136,7 +137,7 @@ export default function Home() {
       const token = localStorage.getItem("token");
       if (!token) throw new Error("Token JWT manquant");
 
-      const res = await fetch("http://localhost:3000/api/caisse/create", {
+      const res = await fetch(`${APP_URL}/api/caisse/create`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

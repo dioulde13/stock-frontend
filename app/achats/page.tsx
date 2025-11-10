@@ -3,6 +3,7 @@
 import { useEffect, useState, useMemo } from "react";
 import React from "react";
 import DashboardLayout from "../components/Layout/DashboardLayout";
+import { APP_URL } from "../environnement/environnements";
 
 type Fournisseur = {
   id: number;
@@ -395,7 +396,7 @@ export default function AchatPage() {
         window.location.href = "/login";
         return; // On arrête l'exécution
       }
-      const res = await fetch("http://localhost:3000/api/achat/create", {
+      const res = await fetch(`${APP_URL}/api/achat/create`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -572,7 +573,7 @@ export default function AchatPage() {
         return; // On arrête l'exécution
       }
       const res = await fetch(
-        `http://localhost:3000/api/achat/annuler/${achatAnnuler.id}`,
+        `${APP_URL}/api/achat/annuler/${achatAnnuler.id}`,
         {
           method: "PUT",
           headers: {

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import ProduitTable from "./ProductTable";
 import ProduitModal from "./ProductModal";
 import DashboardLayout from "../components/Layout/DashboardLayout";
+import { APP_URL } from "../environnement/environnements";
 
 export default function ProductsPage() {
   const router = useRouter();
@@ -55,7 +56,7 @@ export default function ProductsPage() {
       }
 
       const res = await fetch(
-        "http://localhost:3000/api/boutique/listeBoutiqueParAdmin",
+        `${APP_URL}/api/boutique/listeBoutiqueParAdmin`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -79,7 +80,7 @@ export default function ProductsPage() {
         return; // On arrête l'exécution
       }
 
-      const res = await fetch("http://localhost:3000/api/categorie/liste", {
+      const res = await fetch(`${APP_URL}/api/categorie/liste`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -94,14 +95,13 @@ export default function ProductsPage() {
 
   const fetchProduits = async () => {
     try {
-      // const res = await fetch('http://localhost:3000/api/produit/liste');
       const token = localStorage.getItem("token"); // ou sessionStorage / cookie
  if (!token) {
         // Redirection automatique si token manquant
         window.location.href = "/login";
         return; // On arrête l'exécution
       }
-      const res = await fetch("http://localhost:3000/api/produit/liste", {
+      const res = await fetch(`${APP_URL}/api/produit/liste`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -217,7 +217,7 @@ export default function ProductsPage() {
 
                 if (selectedProduit) {
                   await fetch(
-                    `http://localhost:3000/api/produit/${selectedProduit.id}`,
+                    `${APP_URL}/api/produit/${selectedProduit.id}`,
                     {
                       method: "PUT",
                       headers: { "Content-Type": "application/json" },
@@ -226,7 +226,7 @@ export default function ProductsPage() {
                   );
                   showNotification("Produit modifiée avec succès.");
                 } else {
-                  await fetch("http://localhost:3000/api/produit/create", {
+                  await fetch(`${APP_URL}/api/produit/create`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(payload),
