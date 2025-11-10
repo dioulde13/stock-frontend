@@ -5,7 +5,7 @@ import ReactPaginate from "react-paginate";
 import {
   formatMontant,
   formatMontantSansSigne,
-} from "../../components/utils/formatters";
+} from "../components/utils/formatters";
 
 interface Produit {
   id: number;
@@ -21,12 +21,46 @@ interface Produit {
   Boutique?: { nom: string };
 }
 
+// interface ProduitTableProps {
+//   produits: Produit[];
+//   utilisateur: any;
+//   fetchProduits: () => Promise<void>;
+//   showNotification: (message: string) => void;
+//   handleOpenModal: (produit?: Produit) => void;
+// }
+
 interface ProduitTableProps {
   produits: Produit[];
   utilisateur: any;
   fetchProduits: () => Promise<void>;
   showNotification: (message: string) => void;
   handleOpenModal: (produit?: Produit) => void;
+
+  // Ajouté pour corriger l'erreur TypeScript
+  formData: {
+    nom: string;
+    prix_achat: number;
+    prix_vente: number;
+    stock_actuel: number;
+    stock_minimum: number;
+    categorieId: number;
+    utilisateurId: string;
+    boutiqueId: number;
+  };
+  setFormData: React.Dispatch<
+    React.SetStateAction<{
+      nom: string;
+      prix_achat: number;
+      prix_vente: number;
+      stock_actuel: number;
+      stock_minimum: number;
+      categorieId: number;
+      utilisateurId: string;
+      boutiqueId: number;
+    }>
+  >;
+  selectedProduit: Produit | null;
+  setSelectedProduit: React.Dispatch<React.SetStateAction<Produit | null>>;
 }
 
 function ModalSuppression({
@@ -167,9 +201,9 @@ export default function ProduitTable({
     const user = localStorage.getItem("utilisateur");
     const token = localStorage.getItem("token");
     if (!user || !token) {
-        // Redirection automatique si token manquant
-        window.location.href = "/login";
-        return; // On arrête l'exécutio
+      // Redirection automatique si token manquant
+      window.location.href = "/login";
+      return; // On arrête l'exécutio
     }
     const parsedUser = JSON.parse(user);
 

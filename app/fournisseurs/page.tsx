@@ -15,8 +15,6 @@ export default function FournisseurPage() {
   const [formData, setFormData] = useState({
     nom: '',
     telephone: 0,
-    adresse: '',
-    email: '',
     utilisateurId: ''
   });
 
@@ -75,16 +73,12 @@ export default function FournisseurPage() {
       setFormData({
         nom: fournisseur.nom || '',
         telephone: fournisseur.telephone || 0,
-        adresse: fournisseur.adresse || '',
-        email: fournisseur.email || '',
         utilisateurId: String(fournisseur.utilisateurId || utilisateurId)
       });
     } else {
       setFormData({
         nom: '',
         telephone: 0,
-        adresse: '',
-        email: '',
         utilisateurId
       });
     }
@@ -127,8 +121,6 @@ export default function FournisseurPage() {
                 const payload = {
                   nom: formData.nom,
                   telephone: formData.telephone,
-                  adresse: formData.adresse,
-                  email: formData.email,
                   utilisateurId: Number(formData.utilisateurId
                   )
                 };
@@ -162,8 +154,6 @@ export default function FournisseurPage() {
                 setFormData({
                   nom: '',
                   telephone: 0,
-                  adresse: '',
-                  email: '',
                   utilisateurId: ''
                 });
                 setIsModalOpen(false);

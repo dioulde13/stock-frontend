@@ -1,8 +1,8 @@
 "use client";
 
+import { formatMontant } from "../components/utils/formatters";
 // import { useState } from "react";
 import { deletePayment , annulerPayment} from "./services/payementCreditService";
-import { formatMontant } from "@/components/utils/formatters";
 
 
 interface CreditPaymentsTableProps {

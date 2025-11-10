@@ -7,13 +7,32 @@ interface ClientsTableProps {
   fetchClients: () => Promise<void>;
   showNotification: (message: string) => void;
   handleOpenModal: (client?: any) => void;
+
+  formData: {
+    nom: string;
+    telephone: number;
+    utilisateurId: string;
+  };
+  setFormData: React.Dispatch<
+    React.SetStateAction<{
+      nom: string;
+      telephone: number;
+      utilisateurId: string;
+    }>
+  >;
+  selectedClient: any;
+  setSelectedClient: React.Dispatch<React.SetStateAction<any>>;
 }
 
-export default function ClientTable({
+export default function ClientsTable({
   clients,
   fetchClients,
   showNotification,
   handleOpenModal,
+  formData,
+  setFormData,
+  selectedClient,
+  setSelectedClient,
 }: ClientsTableProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [dateStart, setDateStart] = useState("");
@@ -23,15 +42,17 @@ export default function ClientTable({
   const [currentPage, setCurrentPage] = useState(0);
   const itemsPerPage = 10;
 
+  // 🗑️ Suppression client
   const handleDelete = async (id: number) => {
-    if (!confirm("Voulez-vous vraiment supprimer cet client ?")) return;
+    if (!confirm("Voulez-vous vraiment supprimer ce client ?")) return;
+
     try {
       const token = localStorage.getItem("token");
-       if (!token) {
-        // Redirection automatique si token manquant
+      if (!token) {
         window.location.href = "/login";
-        return; // On arrête l'exécution
+        return;
       }
+
       await fetch(`http://localhost:3000/api/client/supprimer/${id}`, {
         method: "DELETE",
         headers: {
@@ -39,6 +60,7 @@ export default function ClientTable({
           Authorization: `Bearer ${token}`,
         },
       });
+
       await fetchClients();
       showNotification("Client supprimé avec succès.");
     } catch (error) {
@@ -46,13 +68,13 @@ export default function ClientTable({
     }
   };
 
-  // Filtrage recherche + dates
+  // 🔍 Filtrage recherche + dates
   const filteredClients = useMemo(() => {
     return clients.filter((client) => {
       const matchesSearch = client.nom
-        .toLowerCase()
+        ?.toLowerCase()
         .includes(searchTerm.toLowerCase());
-      const date = new Date(client.createdAt); // Assurez-vous que `createdAt` existe
+      const date = new Date(client.createdAt);
       const afterStart = dateStart ? date >= new Date(dateStart) : true;
       const beforeEnd = dateEnd
         ? date <= new Date(dateEnd + "T23:59:59")
@@ -69,7 +91,7 @@ export default function ClientTable({
 
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-      {/* Filtres */}
+      {/* 🔎 Filtres */}
       <div className="p-6 border-b border-gray-200 flex flex-col sm:flex-row gap-4 items-end flex-wrap">
         <div className="flex-1 relative">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -105,7 +127,7 @@ export default function ClientTable({
         </div>
       </div>
 
-      {/* Tableau */}
+      {/* 🧾 Tableau */}
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
@@ -116,11 +138,9 @@ export default function ClientTable({
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Nom
               </th>
-
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Téléphone
               </th>
-
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Utilisateur
               </th>
@@ -129,6 +149,7 @@ export default function ClientTable({
               </th>
             </tr>
           </thead>
+
           <tbody className="bg-white divide-y divide-gray-200">
             {paginatedClients.map((client) => (
               <tr key={client.id} className="hover:bg-gray-50">
@@ -176,16 +197,17 @@ export default function ClientTable({
         )}
       </div>
 
-      {/* Pagination */}
+      {/* 📄 Pagination */}
       {pageCount > 1 && (
         <div className="flex justify-center mt-4">
           <button
             disabled={currentPage === 0}
-            className="px-3 py-1 border rounded mx-1"
+            className="px-3 py-1 border rounded mx-1 disabled:opacity-50"
             onClick={() => setCurrentPage((prev) => prev - 1)}
           >
             ← Précédent
           </button>
+
           {Array.from({ length: pageCount }, (_, i) => (
             <button
               key={i}
@@ -197,9 +219,10 @@ export default function ClientTable({
               {i + 1}
             </button>
           ))}
+
           <button
             disabled={currentPage === pageCount - 1}
-            className="px-3 py-1 border rounded mx-1"
+            className="px-3 py-1 border rounded mx-1 disabled:opacity-50"
             onClick={() => setCurrentPage((prev) => prev + 1)}
           >
             Suivant →

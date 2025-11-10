@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useMemo } from "react";
 import React from "react";
-import DashboardLayout from "../../components/Layout/DashboardLayout";
+import DashboardLayout from "../components/Layout/DashboardLayout";
 
 type Fournisseur = {
   id: number;

@@ -1,12 +1,36 @@
-"use client";
+'use client';
 
 import React, { useState, useMemo } from "react";
 
+interface Fournisseur {
+  id: number;
+  nom: string;
+  telephone: number;
+  createdAt: string;
+  Utilisateur?: {
+    nom: string;
+  };
+}
+
 interface FournisseurTableProps {
-  fournisseur: any[];
+  fournisseur: Fournisseur[];
   fetchFournisseurs: () => Promise<void>;
   showNotification: (message: string) => void;
-  handleOpenModal: (fournisseur?: any) => void;
+  handleOpenModal: (fournisseur?: Fournisseur) => void;
+  formData: {
+    nom: string;
+    telephone: number;
+    utilisateurId: string;
+  };
+  setFormData: React.Dispatch<
+    React.SetStateAction<{
+      nom: string;
+      telephone: number;
+      utilisateurId: string;
+    }>
+  >;
+  selectedFournisseur: Fournisseur | null;
+  setSelectedFournisseur: React.Dispatch<React.SetStateAction<Fournisseur | null>>;
 }
 
 export default function FournisseurTable({
@@ -14,6 +38,10 @@ export default function FournisseurTable({
   fetchFournisseurs,
   showNotification,
   handleOpenModal,
+  formData,
+  setFormData,
+  selectedFournisseur,
+  setSelectedFournisseur,
 }: FournisseurTableProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [dateStart, setDateStart] = useState("");
@@ -27,10 +55,9 @@ export default function FournisseurTable({
     if (!confirm("Voulez-vous vraiment supprimer ce fournisseur ?")) return;
     try {
       const token = localStorage.getItem("token");
- if (!token) {
-        // Redirection automatique si token manquant
+      if (!token) {
         window.location.href = "/login";
-        return; // On arrête l'exécution
+        return;
       }
       await fetch(`http://localhost:3000/api/fournisseur/supprimer/${id}`, {
         method: "DELETE",
@@ -49,14 +76,10 @@ export default function FournisseurTable({
   // Filtrage recherche + dates
   const filteredFournisseurs = useMemo(() => {
     return fournisseur.filter((f) => {
-      const matchesSearch = f.nom
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase());
-      const date = new Date(f.createdAt); // Assurez-vous que `createdAt` existe
+      const matchesSearch = f.nom.toLowerCase().includes(searchTerm.toLowerCase());
+      const date = new Date(f.createdAt);
       const afterStart = dateStart ? date >= new Date(dateStart) : true;
-      const beforeEnd = dateEnd
-        ? date <= new Date(dateEnd + "T23:59:59")
-        : true;
+      const beforeEnd = dateEnd ? date <= new Date(dateEnd + "T23:59:59") : true;
       return matchesSearch && afterStart && beforeEnd;
     });
   }, [fournisseur, searchTerm, dateStart, dateEnd]);

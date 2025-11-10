@@ -6,11 +6,24 @@ import ClientTable from "./ClientsTable";
 import ClientModal from "./ClientModal";
 import DashboardLayout from "../components/Layout/DashboardLayout";
 
+interface Client {
+  id: number;
+  nom: string;
+  telephone: number;
+  utilisateurId: string;
+  Utilisateur?: {
+    id: number;
+    nom: string;
+  };
+  createdAt?: string;
+}
+
 export default function ClientPage() {
   const router = useRouter();
+
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedClient, setSelectedClient] = useState<any>(null);
-  const [clients, setClients] = useState<any[]>([]);
+  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
+  const [clients, setClients] = useState<Client[]>([]);
   const [notification, setNotification] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     nom: "",
@@ -18,44 +31,50 @@ export default function ClientPage() {
     utilisateurId: "",
   });
 
+  // ✅ Vérification de l’authentification + chargement initial
   useEffect(() => {
     const isAuthenticated = localStorage.getItem("isAuthenticated");
     if (!isAuthenticated) {
       router.push("/login");
-    } else {
-      fetchClients();
+      return;
     }
+    fetchClients();
   }, [router]);
 
+  // ✅ Récupération des clients depuis l’API
   const fetchClients = async () => {
     try {
       const token = localStorage.getItem("token");
       if (!token) {
-        // Redirection automatique si token manquant
         window.location.href = "/login";
-        return; // On arrête l'exécution
+        return;
       }
+
       const res = await fetch("http://localhost:3000/api/client/liste", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`, // 🔑 ajout du token ici
+          Authorization: `Bearer ${token}`,
         },
       });
+
+      if (!res.ok) throw new Error(`Erreur HTTP ${res.status}`);
+
       const data = await res.json();
-      console.log(data);
       setClients(data);
     } catch (error) {
       console.error("Erreur lors du fetch des clients:", error);
     }
   };
 
+  // ✅ Notification avec disparition automatique
   const showNotification = (message: string) => {
     setNotification(message);
-    setTimeout(() => setNotification(null), 1000);
+    setTimeout(() => setNotification(null), 1500);
   };
 
-  const handleOpenModal = (client: any = null) => {
+  // ✅ Ouvrir le modal pour créer ou modifier un client
+  const handleOpenModal = (client: Client | null = null) => {
     setSelectedClient(client);
 
     const user = localStorage.getItem("utilisateur");
@@ -64,7 +83,9 @@ export default function ClientPage() {
       try {
         const parsedUser = JSON.parse(user);
         utilisateurId = parsedUser.id ? String(parsedUser.id) : "";
-      } catch {}
+      } catch (e) {
+        console.error("Erreur parsing utilisateur:", e);
+      }
     }
 
     if (client) {
@@ -84,9 +105,62 @@ export default function ClientPage() {
     setIsModalOpen(true);
   };
 
+  // ✅ Soumission (ajout / modification)
+  const handleSubmit = async () => {
+    try {
+      const payload = {
+        nom: formData.nom,
+        telephone: formData.telephone,
+        utilisateurId: Number(formData.utilisateurId),
+      };
+
+      if (!payload.utilisateurId) {
+        alert("Utilisateur non trouvé !");
+        return;
+      }
+
+      const token = localStorage.getItem("token");
+      if (!token) {
+        window.location.href = "/login";
+        return;
+      }
+
+      const url = selectedClient
+        ? `http://localhost:3000/api/client/modifier/${selectedClient.id}`
+        : "http://localhost:3000/api/client/create";
+
+      const method = selectedClient ? "PUT" : "POST";
+
+      const res = await fetch(url, {
+        method,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) throw new Error(`Erreur API (${res.status})`);
+
+      showNotification(
+        selectedClient
+          ? "Client modifié avec succès."
+          : "Client ajouté avec succès."
+      );
+
+      await fetchClients();
+      setSelectedClient(null);
+      setFormData({ nom: "", telephone: 0, utilisateurId: "" });
+      setIsModalOpen(false);
+    } catch (error) {
+      console.error("Erreur API client :", error);
+    }
+  };
+
   return (
     <DashboardLayout title="Liste des clients">
       <div className="space-y-6">
+        {/* 🔹 Header */}
         <div className="flex items-center justify-between">
           <h2 className="text-2xl font-bold text-gray-900">
             Gestion des clients
@@ -100,6 +174,7 @@ export default function ClientPage() {
           </button>
         </div>
 
+        {/* 🧾 Tableau */}
         <ClientTable
           clients={clients}
           fetchClients={fetchClients}
@@ -111,73 +186,17 @@ export default function ClientPage() {
           setSelectedClient={setSelectedClient}
         />
 
+        {/* 🪟 Modal */}
         {isModalOpen && (
           <ClientModal
             formData={formData}
             setFormData={setFormData}
             onClose={() => setIsModalOpen(false)}
-            handleSubmit={async () => {
-              try {
-                const payload = {
-                  nom: formData.nom,
-                  telephone: formData.telephone,
-                  utilisateurId: Number(formData.utilisateurId),
-                };
-                if (!payload.utilisateurId)
-                  return alert("Utilisateur non trouvé !");
-
-                if (selectedClient) {
-                  const token = localStorage.getItem("token");
-                  if (!token) {
-                    // Redirection automatique si token manquant
-                    window.location.href = "/login";
-                    return; // On arrête l'exécution
-                  }
-                  await fetch(
-                    `http://localhost:3000/api/client/modifier/${selectedClient.id}`,
-                    {
-                      method: "PUT",
-                      headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${token}`,
-                      },
-                      body: JSON.stringify(payload),
-                    }
-                  );
-                  showNotification("Client modifiée avec succès.");
-                } else {
-                  const token = localStorage.getItem("token");
-                  if (!token) {
-                    // Redirection automatique si token manquant
-                    window.location.href = "/login";
-                    return; // On arrête l'exécution
-                  }
-                  await fetch("http://localhost:3000/api/client/create", {
-                    method: "POST",
-                    headers: {
-                      "Content-Type": "application/json",
-                      Authorization: `Bearer ${token}`,
-                    },
-                    body: JSON.stringify(payload),
-                  });
-                  showNotification("Client ajouté avec succès.");
-                }
-
-                await fetchClients();
-                setSelectedClient(null);
-                setFormData({
-                  nom: "",
-                  telephone: 0,
-                  utilisateurId: "",
-                });
-                setIsModalOpen(false);
-              } catch (error) {
-                console.error("Erreur API catégorie :", error);
-              }
-            }}
+            handleSubmit={handleSubmit}
           />
         )}
 
+        {/* 🔔 Notification */}
         {notification && (
           <div className="fixed top-5 right-5 bg-green-500 text-white px-4 py-2 rounded shadow-lg z-50">
             {notification}

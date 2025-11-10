@@ -3,12 +3,12 @@
 interface ClientModalProps {
   formData: { 
     nom: string;
-    telephone: string; // changer en string
+    telephone: number; // ✅ reste un number
     utilisateurId: string;
   };
   setFormData: (data: { 
     nom: string;
-    telephone: string;
+    telephone: number;
     utilisateurId: string;
   }) => void;
   onClose: () => void;
@@ -31,7 +31,10 @@ export default function ClientModal({ formData, setFormData, onClose, handleSubm
       value = "6" + value.slice(1);
     }
 
-    setFormData({ ...formData, telephone: value });
+    // ✅ convertir en number avant de mettre dans le state
+    const numericValue = value ? Number(value) : 0;
+
+    setFormData({ ...formData, telephone: numericValue });
   };
 
   return (
@@ -44,7 +47,13 @@ export default function ClientModal({ formData, setFormData, onClose, handleSubm
           </button>
         </div>
 
-        <form onSubmit={(e) => { e.preventDefault(); handleSubmit(); }} className="p-6 space-y-4">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleSubmit();
+          }}
+          className="p-6 space-y-4"
+        >
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Nom</label>
             <input
@@ -62,8 +71,9 @@ export default function ClientModal({ formData, setFormData, onClose, handleSubm
             <input
               type="tel"
               required
+              inputMode="numeric"
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-              value={formData.telephone}
+              value={formData.telephone || ""}
               onChange={handleTelephoneChange}
               placeholder="Téléphone du client"
             />
@@ -73,10 +83,17 @@ export default function ClientModal({ formData, setFormData, onClose, handleSubm
           </div>
 
           <div className="flex items-center justify-end space-x-3 pt-4 border-t border-gray-200">
-            <button type="button" onClick={onClose} className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 whitespace-nowrap">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 whitespace-nowrap"
+            >
               Annuler
             </button>
-            <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 whitespace-nowrap">
+            <button
+              type="submit"
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 whitespace-nowrap"
+            >
               Valider
             </button>
           </div>

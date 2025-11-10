@@ -1,6 +1,7 @@
 "use client";
 
-import { formatMontant } from "@/components/utils/formatters";
+import { formatMontant } from "../components/utils/formatters";
+
 // import { annulerCredit } from "./services/creditService";
 
 type Client = {

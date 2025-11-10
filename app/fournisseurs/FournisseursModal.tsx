@@ -3,12 +3,12 @@
 interface FournisseursModalProps {
   formData: {
     nom: string;
-    telephone: string; // passer en string pour gérer le 0 initial
+    telephone: number; // ✅ number
     utilisateurId: string;
   };
   setFormData: (data: {
     nom: string;
-    telephone: string;
+    telephone: number; // ✅ number
     utilisateurId: string;
   }) => void;
   onClose: () => void;
@@ -35,7 +35,10 @@ export default function FournisseurModal({
       value = "6" + value.slice(1);
     }
 
-    setFormData({ ...formData, telephone: value });
+    // ✅ convertir en number avant de mettre dans le state
+    const numericValue = value ? Number(value) : 0;
+
+    setFormData({ ...formData, telephone: numericValue });
   };
 
   return (
@@ -83,8 +86,9 @@ export default function FournisseurModal({
             <input
               type="tel"
               required
+              inputMode="numeric"
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-              value={formData.telephone}
+              value={formData.telephone || ""}
               onChange={handleTelephoneChange}
               placeholder="Téléphone du fournisseur"
             />
