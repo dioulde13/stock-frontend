@@ -3,8 +3,8 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import DashboardLayout from '../../components/Layout/DashboardLayout';
 import DashboardStats from './DashboardStats';
+import DashboardLayout from '../components/Layout/DashboardLayout';
 
 export default function DashboardPage() {
   const router = useRouter();

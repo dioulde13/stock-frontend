@@ -3,9 +3,9 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
-import DashboardLayout from "../../components/Layout/DashboardLayout";
 import ExpensesTable from "./ExpensesTable";
 import ExpenseModal from "./ExpenseModal";
+import DashboardLayout from "../components/Layout/DashboardLayout";
 
 export default function ExpensesPage() {
   const router = useRouter();

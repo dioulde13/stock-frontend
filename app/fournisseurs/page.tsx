@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import DashboardLayout from '../../components/Layout/DashboardLayout';
 import FournisseursTable from './FournisseursTable';
 import FournisseursModal from './FournisseursModal';
+import DashboardLayout from '../components/Layout/DashboardLayout';
 
 export default function FournisseurPage() {
   const router = useRouter();

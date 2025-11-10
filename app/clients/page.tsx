@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import DashboardLayout from "../../components/Layout/DashboardLayout";
 import ClientTable from "./ClientsTable";
 import ClientModal from "./ClientModal";
+import DashboardLayout from "../components/Layout/DashboardLayout";
 
 export default function ClientPage() {
   const router = useRouter();

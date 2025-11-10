@@ -2,7 +2,6 @@
 
 import { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import DashboardLayout from "../../components/Layout/DashboardLayout";
 import CreditsTable from "./CreditsTable";
 import {
   getCredits,
@@ -12,7 +11,8 @@ import {
   annulerCredit,
 } from "./services/creditService";
 import ReactPaginate from "react-paginate";
-import { formatMontant } from "@/components/utils/formatters";
+import DashboardLayout from "../components/Layout/DashboardLayout";
+import { formatMontant } from "../components/utils/formatters";
 
 export default function CreditsPage() {
   const router = useRouter();

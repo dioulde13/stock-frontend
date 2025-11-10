@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import DashboardLayout from "../../components/Layout/DashboardLayout";
 import ProduitTable from "./ProductTable";
 import ProduitModal from "./ProductModal";
+import DashboardLayout from "../components/Layout/DashboardLayout";
 
 export default function ProductsPage() {
   const router = useRouter();

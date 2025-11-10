@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import DashboardLayout from "../../components/Layout/DashboardLayout";
 import UtilisateurTable from "./UtilisateurTablde";
 import UtilisateurModal from "./UtilisateurModal";
+import DashboardLayout from "../components/Layout/DashboardLayout";
 
 export default function UtilisateurPage() {
   const router = useRouter();

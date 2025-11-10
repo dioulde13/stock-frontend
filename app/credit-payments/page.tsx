@@ -2,9 +2,9 @@
 
 import { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import DashboardLayout from "../../components/Layout/DashboardLayout";
 import CreditPaymentsTable from "./CreditPaymentsTable";
 import { addPayment, getPayments } from "./services/payementCreditService";
+import DashboardLayout from "../components/Layout/DashboardLayout";
 
 export default function CreditPaymentsPage() {
   const router = useRouter();

@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import DashboardLayout from '../../components/Layout/DashboardLayout';
 import StockMinimumTable from './StockMinimumTable';
+import DashboardLayout from '../components/Layout/DashboardLayout';
 
 export default function MouvementPage() {
   const router = useRouter();

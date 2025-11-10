@@ -6,7 +6,7 @@ import {
   deleteDepense,
   annulerDepense,
 } from "./services/depenseService";
-import { formatMontant } from "../../components/utils/formatters";
+import { formatMontant } from "../components/utils/formatters";
 
 type Depense = {
   id: number;

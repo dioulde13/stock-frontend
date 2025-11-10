@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import DashboardLayout from "../../components/Layout/DashboardLayout";
 import CategorieTable from "./CategorieTable";
 import CategorieModal from "./CategorieModal";
+import DashboardLayout from "../components/Layout/DashboardLayout";
 
 export default function CategoriePage() {
   const router = useRouter();

@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import LoginForm from './LoginForm';
 import LoginHeader from './LoginHeader';
-import { APP_URL } from '@/environnement/environnements';
+import { APP_URL } from '../environnement/environnements';
 
 type ApiResponse = {
   message?: string;

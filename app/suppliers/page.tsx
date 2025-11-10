@@ -3,8 +3,8 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import DashboardLayout from '../../components/Layout/DashboardLayout';
 import SuppliersTable from './SuppliersTable';
+import DashboardLayout from '../components/Layout/DashboardLayout';
 
 export default function SuppliersPage() {
   const router = useRouter();

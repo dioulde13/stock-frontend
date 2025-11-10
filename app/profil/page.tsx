@@ -1,7 +1,7 @@
 "use client";
 
-import DashboardLayout from "@/components/Layout/DashboardLayout";
 import { useState, useEffect } from "react";
+import DashboardLayout from "../components/Layout/DashboardLayout";
 
 export default function ProfilPage() {
   const [activeTab, setActiveTab] = useState<"infos" | "password">("infos");

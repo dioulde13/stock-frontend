@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import DashboardLayout from "../../components/Layout/DashboardLayout";
 import MouvementTable from "./MouvementTable";
 import MouvementModal from "./MouvementModal";
 import styles from "./mouvement.module.css";
+import DashboardLayout from "../components/Layout/DashboardLayout";
 
 type TypeMvt = {
   id: number;
