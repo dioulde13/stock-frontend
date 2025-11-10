@@ -1,0 +1,64 @@
+'use client';
+
+export const getPayments = async () => {
+  const token = localStorage.getItem("token");
+   if (!token) {
+        // Redirection automatique si token manquant
+        window.location.href = "/login";
+        return; // On arrête l'exécution
+      }
+  const res = await fetch("http://localhost:3000/api/payementCredit/liste", {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`, // 🔑 ajout du token ici
+    },
+  });
+  if (!res.ok) throw new Error('Erreur lors du chargement des paiements');
+  return res.json();
+};
+
+export const addPayment = async (data: {
+  reference: string;
+  utilisateurId: number;
+  montant: number;
+}) => {
+  const token = localStorage.getItem("token");
+   if (!token) {
+        // Redirection automatique si token manquant
+        window.location.href = "/login";
+        return; // On arrête l'exécution
+      }
+  const res = await fetch('http://localhost:3000/api/payementCredit/create', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}`, },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error('Erreur lors de l\'ajout du paiement');
+  return res.json();
+};
+
+
+
+export const annulerPayment = async (id: number) => {
+  const token = localStorage.getItem("token");
+ if (!token) {
+        // Redirection automatique si token manquant
+        window.location.href = "/login";
+        return; // On arrête l'exécution
+      }
+  const res = await fetch(`http://localhost:3000/api/payementCredit/annuler/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}`, },
+  });
+  if (!res.ok) throw new Error("Erreur lors de l'annulation");
+  return res.json();
+};
+
+export const deletePayment = async (id: number) => {
+  const res = await fetch(`http://localhost:3000/api/payementCredit/supprimer/${id}`, {
+    method: 'DELETE',
+  });
+  if (!res.ok) throw new Error('Erreur lors de la suppression');
+  return res.json();
+};

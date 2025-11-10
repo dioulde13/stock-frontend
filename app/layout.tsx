@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Pacifico } from "next/font/google";
 import "./globals.css";
-import FetchInterceptorWrapper from "@/components/utils/interceptors/FetchInterceptorWrapper";
+import FetchInterceptorWrapper from "./components/utils/interceptors/FetchInterceptorWrapper";
 
 const pacifico = Pacifico({
   weight: '400',
