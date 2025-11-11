@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import FournisseursTable from './FournisseursTable';
 import FournisseursModal from './FournisseursModal';
 import DashboardLayout from '../components/Layout/DashboardLayout';
+import { APP_URL } from '../environnement/environnements';
 
 export default function FournisseurPage() {
   const router = useRouter();
@@ -35,7 +36,7 @@ export default function FournisseurPage() {
         window.location.href = "/login";
         return; // On arrête l'exécution
       }
-      const res = await fetch("http://localhost:3000/api/fournisseur/liste", {
+      const res = await fetch(`${APP_URL}/api/fournisseur/liste`, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
@@ -129,7 +130,7 @@ export default function FournisseurPage() {
                 if (selectedFournisseur) {
                    const token = localStorage.getItem("token");
 
-                  await fetch(`http://localhost:3000/api/fournisseur/modifier/${selectedFournisseur.id}`, {
+                  await fetch(`${APP_URL}/api/fournisseur/modifier/${selectedFournisseur.id}`, {
                     method: "PUT",
                     headers: { 
                       "Content-Type": "application/json",
@@ -141,7 +142,7 @@ export default function FournisseurPage() {
                 } else {
                   const token = localStorage.getItem("token");
                 
-                  await fetch("http://localhost:3000/api/fournisseur/create", {
+                  await fetch(`${APP_URL}/api/fournisseur/create`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}`, },
                     body: JSON.stringify(payload),

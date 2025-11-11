@@ -131,7 +131,7 @@ export default function AchatPage() {
         window.location.href = "/login";
         return; // On arrête l'exécution
       }
-      const res = await fetch("http://localhost:3000/api/client/liste", {
+      const res = await fetch(`${APP_URL}/api/client/liste`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -154,7 +154,7 @@ export default function AchatPage() {
         window.location.href = "/login";
         return; // On arrête l'exécution
       }
-      const res = await fetch("http://localhost:3000/api/utilisateur/liste", {
+      const res = await fetch(`${APP_URL}/api/utilisateur/liste`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -179,7 +179,7 @@ export default function AchatPage() {
         window.location.href = "/login";
         return; // On arrête l'exécution
       }
-      const res = await fetch("http://localhost:3000/api/fournisseur/liste", {
+      const res = await fetch(`${APP_URL}/api/fournisseur/liste`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -205,7 +205,7 @@ export default function AchatPage() {
         window.location.href = "/login";
         return; // On arrête l'exécution
       }
-      const res = await fetch("http://localhost:3000/api/produit/liste", {
+      const res = await fetch(`${APP_URL}/api/produit/liste`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -267,7 +267,7 @@ export default function AchatPage() {
         window.location.href = "/login";
         return; // On arrête l'exécution
       }
-      const res = await fetch("http://localhost:3000/api/achat/liste", {
+      const res = await fetch(`${APP_URL}/api/achat/liste`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",

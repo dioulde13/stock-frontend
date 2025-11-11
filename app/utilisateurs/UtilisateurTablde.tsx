@@ -1,6 +1,7 @@
 "use client";
 
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { APP_URL } from "../environnement/environnements";
 
 interface Boutique {
   id: number;
@@ -57,7 +58,7 @@ export default function UtilisateursTable({
   const handleDelete = async (id: number) => {
     if (!confirm("Voulez-vous vraiment supprimer cet utilisateur ?")) return;
     try {
-      const response = await fetch(`http://localhost:3000/api/utilisateur/supprimer/${id}`, {
+      const response = await fetch(`${APP_URL}/api/utilisateur/supprimer/${id}`, {
         method: "DELETE",
       });
       if (!response.ok) throw new Error("Impossible de supprimer cet utilisateur.");

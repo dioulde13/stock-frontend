@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import CategorieTable from "./CategorieTable";
 import CategorieModal from "./CategorieModal";
 import DashboardLayout from "../components/Layout/DashboardLayout";
+import { APP_URL } from "../environnement/environnements";
 
 export default function CategoriePage() {
   const router = useRouter();
@@ -42,7 +43,7 @@ export default function CategoriePage() {
         return; // On arrête l'exécution
       }
 
-      const res = await fetch("http://localhost:3000/api/categorie/liste", {
+      const res = await fetch(`${APP_URL}/api/categorie/liste`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -140,7 +141,7 @@ export default function CategoriePage() {
                 if (selectedCategorie) {
                   // 🔄 Modifier
                   await fetch(
-                    `http://localhost:3000/api/categorie/${selectedCategorie.id}`,
+                    `${APP_URL}/api/categorie/${selectedCategorie.id}`,
                     {
                       method: "PUT",
                       headers: {
@@ -153,7 +154,7 @@ export default function CategoriePage() {
                   showNotification("Catégorie modifiée avec succès.");
                 } else {
                   // ➕ Créer
-                  await fetch("http://localhost:3000/api/categorie/create", {
+                  await fetch(`${APP_URL}/api/categorie/create`, {
                     method: "POST",
                     headers: {
                       "Content-Type": "application/json",

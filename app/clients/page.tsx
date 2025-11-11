@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import ClientTable from "./ClientsTable";
 import ClientModal from "./ClientModal";
 import DashboardLayout from "../components/Layout/DashboardLayout";
+import { APP_URL } from "../environnement/environnements";
 
 interface Client {
   id: number;
@@ -50,7 +51,7 @@ export default function ClientPage() {
         return;
       }
 
-      const res = await fetch("http://localhost:3000/api/client/liste", {
+      const res = await fetch(`${APP_URL}/api/client/liste`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -126,8 +127,8 @@ export default function ClientPage() {
       }
 
       const url = selectedClient
-        ? `http://localhost:3000/api/client/modifier/${selectedClient.id}`
-        : "http://localhost:3000/api/client/create";
+        ? `${APP_URL}/api/client/modifier/${selectedClient.id}`
+        : `${APP_URL}/api/client/create`;
 
       const method = selectedClient ? "PUT" : "POST";
 

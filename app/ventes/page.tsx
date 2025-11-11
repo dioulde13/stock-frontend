@@ -3,6 +3,7 @@
 import { useEffect, useState, useMemo } from "react";
 import React from "react";
 import DashboardLayout from "../components/Layout/DashboardLayout";
+import { APP_URL } from "../environnement/environnements";
 
 type Produit = {
   id: number;
@@ -103,7 +104,7 @@ export default function VentesPage() {
         window.location.href = "/login";
         return; // On arrête l'exécution
       }
-      const res = await fetch("http://localhost:3000/api/vente/liste", {
+      const res = await fetch(`${APP_URL}/api/vente/liste`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -247,7 +248,7 @@ const filteredVentes = useMemo(() => {
         window.location.href = "/login";
         return; // On arrête l'exécution
       }
-      const res = await fetch("http://localhost:3000/api/client/liste", {
+      const res = await fetch(`${APP_URL}/api/client/liste`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -270,7 +271,7 @@ const filteredVentes = useMemo(() => {
         window.location.href = "/login";
         return; // On arrête l'exécution
       }
-      const res = await fetch("http://localhost:3000/api/produit/liste", {
+      const res = await fetch(`${APP_URL}/api/produit/liste`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -327,7 +328,7 @@ const filteredVentes = useMemo(() => {
         window.location.href = "/login";
         return; // On arrête l'exécution
       }
-      const res = await fetch("http://localhost:3000/api/vente/create", {
+      const res = await fetch(`${APP_URL}/api/vente/create`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -463,7 +464,7 @@ const filteredVentes = useMemo(() => {
         return; // On arrête l'exécution
       }
       const res = await fetch(
-        `http://localhost:3000/api/vente/annuler/${venteAAnnuler.id}`,
+        `${APP_URL}/api/vente/annuler/${venteAAnnuler.id}`,
         {
           method: "PUT",
           headers: {

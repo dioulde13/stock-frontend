@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useMemo } from "react";
+import { APP_URL } from "../environnement/environnements";
 
 interface Fournisseur {
   id: number;
@@ -59,7 +60,7 @@ export default function FournisseurTable({
         window.location.href = "/login";
         return;
       }
-      await fetch(`http://localhost:3000/api/fournisseur/supprimer/${id}`, {
+      await fetch(`${APP_URL}/api/fournisseur/supprimer/${id}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",

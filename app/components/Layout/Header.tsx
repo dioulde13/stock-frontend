@@ -1,5 +1,6 @@
 "use client";
 
+import { APP_URL } from "@/app/environnement/environnements";
 import { useEffect, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import useSound from "use-sound";
@@ -45,7 +46,7 @@ export default function Header({ onMenuClick, title = "Tableau de bord" }: Heade
       const token = localStorage.getItem("token");
       if (!token) return;
 
-      const res = await fetch("http://localhost:3000/api/caisse/listeParRole", {
+      const res = await fetch(`${APP_URL}/api/caisse/listeParRole`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -89,7 +90,7 @@ export default function Header({ onMenuClick, title = "Tableau de bord" }: Heade
     if (!utilisateurId) return;
     const fetchNotifications = async () => {
       try {
-        const res = await fetch(`http://localhost:3000/api/notification/${utilisateurId}`);
+        const res = await fetch(`${APP_URL}/api/notification/${utilisateurId}`);
         const data: Notification[] = await res.json();
         setNotifications(data.map(n => ({ ...n, read: n.read ?? false })));
       } catch (err) {

@@ -1,5 +1,7 @@
 'use client';
 
+import { APP_URL } from "@/app/environnement/environnements";
+
 export const getPayments = async () => {
   const token = localStorage.getItem("token");
    if (!token) {
@@ -7,7 +9,7 @@ export const getPayments = async () => {
         window.location.href = "/login";
         return; // On arrête l'exécution
       }
-  const res = await fetch("http://localhost:3000/api/payementCredit/liste", {
+  const res = await fetch(`${APP_URL}/api/payementCredit/liste`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -29,7 +31,7 @@ export const addPayment = async (data: {
         window.location.href = "/login";
         return; // On arrête l'exécution
       }
-  const res = await fetch('http://localhost:3000/api/payementCredit/create', {
+  const res = await fetch(`${APP_URL}/api/payementCredit/create`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}`, },
     body: JSON.stringify(data),
@@ -47,7 +49,7 @@ export const annulerPayment = async (id: number) => {
         window.location.href = "/login";
         return; // On arrête l'exécution
       }
-  const res = await fetch(`http://localhost:3000/api/payementCredit/annuler/${id}`, {
+  const res = await fetch(`${APP_URL}/api/payementCredit/annuler/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}`, },
   });
@@ -56,7 +58,7 @@ export const annulerPayment = async (id: number) => {
 };
 
 export const deletePayment = async (id: number) => {
-  const res = await fetch(`http://localhost:3000/api/payementCredit/supprimer/${id}`, {
+  const res = await fetch(`${APP_URL}/api/payementCredit/supprimer/${id}`, {
     method: 'DELETE',
   });
   if (!res.ok) throw new Error('Erreur lors de la suppression');

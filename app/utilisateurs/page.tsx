@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import UtilisateurTable from "./UtilisateurTablde";
 import UtilisateurModal from "./UtilisateurModal";
 import DashboardLayout from "../components/Layout/DashboardLayout";
+import { APP_URL } from "../environnement/environnements";
 
 export default function UtilisateurPage() {
   const router = useRouter();
@@ -43,7 +44,7 @@ export default function UtilisateurPage() {
         return;
       }
       const res = await fetch(
-        "http://localhost:3000/api/boutique/listeBoutiqueParAdmin",
+        `${APP_URL}/api/boutique/listeBoutiqueParAdmin`,
         {
           method: "GET",
           headers: {
@@ -69,7 +70,7 @@ export default function UtilisateurPage() {
         window.location.href = "/login";
         return;
       }
-      const res = await fetch("http://localhost:3000/api/utilisateur/liste", {
+      const res = await fetch(`${APP_URL}/api/utilisateur/liste`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -165,7 +166,7 @@ export default function UtilisateurPage() {
 
                 if (selectedUtilisateur) {
                   await fetch(
-                    `http://localhost:3000/api/utilisateur/${selectedUtilisateur.id}`,
+                    `${APP_URL}/api/utilisateur/${selectedUtilisateur.id}`,
                     {
                       method: "PUT",
                       headers: {
@@ -176,7 +177,7 @@ export default function UtilisateurPage() {
                   );
                   showNotification("Utilisateur modifié avec succès.");
                 } else {
-                  await fetch("http://localhost:3000/api/utilisateur/create", {
+                  await fetch(`${APP_URL}/api/utilisateur/create`, {
                     method: "POST",
                     headers: {
                       "Content-Type": "application/json",

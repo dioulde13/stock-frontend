@@ -2,6 +2,7 @@
 
 import React, { useMemo, useState, Dispatch, SetStateAction } from "react";
 import ReactPaginate from "react-paginate";
+import { APP_URL } from "../environnement/environnements";
 
 interface MouvementTableProps {
   mouvement: any[];
@@ -79,7 +80,7 @@ export default function MouvementStockTable({
     try {
       const token = localStorage.getItem("token");
 
-      await fetch(`http://localhost:3000/api/mouvementStock/supprimer/${id}`, {
+      await fetch(`${APP_URL}/api/mouvementStock/supprimer/${id}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -101,7 +102,7 @@ export default function MouvementStockTable({
     try {
       const token = localStorage.getItem("token");
       const res = await fetch(
-        `http://localhost:3000/api/mouvementStock/annuler/${selectedMouvement.id}`,
+        `${APP_URL}/api/mouvementStock/annuler/${selectedMouvement.id}`,
         {
           method: "PUT", // ou POST selon ton routeur
           headers: {

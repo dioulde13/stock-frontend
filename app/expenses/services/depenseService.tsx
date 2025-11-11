@@ -1,3 +1,5 @@
+import { APP_URL } from "@/app/environnement/environnements";
+
 export async function getDepenses() {
   const token = localStorage.getItem("token");
    if (!token) {
@@ -5,7 +7,7 @@ export async function getDepenses() {
         window.location.href = "/login";
         return; // On arrête l'exécution
       }
-  const res = await fetch("http://localhost:3000/api/depense/liste", {
+  const res = await fetch(`${APP_URL}/api/depense/liste`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -17,7 +19,7 @@ export async function getDepenses() {
 }
 
 export async function getDepense(id: number) {
-  const res = await fetch(`http://localhost:3000/api/depense/consulter/${id}`);
+  const res = await fetch(`${APP_URL}/api/depense/consulter/${id}`);
   if (!res.ok) throw new Error("Erreur lors du chargement de la dépense");
   return res.json();
 }
@@ -33,7 +35,7 @@ export const fetchCaisses = async () => {
         return; // On arrête l'exécution
       }
 
-    const res = await fetch('http://localhost:3000/api/caisse/listeParRole', {
+    const res = await fetch(`${APP_URL}/api/caisse/listeParRole`, {
       headers: { Authorization: `Bearer ${token}` },
     });
 
@@ -55,7 +57,7 @@ export async function createDepense(depense: any) {
         return; // On arrête l'exécution
       }
 
-  const res = await fetch("http://localhost:3000/api/depense/create", {
+  const res = await fetch(`${APP_URL}/api/depense/create`, {
     method: "POST",
     headers: { 
       "Content-Type": "application/json",
@@ -94,7 +96,7 @@ export async function updateDepense(id: number, depense: any) {
         window.location.href = "/login";
         return; // On arrête l'exécution
       }
-  const res = await fetch(`http://localhost:3000/api/depense/modifier/${id}`, {
+  const res = await fetch(`${APP_URL}/api/depense/modifier/${id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" ,  Authorization: `Bearer ${token}`},
     body: JSON.stringify(depense),
@@ -110,7 +112,7 @@ export async function deleteDepense(id: number) {
         window.location.href = "/login";
         return; // On arrête l'exécution
       }
-  const res = await fetch(`http://localhost:3000/api/depense/supprimer/${id}`, {
+  const res = await fetch(`${APP_URL}/api/depense/supprimer/${id}`, {
     method: "DELETE",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
 
@@ -126,7 +128,7 @@ export async function annulerDepense(id: number) {
         window.location.href = "/login";
         return; // On arrête l'exécution
       }
-  const res = await fetch(`http://localhost:3000/api/depense/annuler/${id}`, {
+  const res = await fetch(`${APP_URL}/api/depense/annuler/${id}`, {
     method: "DELETE",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
 

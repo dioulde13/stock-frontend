@@ -1,5 +1,7 @@
 // services/creditService.ts
 
+import { APP_URL } from "@/app/environnement/environnements";
+
 // Récupérer tous les crédits
 export const getCredits = async () => {
   const token = localStorage.getItem("token");
@@ -8,7 +10,7 @@ export const getCredits = async () => {
         window.location.href = "/login";
         return; // On arrête l'exécution
       }
-  const res = await fetch("http://localhost:3000/api/credit/liste", {
+  const res = await fetch(`${APP_URL}/api/credit/liste`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -21,7 +23,7 @@ export const getCredits = async () => {
 
 // Récupérer un crédit par ID
 export const getCreditById = async (id: number) => {
-  const res = await fetch(`http://localhost:3000/api/credit/${id}`);
+  const res = await fetch(`${APP_URL}/api/credit/${id}`);
   if (!res.ok) throw new Error("Erreur lors de la récupération du crédit");
   return res.json();
 };
@@ -34,7 +36,7 @@ export const createCredit = async (data: any) => {
         window.location.href = "/login";
         return; // On arrête l'exécution
       }
-  const res = await fetch("http://localhost:3000/api/credit/create", {
+  const res = await fetch(`${APP_URL}/api/credit/create`, {
     method: "POST",
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}`, },
     body: JSON.stringify(data),
@@ -68,7 +70,7 @@ export const updateCredit = async (id: number, data:
         window.location.href = "/login";
         return; // On arrête l'exécution
       }
-  const res = await fetch(`http://localhost:3000/api/credit/modifier/${id}`, {
+  const res = await fetch(`${APP_URL}/api/credit/modifier/${id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}`, },
     body: JSON.stringify(data),
@@ -86,7 +88,7 @@ export const annulerCredit = async (id: number) => {
         window.location.href = "/login";
         return; // On arrête l'exécution
       }
-  const res = await fetch(`http://localhost:3000/api/credit/annuler/${id}`, {
+  const res = await fetch(`${APP_URL}/api/credit/annuler/${id}`, {
     method: "DELETE",
      headers: {
       "Content-Type": "application/json",
@@ -105,7 +107,7 @@ export const deleteCredit = async (id: number) => {
         window.location.href = "/login";
         return; // On arrête l'exécution
       }
-  const res = await fetch(`http://localhost:3000/api/credit/supprimer/${id}`, {
+  const res = await fetch(`${APP_URL}/api/credit/supprimer/${id}`, {
     method: "DELETE",
      headers: {
       "Content-Type": "application/json",

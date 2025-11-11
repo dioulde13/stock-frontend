@@ -13,6 +13,7 @@ import {
 import ReactPaginate from "react-paginate";
 import DashboardLayout from "../components/Layout/DashboardLayout";
 import { formatMontant } from "../components/utils/formatters";
+import { APP_URL } from "../environnement/environnements";
 
 export default function CreditsPage() {
   const router = useRouter();
@@ -83,7 +84,7 @@ export default function CreditsPage() {
         window.location.href = "/login";
         return; // On arrête l'exécution
       }
-      const res = await fetch("http://localhost:3000/api/client/liste", {
+      const res = await fetch(`${APP_URL}/api/client/liste`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import DashboardLayout from "../components/Layout/DashboardLayout";
+import { APP_URL } from "../environnement/environnements";
 
 export default function ProfilPage() {
   const [activeTab, setActiveTab] = useState<"infos" | "password">("infos");
@@ -44,7 +45,7 @@ export default function ProfilPage() {
         return; // On arrête l'exécution
       }
       const res = await fetch(
-        "http://localhost:3000/api/utilisateur/modifier",
+        `${APP_URL}/api/utilisateur/modifier`,
         {
           method: "PUT",
           headers: {
@@ -95,7 +96,7 @@ export default function ProfilPage() {
       }
 
       const res = await fetch(
-        "http://localhost:3000/api/utilisateur/updatePassword",
+        `${APP_URL}/api/utilisateur/updatePassword`,
         {
           method: "PUT",
           headers: {

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import StockMinimumTable from './StockMinimumTable';
 import DashboardLayout from '../components/Layout/DashboardLayout';
+import { APP_URL } from '../environnement/environnements';
 
 export default function MouvementPage() {
   const router = useRouter();
@@ -30,7 +31,7 @@ export default function MouvementPage() {
         window.location.href = "/login";
         return; // On arrête l'exécution
       }
-    const res = await fetch('http://localhost:3000/api/produit/alert', {
+    const res = await fetch(`${APP_URL}/api/produit/alert`, {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`,

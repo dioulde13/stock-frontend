@@ -6,6 +6,7 @@ import MouvementTable from "./MouvementTable";
 import MouvementModal from "./MouvementModal";
 import styles from "./mouvement.module.css";
 import DashboardLayout from "../components/Layout/DashboardLayout";
+import { APP_URL } from "../environnement/environnements";
 
 type TypeMvt = {
   id: number;
@@ -70,7 +71,7 @@ export default function MouvementPage() {
         window.location.href = "/login";
         return; // On arrête l'exécution
       }
-      const res = await fetch("http://localhost:3000/api/produit/liste", {
+      const res = await fetch(`${APP_URL}/api/produit/liste`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -97,7 +98,7 @@ export default function MouvementPage() {
         window.location.href = "/login";
         return; // On arrête l'exécution
       }
-      const res = await fetch("http://localhost:3000/api/typeMvtStock/liste", {
+      const res = await fetch(`${APP_URL}/api/typeMvtStock/liste`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -120,7 +121,7 @@ export default function MouvementPage() {
         return; // On arrête l'exécution
       }
       const res = await fetch(
-        "http://localhost:3000/api/mouvementStock/liste",
+        `${APP_URL}/api/mouvementStock/liste`,
         {
           method: "GET",
           headers: {
@@ -186,7 +187,7 @@ export default function MouvementPage() {
     try {
       setLoadingSubmit(true);
       const newTypeMvt = { type: formTypeMvt };
-      const res = await fetch("http://localhost:3000/api/typeMvtStock/create", {
+      const res = await fetch(`${APP_URL}/api/typeMvtStock/create`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newTypeMvt),
@@ -212,7 +213,7 @@ export default function MouvementPage() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch("http://localhost:3000/api/typeMvtStock/liste");
+      const res = await fetch(`${APP_URL}/api/typeMvtStock/liste`);
       if (!res.ok) throw new Error("Erreur lors du chargement des types");
       const typeMvtStock: TypeMvt[] = await res.json();
       setDataTypeMvt(typeMvtStock);
@@ -335,7 +336,7 @@ export default function MouvementPage() {
                   const token = localStorage.getItem("token");
 
                   response = await fetch(
-                    `http://localhost:3000/api/mouvementStock/modifier/${selectedMouvement.id}`,
+                    `${APP_URL}/api/mouvementStock/modifier/${selectedMouvement.id}`,
                     {
                       method: "PUT",
                       headers: {
@@ -349,7 +350,7 @@ export default function MouvementPage() {
                   const token = localStorage.getItem("token");
 
                   response = await fetch(
-                    "http://localhost:3000/api/mouvementStock/create",
+                    `${APP_URL}/api/mouvementStock/create`,
                     {
                       method: "POST",
                       headers: {
