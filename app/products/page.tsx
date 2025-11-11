@@ -49,20 +49,17 @@ export default function ProductsPage() {
   const fetchBoutiques = async () => {
     try {
       const token = localStorage.getItem("token");
-     if (!token) {
+      if (!token) {
         // Redirection automatique si token manquant
         window.location.href = "/login";
         return; // On arrête l'exécution
       }
 
-      const res = await fetch(
-        `${APP_URL}/api/boutique/listeBoutiqueParAdmin`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const res = await fetch(`${APP_URL}/api/boutique/listeBoutiqueParAdmin`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       const data = await res.json();
       setDataBoutique(data);
@@ -96,7 +93,7 @@ export default function ProductsPage() {
   const fetchProduits = async () => {
     try {
       const token = localStorage.getItem("token"); // ou sessionStorage / cookie
- if (!token) {
+      if (!token) {
         // Redirection automatique si token manquant
         window.location.href = "/login";
         return; // On arrête l'exécution
@@ -214,21 +211,29 @@ export default function ProductsPage() {
                 };
                 if (!payload.utilisateurId)
                   return alert("Utilisateur non trouvé !");
-
+                const token = localStorage.getItem("token"); // ou sessionStorage / cookie
+                if (!token) {
+                  // Redirection automatique si token manquant
+                  window.location.href = "/login";
+                  return; // On arrête l'exécution
+                }
                 if (selectedProduit) {
-                  await fetch(
-                    `${APP_URL}/api/produit/${selectedProduit.id}`,
-                    {
-                      method: "PUT",
-                      headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify(payload),
-                    }
-                  );
+                  await fetch(`${APP_URL}/api/produit/${selectedProduit.id}`, {
+                    method: "PUT",
+                    headers: {
+                      "Content-Type": "application/json",
+                      Authorization: `Bearer ${token}`,
+                    },
+                    body: JSON.stringify(payload),
+                  });
                   showNotification("Produit modifiée avec succès.");
                 } else {
                   await fetch(`${APP_URL}/api/produit/create`, {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
+                    headers: {
+                      "Content-Type": "application/json",
+                      Authorization: `Bearer ${token}`,
+                    },
                     body: JSON.stringify(payload),
                   });
                   console.log(payload);
