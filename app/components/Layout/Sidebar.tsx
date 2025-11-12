@@ -76,6 +76,7 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
 
   return (
     <>
+      {/* Overlay mobile */}
       {isOpen && (
         <div
           className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
@@ -83,15 +84,19 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
         />
       )}
 
-      <div className={`
-        fixed top-0 left-0 h-full bg-white border-r border-gray-200 z-50
-        transform transition-transform duration-300 ease-in-out
-        ${isOpen ? 'translate-x-0' : '-translate-x-full'}
-        lg:translate-x-0 lg:static lg:z-auto
-        w-64 flex flex-col
-      `}>
+      {/* Sidebar */}
+      <div
+        className={`
+          fixed top-0 left-0 h-full bg-white border-r border-gray-200 z-50
+          transform transition-transform duration-300 ease-in-out
+          ${isOpen ? 'translate-x-0' : '-translate-x-full'}
+          lg:translate-x-0 lg:fixed lg:z-auto
+          w-64 flex flex-col
+        `}
+      >
+        {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-gray-200">
-          <h1 className="text-xl font-bold font-pacifico text-gray-800">logo</h1>
+          <h1 className="text-xl font-bold font-pacifico text-gray-800">Logo</h1>
           <button
             onClick={onToggle}
             className="lg:hidden p-2 rounded-lg hover:bg-gray-100"
@@ -100,7 +105,8 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
           </button>
         </div>
 
-        <nav className="p-4 space-y-2 overflow-y-auto">
+        {/* Contenu scrollable */}
+        <div className="flex-1 overflow-y-auto p-4 space-y-2">
           {filteredMenuItems.map((item) => (
             <Link
               key={item.href}
@@ -120,10 +126,10 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
               <span className="font-medium">{item.label}</span>
             </Link>
           ))}
-        </nav>
+        </div>
 
         {/* Section Déconnexion fixée en bas */}
-        <div className="mt-auto p-4 border-t border-gray-200">
+        <div className="p-4 border-t border-gray-200">
           <Link
             href="/login"
             className="flex items-center px-4 py-3 rounded-lg text-red-600 hover:bg-red-50 transition-colors duration-200"

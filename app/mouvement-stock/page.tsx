@@ -236,9 +236,9 @@ export default function MouvementPage() {
     <DashboardLayout title="Liste des mouvements de stocks">
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-bold text-gray-900">
+          {/* <h2 className="text-2xl font-bold text-gray-900">
             Gestion des mouvements de stocks
-          </h2>
+          </h2> */}
           <button
             onClick={() => openModal("addTypeMvt")}
             className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
@@ -250,7 +250,7 @@ export default function MouvementPage() {
             className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2 whitespace-nowrap"
           >
             <i className="ri-add-line"></i>
-            <span>Ajouter un mouvement de stock</span>
+            <span>Ajouter</span>
           </button>
         </div>
 
@@ -271,7 +271,7 @@ export default function MouvementPage() {
           <div className={styles.modalOverlay}>
             <div className={styles.modalContent}>
               <>
-                <h2>Ajouter un type de mouvements de stock</h2>
+                <h2>Ajouter un type</h2>
                 <form
                   onSubmit={(e) => {
                     e.preventDefault();

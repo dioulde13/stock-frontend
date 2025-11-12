@@ -166,9 +166,6 @@ export default function ProductsPage() {
     <DashboardLayout title="Liste des produits">
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-bold text-gray-900">
-            Gestion des produits
-          </h2>
           <button
             onClick={() => handleOpenModal()}
             className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2 whitespace-nowrap"

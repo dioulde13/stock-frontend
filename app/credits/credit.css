@@ -1,0 +1,102 @@
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5); /* fond sombre */
+  display: flex;
+  align-items: flex-start; /* aligner en haut */
+  justify-content: center;
+  padding-top: 50px; /* espace depuis le haut */
+  z-index: 1000;
+  overflow-y: auto; /* scroll si le contenu dépasse */
+}
+
+.modalContent {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  max-width: 400px;
+  max-height: 90vh; /* limite la hauteur */
+  overflow-y: auto; /* scroll interne si nécessaire */
+  padding: 24px;
+  animation: fadeIn 0.3s ease;
+}
+
+.modalContent h3 {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: #111827;
+}
+
+.modalContent label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 4px;
+  color: #374151;
+}
+
+.modalContent input,
+.modalContent select {
+  width: 100%;
+  padding: 8px;
+  margin-top: 4px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.modalContent input:focus,
+.modalContent select:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.3);
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.modalActions button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.modalActions .cancelBtn {
+  background-color: #d1d5db;
+  color: #374151;
+}
+
+.modalActions .cancelBtn:hover {
+  background-color: #9ca3af;
+}
+
+.modalActions .submitBtn {
+  background-color: #4f46e5;
+  color: white;
+}
+
+.modalActions .submitBtn:hover {
+  background-color: #4338ca;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

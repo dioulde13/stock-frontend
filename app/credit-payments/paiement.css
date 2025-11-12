@@ -1,0 +1,97 @@
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: flex-start; /* aligné en haut */
+  justify-content: center;
+  padding-top: 50px; /* espace depuis le haut */
+  z-index: 1000;
+  overflow-y: auto; /* scroll si le contenu dépasse */
+}
+
+.modalContent {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  max-width: 400px;
+  max-height: 90vh;
+  overflow-y: auto; /* scroll interne si nécessaire */
+  padding: 24px;
+  animation: fadeIn 0.3s ease;
+}
+
+.modalContent h3 {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: #111827;
+}
+
+.modalContent input {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.modalContent input:focus {
+  outline: none;
+  border-color: #14b8a6; /* teal */
+  box-shadow: 0 0 0 2px rgba(20, 184, 166, 0.3);
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.modalActions button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.modalActions .cancelBtn {
+  background-color: #d1d5db;
+  color: #374151;
+}
+
+.modalActions .cancelBtn:hover {
+  background-color: #9ca3af;
+}
+
+.modalActions .submitBtn {
+  background-color: #14b8a6;
+  color: white;
+}
+
+.modalActions .submitBtn:hover {
+  background-color: #0f766e;
+}
+
+.modalActions .submitBtn.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

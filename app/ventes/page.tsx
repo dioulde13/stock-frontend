@@ -914,7 +914,7 @@ const filteredVentes = useMemo(() => {
 
       {modalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded shadow-lg w-96">
+          <div className="bg-white p-6 rounded shadow-lg w-96" style={{width: '72%'}}>
             <h2 className="text-lg font-semibold mb-4">
               {editingIndex !== null
                 ? "Modifier la ligne"
@@ -982,7 +982,7 @@ const filteredVentes = useMemo(() => {
 
       {confirmationModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded shadow-lg w-96">
+          <div className="bg-white p-6 rounded shadow-lg w-96" style={{width: '72%'}}>
             <h2 className="text-lg font-semibold mb-4">Confirmer la vente</h2>
             <select
               value={venteType}
@@ -1029,7 +1029,7 @@ const filteredVentes = useMemo(() => {
       {/* ✅ Modal de confirmation d’annulation */}
       {showModalAnnulation && venteAAnnuler && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-96 text-center">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-96 text-center" style={{width: '72%'}}>
             <h3 className="text-lg font-bold mb-4 text-gray-800">
               Annuler la vente #{venteAAnnuler.id} ?
             </h3>

@@ -1065,8 +1065,7 @@ export default function AchatPage() {
                   background: "white",
                   padding: 20,
                   borderRadius: 8,
-                  width: "90%",
-                  maxWidth: 600,
+                  width: "60%",
                 }}
               >
                 <h3
@@ -1272,7 +1271,7 @@ export default function AchatPage() {
 
       {confirmationModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded shadow-lg w-96">
+          <div className="bg-white p-6 rounded shadow-lg w-96" style={{width: '60%'}}>
             <h2 className="text-lg font-semibold mb-4">Confirmer la vente</h2>
             <select
               value={venteType}
@@ -1319,7 +1318,7 @@ export default function AchatPage() {
       {/* ✅ Modal de confirmation d’annulation */}
       {showModalAnnulation && achatAnnuler && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-96 text-center">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-96 text-center" style={{width: '72%'}}>
             <h3 className="text-lg font-bold mb-4 text-gray-800">
               Annuler l'achat #{achatAnnuler.id} ?
             </h3>

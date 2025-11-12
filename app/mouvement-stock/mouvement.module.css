@@ -1,5 +1,3 @@
-/* mouvement.module.css */
-
 .modalOverlay {
   position: fixed;
   top: 0;
@@ -8,9 +6,11 @@
   height: 100%;
   background: rgba(0, 0, 0, 0.5); /* fond sombre */
   display: flex;
-  align-items: center;
+  align-items: flex-start; /* aligner en haut */
   justify-content: center;
+  padding-top: 50px; /* espace depuis le haut */
   z-index: 1000;
+  overflow-y: auto; /* permet de scroller si contenu trop grand */
 }
 
 .modalContent {
@@ -19,6 +19,8 @@
   border-radius: 12px;
   width: 400px;
   max-width: 90%;
+  max-height: 90vh; /* limite la hauteur à 90% de la fenêtre */
+  overflow-y: auto; /* scroll interne si contenu dépasse */
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
   animation: fadeIn 0.3s ease;
 }

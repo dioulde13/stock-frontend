@@ -3,6 +3,8 @@
 import { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import CreditsTable from "./CreditsTable";
+import './credit.css';
+
 import {
   getCredits,
   createCredit,
@@ -55,7 +57,6 @@ export default function CreditsPage() {
 
   const [utilisateur, setUtilisateur] = useState<any[]>([]);
 
-
   useEffect(() => {
     const isAuthenticated = localStorage.getItem("isAuthenticated");
     const user = localStorage.getItem("utilisateur");
@@ -79,7 +80,7 @@ export default function CreditsPage() {
   const fetchClients = async () => {
     try {
       const token = localStorage.getItem("token");
-       if (!token) {
+      if (!token) {
         // Redirection automatique si token manquant
         window.location.href = "/login";
         return; // On arrête l'exécution
@@ -129,10 +130,6 @@ export default function CreditsPage() {
         montant: Number(formData.montant),
       });
 
-      // setModalType("success");
-      // setModalMessage(response.message || "Crédit créé avec succès.");
-      // setModalVisible(true);
-
       showNotification(response.message);
 
       setShowForm(false);
@@ -140,9 +137,6 @@ export default function CreditsPage() {
       fetchCredits();
     } catch (err) {
       console.error("Erreur lors de la création du crédit :", err);
-      // showNotification(err);
-      // setModalType("error");
-      // setModalVisible(true);
     }
   };
 
@@ -252,13 +246,6 @@ export default function CreditsPage() {
     (currentPage + 1) * itemsPerPage
   );
 
-  // const totalMontant = filteredCredits.reduce((sum, c) => sum + c.montant, 0);
-  // const totalPaye = filteredCredits.reduce((sum, c) => sum + c.montantPaye, 0);
-  // const totalRestant = filteredCredits.reduce(
-  //   (sum, c) => sum + c.montantRestant,
-  //   0
-  // );
-
   const creditsActifs = filteredCredits.filter((c) => c.status !== "ANNULER");
 
   const totalMontant = creditsActifs.reduce((sum, c) => sum + c.montant, 0);
@@ -294,16 +281,6 @@ export default function CreditsPage() {
 
   return (
     <DashboardLayout title="Crédits">
-      {/* {modalVisible && (
-        <Modal
-          title={modalType === "error" ? "Erreur" : "Succès"}
-          onClose={() => setModalVisible(false)}
-        >
-          <p>{modalMessage}</p>
-          <button onClick={() => setModalVisible(false)}>OK</button>
-        </Modal>
-      )} */}
-
       {notification && (
         <div className="fixed top-5 right-5 bg-green-500 text-white px-4 py-2 rounded shadow-lg z-50">
           {notification}
@@ -313,15 +290,15 @@ export default function CreditsPage() {
       <div className="space-y-6">
         <div className="flex items-center justify-between flex-wrap gap-4">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">
+            {/* <h2 className="text-2xl font-bold text-gray-900">
               Gestion des crédits
             </h2>
             <p className="text-gray-600">
               Suivez les crédits accordés aux clients
-            </p>
+            </p> */}
           </div>
           <button
-            className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 flex items-center space-x-2 whitespace-nowrap"
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
             onClick={() => {
               resetForm();
               setEditingId(null);
@@ -430,19 +407,15 @@ export default function CreditsPage() {
 
         {/* Formulaire Modal */}
         {showForm && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-            <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
-              <h3 className="text-lg font-bold mb-4">
-                {editingId ? "Modifier le crédit" : "Ajouter un crédit"}
-              </h3>
+          <div className="modalOverlay">
+            <div className="modalContent">
+              <h3>{editingId ? "Modifier le crédit" : "Ajouter un crédit"}</h3>
+
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Description
-                </label>
+                <label>Description</label>
                 <input
                   type="text"
                   required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
                   value={formData.description}
                   onChange={(e) =>
                     setFormData({ ...formData, description: e.target.value })
@@ -450,74 +423,91 @@ export default function CreditsPage() {
                   placeholder="Entrer la description"
                 />
               </div>
-              <select
-                value={formData.clientId}
-                onChange={(e) =>
-                  setFormData({ ...formData, clientId: Number(e.target.value) })
-                }
-                className="w-full px-3 py-2 mt-2 border border-gray-300 rounded-lg text-sm"
-              >
-                <option value="">-- Client --</option>
-                {dataClient.map((client: any) => (
-                  <option key={client.id} value={client.id}>
-                    {client.nom}
-                  </option>
-                ))}
-              </select>
 
-              <select
-                value={formData.type}
-                onChange={(e) =>
-                  setFormData({ ...formData, type: e.target.value })
-                }
-                className="w-full px-3 py-2 mt-2 border border-gray-300 rounded-lg text-sm"
-              >
-                <option value="">-- Type --</option>
-                <option value="ENTRE">Entre</option>
-                <option value="SORTIE">Sortie</option>
-              </select>
+              <div>
+                <label>Client</label>
+                <select
+                  value={formData.clientId}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      clientId: Number(e.target.value),
+                    })
+                  }
+                >
+                  <option value="">-- Client --</option>
+                  {dataClient.map((client: any) => (
+                    <option key={client.id} value={client.id}>
+                      {client.nom}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
-              <input
-                type="text"
-                placeholder="Montant"
-                value={
-                  formData.montant
-                    ? new Intl.NumberFormat("fr-FR").format(formData.montant)
-                    : ""
-                }
-                onChange={(e) => {
-                  const rawValue = e.target.value.replace(/\s/g, "");
-                  setFormData({ ...formData, montant: Number(rawValue) || 0 });
-                }}
-                className="w-full px-3 py-2 mt-2 border border-gray-300 rounded-lg text-sm"
-              />
+              <div>
+                <label>Type</label>
+                <select
+                  value={formData.type}
+                  onChange={(e) =>
+                    setFormData({ ...formData, type: e.target.value })
+                  }
+                >
+                  <option value="">-- Type --</option>
+                  <option value="ENTRE">Entre</option>
+                  <option value="SORTIE">Sortie</option>
+                </select>
+              </div>
 
-              {editingId && (
+              <div>
+                <label>Montant</label>
                 <input
                   type="text"
-                  placeholder="Montant payé"
+                  placeholder="Montant"
                   value={
-                    montantPaye
-                      ? new Intl.NumberFormat("fr-FR").format(montantPaye)
+                    formData.montant
+                      ? new Intl.NumberFormat("fr-FR").format(formData.montant)
                       : ""
                   }
                   onChange={(e) => {
                     const rawValue = e.target.value.replace(/\s/g, "");
-                    setMontantPaye(Number(rawValue) || 0);
+                    setFormData({
+                      ...formData,
+                      montant: Number(rawValue) || 0,
+                    });
                   }}
-                  className="w-full px-3 py-2 mt-2 border border-gray-300 rounded-lg text-sm"
                 />
+              </div>
+
+              {editingId && (
+                <div>
+                  <label>Montant payé</label>
+                  <input
+                    type="text"
+                    placeholder="Montant payé"
+                    value={
+                      montantPaye
+                        ? new Intl.NumberFormat("fr-FR").format(montantPaye)
+                        : ""
+                    }
+                    onChange={(e) => {
+                      const rawValue = e.target.value.replace(/\s/g, "");
+                      setMontantPaye && setMontantPaye(Number(rawValue) || 0);
+                    }}
+                  />
+                </div>
               )}
 
-              <div className="flex justify-end space-x-3 mt-3">
+              <div className="modalActions">
                 <button
-                  className="px-4 py-2 bg-gray-300 rounded"
+                  type="button"
+                  className="cancelBtn"
                   onClick={() => setShowForm(false)}
                 >
                   Annuler
                 </button>
                 <button
-                  className="px-4 py-2 bg-indigo-600 text-white rounded"
+                  type="button"
+                  className="submitBtn"
                   onClick={editingId ? handleEdit : handleAdd}
                 >
                   {editingId ? "Modifier" : "Ajouter"}

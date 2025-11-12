@@ -16,9 +16,9 @@ export default function DashboardLayout({ children, title }: DashboardLayoutProp
     <div className="min-h-screen flex">
       {/* Sidebar */}
       <Sidebar isOpen={sidebarOpen} onToggle={() => setSidebarOpen(!sidebarOpen)} />
-      
+
       {/* Contenu principal */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col lg:ml-64"> {/* <--- Décalage sur grands écrans */}
         {/* Header fixé en haut */}
         <Header 
           onMenuClick={() => setSidebarOpen(!sidebarOpen)} 

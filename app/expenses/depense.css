@@ -1,0 +1,86 @@
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: flex-start; /* aligner en haut */
+  justify-content: center;
+  padding-top: 50px; /* espace depuis le haut */
+  z-index: 1000;
+  overflow-y: auto; /* scroll si le contenu dépasse */
+}
+
+.modalContent {
+  background: #fff;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 400px;
+  max-height: 90vh; /* limite la hauteur */
+  padding: 24px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  overflow-y: auto; /* scroll interne si nécessaire */
+  animation: fadeIn 0.3s ease;
+}
+
+.modalContent h2 {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  color: #111827;
+}
+
+.modalContent input {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.modalContent input:focus {
+  outline: none;
+  border-color: #dc2626; /* rouge */
+  box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.3);
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.modalActions button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.modalActions .cancelBtn {
+  background-color: #f3f4f6;
+  color: #374151;
+}
+
+.modalActions .cancelBtn:hover {
+  background-color: #e5e7eb;
+}
+
+.modalActions .submitBtn {
+  background-color: #dc2626;
+  color: white;
+}
+
+.modalActions .submitBtn:hover {
+  background-color: #b91c1c;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}

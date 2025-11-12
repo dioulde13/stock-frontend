@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import CreditPaymentsTable from "./CreditPaymentsTable";
 import { addPayment, getPayments } from "./services/payementCreditService";
 import DashboardLayout from "../components/Layout/DashboardLayout";
+import './paiement.css';
 
 export default function CreditPaymentsPage() {
   const router = useRouter();
@@ -105,19 +106,18 @@ export default function CreditPaymentsPage() {
     (currentPage + 1) * itemsPerPage
   );
 
-
   const creditsAnnulerActifs = filteredPayments.filter(
     (c) => c.status === "ANNULER"
   );
 
-   const creditsActifs = filteredPayments.filter(
-    (c) => c.status !== "ANNULER"
-  );
+  const creditsActifs = filteredPayments.filter((c) => c.status !== "ANNULER");
 
   const totalMontant = creditsActifs.reduce((sum, p) => sum + p.montant, 0);
 
-  const totalAnnulerMontant = creditsAnnulerActifs.reduce((sum, p) => sum + p.montant, 0);
-
+  const totalAnnulerMontant = creditsAnnulerActifs.reduce(
+    (sum, p) => sum + p.montant,
+    0
+  );
 
   return (
     <DashboardLayout title="Paiement crédits">
@@ -142,13 +142,11 @@ export default function CreditPaymentsPage() {
 
         {/* Total montant */}
         <div className="bg-white border rounded-lg p-3 text-sm font-medium flex justify-between">
-          
-          
           <div>
             Total Montant Valider:{" "}
             <span className="text-teal-600">{totalMontant} GNF</span>
           </div>
-           <div>
+          <div>
             Total Montant Annuler :{" "}
             <span className="text-teal-600">{totalAnnulerMontant} GNF</span>
           </div>
@@ -216,20 +214,20 @@ export default function CreditPaymentsPage() {
 
         {/* Modal */}
         {isModalOpen && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg shadow-lg w-full max-w-md p-6 relative">
-              <h3 className="text-lg font-bold mb-4">
-                Enregistrer un paiement
-              </h3>
+          <div className="modalOverlay">
+            <div className="modalContent">
+              <h3>Enregistrer un paiement</h3>
 
               <input
                 type="text"
                 name="reference"
                 placeholder="Référence du crédit"
-                className="w-full mb-3 px-3 py-2 border rounded"
                 value={formData.reference}
-                onChange={handleInputChange}
+                onChange={(e) =>
+                  setFormData({ ...formData, reference: e.target.value })
+                }
               />
+
               <input
                 type="text"
                 placeholder="Montant"
@@ -242,26 +240,20 @@ export default function CreditPaymentsPage() {
                   const rawValue = e.target.value.replace(/\s/g, "");
                   setFormData({ ...formData, montant: Number(rawValue) || 0 });
                 }}
-                className="w-full mb-3 px-3 py-2 border rounded"
-                // type="number"
-                // name="montant"
-                // placeholder="Montant"
-                // value={formData.montant}
-                // onChange={handleInputChange}
               />
 
-              <div className="flex justify-end space-x-3 mt-4">
+              <div className="modalActions">
                 <button
+                  type="button"
+                  className="cancelBtn"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
                 >
                   Annuler
                 </button>
                 <button
+                  type="button"
+                  className={`submitBtn ${loading ? "disabled" : ""}`}
                   onClick={handleSubmit}
-                  className={`px-4 py-2 bg-teal-600 text-white rounded hover:bg-teal-700 ${
-                    loading ? "opacity-50 cursor-not-allowed" : ""
-                  }`}
                   disabled={loading}
                 >
                   {loading ? "Enregistrement..." : "Enregistrer"}
