@@ -193,14 +193,14 @@ export default function Header({ onMenuClick, title = "Tableau de bord" }: Heade
 
         <div className="flex items-center space-x-4 relative">
           {/* --- Notifications --- */}
-          <button id="notif-button" onClick={toggleNotif} className="p-2 rounded-lg hover:bg-gray-100 relative">
+          {/* <button id="notif-button" onClick={toggleNotif} className="p-2 rounded-lg hover:bg-gray-100 relative">
             <i className="ri-notification-line text-xl text-gray-600"></i>
             {unreadCount > 0 && (
               <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                 {unreadCount}
               </span>
             )}
-          </button>
+          </button> */}
 
           {isNotifOpen && (
             <div

@@ -146,7 +146,7 @@
 /* 📱 Responsive : mobile + tablette */
 @media (max-width: 768px) {
   .modal-container {
-    max-width: 95%;
+    max-width: 30%;
     border-radius: 10px;
   }
 
