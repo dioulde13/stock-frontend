@@ -1,0 +1,183 @@
+/* Overlay */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center; /* centré verticalement */
+  padding: 1rem;
+  overflow-y: auto; /* au cas où le contenu dépasse */
+}
+
+/* Container */
+.modal-container {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  width: 100%;
+  max-width: 450px;
+  max-height: 90vh; /* ne dépasse pas 90% de la hauteur écran */
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  animation: modalFadeIn 0.3s ease-in-out;
+}
+
+/* Header */
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.modal-header h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  color: #6b7280;
+  font-size: 1.4rem;
+  cursor: pointer;
+}
+
+.close-btn:hover {
+  color: #111827;
+}
+
+/* Form */
+.modal-form {
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  font-size: 0.9rem;
+  color: #374151;
+  margin-bottom: 0.25rem;
+}
+
+.form-group input,
+.form-group select {
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.9rem;
+  outline: none;
+  background: #fff;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
+
+/* Row for two fields */
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+}
+
+/* Actions (buttons) */
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.cancel-btn,
+.submit-btn {
+  border: none;
+  border-radius: 8px;
+  padding: 0.6rem 1.2rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.cancel-btn {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.cancel-btn:hover {
+  background: #e5e7eb;
+}
+
+.submit-btn {
+  background: #2563eb;
+  color: #ffffff;
+}
+
+.submit-btn:hover {
+  background: #1d4ed8;
+}
+
+/* Animation */
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* 📱 Responsive : mobile + tablette */
+@media (max-width: 768px) {
+  .modal-container {
+    max-width: 95%;
+    border-radius: 10px;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr; /* empiler au lieu de côte à côte */
+  }
+
+  .modal-header h3 {
+    font-size: 1rem;
+  }
+
+  .form-group input,
+  .form-group select {
+    font-size: 0.85rem;
+    padding: 0.45rem 0.6rem;
+  }
+
+  .cancel-btn,
+  .submit-btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+  }
+
+  /* Assurer que sur mobile, l’overlay ne pousse pas le modal trop bas */
+  .modal-overlay {
+    align-items: flex-start; /* modal commence en haut au lieu centre si besoin */
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
+  }
+
+  .modal-container {
+    max-height: calc(100vh - 3rem); /* laisse un petit espace en haut & bas */
+  }
+}
