@@ -14,7 +14,7 @@ export default function ProductsPage() {
   const [dataCategorie, setDataCategorie] = useState<any>(null);
   const [dataBoutique, setDataBoutique] = useState<any>(null);
   const [produits, setProduits] = useState<any[]>([]);
-  const [notification, setNotification] = useState<string | null>(null);
+  // const [notification, setNotification] = useState<string | null>(null);
   const [utilisateur, setUtilisateur] = useState<any[]>([]);
 
   const [formData, setFormData] = useState({
@@ -118,9 +118,18 @@ export default function ProductsPage() {
     }
   };
 
-  const showNotification = (message: string) => {
-    setNotification(message);
-    setTimeout(() => setNotification(null), 1000);
+  // 🟢 Affichage des notifications
+  const [notification, setNotification] = useState<{
+    message: string;
+    type: "success" | "error";
+  } | null>(null);
+
+  const showNotification = (
+    message: string,
+    type: "success" | "error" = "success"
+  ) => {
+    setNotification({ message, type });
+    setTimeout(() => setNotification(null), 2000); // 2s pour que ce soit plus visible
   };
 
   const handleOpenModal = (produit: any = null) => {
@@ -206,26 +215,47 @@ export default function ProductsPage() {
                   boutiqueId: formData.boutiqueId,
                   utilisateurId: Number(formData.utilisateurId),
                 };
+
                 if (!payload.utilisateurId)
                   return alert("Utilisateur non trouvé !");
-                const token = localStorage.getItem("token"); // ou sessionStorage / cookie
+
+                const token = localStorage.getItem("token");
                 if (!token) {
-                  // Redirection automatique si token manquant
                   window.location.href = "/login";
-                  return; // On arrête l'exécution
+                  return;
                 }
+
+                let response, data;
+
                 if (selectedProduit) {
-                  await fetch(`${APP_URL}/api/produit/${selectedProduit.id}`, {
-                    method: "PUT",
-                    headers: {
-                      "Content-Type": "application/json",
-                      Authorization: `Bearer ${token}`,
-                    },
-                    body: JSON.stringify(payload),
-                  });
-                  showNotification("Produit modifiée avec succès.");
+                  // 🔄 Modifier
+                  response = await fetch(
+                    `${APP_URL}/api/produit/${selectedProduit.id}`,
+                    {
+                      method: "PUT",
+                      headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                      },
+                      body: JSON.stringify(payload),
+                    }
+                  );
+                  data = await response.json();
+                  if (!response.ok) {
+                    showNotification(
+                      data.message || "Erreur lors de la modification.",
+                      "error"
+                    );
+                  } else {
+                    showNotification(
+                      data.message || "Produit modifié avec succès.",
+                      "success"
+                    );
+                    setIsModalOpen(false);
+                  }
                 } else {
-                  await fetch(`${APP_URL}/api/produit/create`, {
+                  // ➕ Créer
+                  response = await fetch(`${APP_URL}/api/produit/create`, {
                     method: "POST",
                     headers: {
                       "Content-Type": "application/json",
@@ -233,8 +263,19 @@ export default function ProductsPage() {
                     },
                     body: JSON.stringify(payload),
                   });
-                  console.log(payload);
-                  showNotification("Produit ajoutée avec succès.");
+                  data = await response.json();
+                  if (!response.ok) {
+                    showNotification(
+                      data.message || "Erreur lors de l'ajout.",
+                      "error"
+                    );
+                  } else {
+                    showNotification(
+                      data.message || "Produit ajouté avec succès.",
+                      "success"
+                    );
+                    setIsModalOpen(false);
+                  }
                 }
 
                 await fetchProduits();
@@ -249,17 +290,27 @@ export default function ProductsPage() {
                   boutiqueId: 0,
                   utilisateurId: "",
                 });
-                setIsModalOpen(false);
-              } catch (error) {
-                console.error("Erreur API catégorie :", error);
+              } catch (error: any) {
+                console.error("Erreur API produit :", error);
+                showNotification(
+                  error.message || "Une erreur est survenue.",
+                  "error"
+                );
               }
             }}
           />
         )}
 
+        {/* ✅ Notification */}
         {notification && (
-          <div className="fixed top-5 right-5 bg-green-500 text-white px-4 py-2 rounded shadow-lg z-50">
-            {notification}
+          <div
+            className={`fixed top-5 right-5 px-4 py-2 rounded shadow-lg z-50 ${
+              notification.type === "success"
+                ? "bg-green-500 text-white"
+                : "bg-red-500 text-white"
+            }`}
+          >
+            {notification.message}
           </div>
         )}
       </div>

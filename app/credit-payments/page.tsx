@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import CreditPaymentsTable from "./CreditPaymentsTable";
 import { addPayment, getPayments } from "./services/payementCreditService";
 import DashboardLayout from "../components/Layout/DashboardLayout";
-import './paiement.css';
+import "./paiement.css";
 
 export default function CreditPaymentsPage() {
   const router = useRouter();
@@ -26,6 +26,20 @@ export default function CreditPaymentsPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [dateStart, setDateStart] = useState("");
   const [dateEnd, setDateEnd] = useState("");
+
+  // 🟢 Affichage des notifications
+  const [notification, setNotification] = useState<{
+    message: string;
+    type: "success" | "error";
+  } | null>(null);
+
+  const showNotification = (
+    message: string,
+    type: "success" | "error" = "success"
+  ) => {
+    setNotification({ message, type });
+    setTimeout(() => setNotification(null), 2000); // 2s pour que ce soit plus visible
+  };
 
   useEffect(() => {
     const user = localStorage.getItem("utilisateur");
@@ -59,31 +73,36 @@ export default function CreditPaymentsPage() {
   };
 
   const handleSubmit = async () => {
-    if (!formData.reference || !formData.utilisateurId || !formData.montant) {
-      return alert("Veuillez remplir tous les champs");
-    }
+  if (!formData.reference || !formData.utilisateurId || !formData.montant) {
+    setIsModalOpen(false);
+    return showNotification("Veuillez remplir tous les champs", "error");
+  }
 
-    try {
-      setLoading(true);
-      await addPayment({
-        reference: formData.reference,
-        utilisateurId: Number(formData.utilisateurId),
-        montant: Number(formData.montant),
-      });
-      alert("Paiement enregistré avec succès !");
-      setIsModalOpen(false);
-      setFormData({
-        reference: "",
-        utilisateurId: formData.utilisateurId,
-        montant: 0,
-      });
-      await fetchPayments();
-    } catch (error: any) {
-      alert(error.message || "Erreur lors de l'enregistrement du paiement");
-    } finally {
-      setLoading(false);
-    }
-  };
+  try {
+    setLoading(true);
+    const response = await addPayment({
+      reference: formData.reference,
+      utilisateurId: Number(formData.utilisateurId),
+      montant: Number(formData.montant),
+    });
+    setIsModalOpen(false);
+
+
+    showNotification(response?.message || "Paiement enregistré avec succès !", "success");
+
+    setFormData({
+      reference: "",
+      utilisateurId: formData.utilisateurId,
+      montant: 0,
+    });
+    await fetchPayments();
+  } catch (error: any) {
+    showNotification(error.message || "Erreur lors de l'enregistrement du paiement", "error");
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   // Filtrage + Pagination + Dates
   const filteredPayments = useMemo(() => {
@@ -121,6 +140,18 @@ export default function CreditPaymentsPage() {
 
   return (
     <DashboardLayout title="Paiement crédits">
+      {/* ✅ Notification */}
+      {notification && (
+        <div
+          className={`fixed top-5 right-5 px-4 py-2 rounded shadow-lg z-50 ${
+            notification.type === "success"
+              ? "bg-green-500 text-white"
+              : "bg-red-500 text-white"
+          }`}
+        >
+          {notification.message}
+        </div>
+      )}
       <div className="space-y-6">
         <div className="flex items-center justify-between flex-wrap gap-4">
           <div>

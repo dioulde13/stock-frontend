@@ -126,7 +126,7 @@ export default function AchatPage() {
   const fetchClients = async () => {
     try {
       const token = localStorage.getItem("token");
-       if (!token) {
+      if (!token) {
         // Redirection automatique si token manquant
         window.location.href = "/login";
         return; // On arrête l'exécution
@@ -149,7 +149,7 @@ export default function AchatPage() {
   const fetchUtilisateur = async () => {
     try {
       const token = localStorage.getItem("token");
-       if (!token) {
+      if (!token) {
         // Redirection automatique si token manquant
         window.location.href = "/login";
         return; // On arrête l'exécution
@@ -174,7 +174,7 @@ export default function AchatPage() {
   const fetchFournisseurs = async () => {
     try {
       const token = localStorage.getItem("token");
-       if (!token) {
+      if (!token) {
         // Redirection automatique si token manquant
         window.location.href = "/login";
         return; // On arrête l'exécution
@@ -200,7 +200,7 @@ export default function AchatPage() {
   const fetchProduits = async () => {
     try {
       const token = localStorage.getItem("token");
-       if (!token) {
+      if (!token) {
         // Redirection automatique si token manquant
         window.location.href = "/login";
         return; // On arrête l'exécution
@@ -262,7 +262,7 @@ export default function AchatPage() {
     setError(null);
     try {
       const token = localStorage.getItem("token");
-       if (!token) {
+      if (!token) {
         // Redirection automatique si token manquant
         window.location.href = "/login";
         return; // On arrête l'exécution
@@ -355,21 +355,37 @@ export default function AchatPage() {
   const totalPages = Math.ceil(filteredVentes.length / ventesParPage);
   const handlePageChange = (page: number) => setCurrentPage(page);
 
+  // 🟢 Affichage des notifications
+  const [notification, setNotification] = useState<{
+    message: string;
+    type: "success" | "error";
+  } | null>(null);
+
+  const showNotification = (
+    message: string,
+    type: "success" | "error" = "success"
+  ) => {
+    setNotification({ message, type });
+    setTimeout(() => setNotification(null), 2000); // 2s pour que ce soit plus visible
+  };
+
   const creerAchatAvecType = async (
     type: "ACHAT" | "CREDIT",
     clientId: number | null
   ) => {
     if (lignesAchat.length === 0) {
-      alert("Ajoutez au moins une ligne de vente.");
-      return;
+      return showNotification("Ajoutez au moins une ligne d'achat.", "error");
     }
+
     const lignesValides = lignesAchat.every(
       (ligne) =>
         ligne.produitId > 0 && ligne.quantite > 0 && ligne.prix_vente > 0
     );
     if (!lignesValides) {
-      alert("Veuillez remplir correctement toutes les lignes de vente.");
-      return;
+      return showNotification(
+        "Veuillez remplir correctement toutes les lignes d'achat.",
+        "error"
+      );
     }
 
     const { utilisateurId, fournisseurId } = lignesAchat[0];
@@ -389,13 +405,14 @@ export default function AchatPage() {
 
     console.log(payload);
     setCreating(true);
+
     try {
       const token = localStorage.getItem("token");
-       if (!token) {
-        // Redirection automatique si token manquant
+      if (!token) {
         window.location.href = "/login";
-        return; // On arrête l'exécution
+        return;
       }
+
       const res = await fetch(`${APP_URL}/api/achat/create`, {
         method: "POST",
         headers: {
@@ -404,15 +421,18 @@ export default function AchatPage() {
         },
         body: JSON.stringify(payload),
       });
+
+      const data = await res.json();
+
       if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.message || "Erreur inconnue");
+        return showNotification(data.message || "Erreur inconnue", "error");
       }
-      alert("Achat créée avec succès !");
+
+      showNotification(data.message || "Achat créé avec succès !", "success");
       setLignesAchat([]);
       fetchAchats();
-    } catch (e) {
-      alert((e as Error).message);
+    } catch (e: any) {
+      showNotification(e.message || "Erreur de connexion au serveur", "error");
     } finally {
       setCreating(false);
     }
@@ -546,32 +566,17 @@ export default function AchatPage() {
   //   setTimeout(() => setNotification(null), 1500);
   // };
 
-  const [notification, setNotification] = useState<{
-    message: string;
-    type: "success" | "error" | null;
-  }>({
-    message: "",
-    type: null,
-  });
-
-  const showNotification = (
-    msg: string,
-    type: "success" | "error" = "success"
-  ) => {
-    setNotification({ message: msg, type });
-    setTimeout(() => setNotification({ message: "", type: null }), 1500);
-  };
-
-  // 🔹 Annulation d'une vente
+  // 🔹 Annulation d'un achat
   const handleAnnulerAchat = async () => {
     if (!achatAnnuler) return;
+
     try {
       const token = localStorage.getItem("token");
-       if (!token) {
-        // Redirection automatique si token manquant
+      if (!token) {
         window.location.href = "/login";
-        return; // On arrête l'exécution
+        return;
       }
+
       const res = await fetch(
         `${APP_URL}/api/achat/annuler/${achatAnnuler.id}`,
         {
@@ -582,14 +587,19 @@ export default function AchatPage() {
           },
         }
       );
+
       const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Erreur d’annulation.");
-      showNotification("Vente enregistrée avec succès", "success");
+
+      if (!res.ok) {
+        throw new Error(data.message || "Erreur d’annulation.");
+      }
+
+      showNotification(data.message || "Achat annulé avec succès.", "success");
       setShowModalAnnulation(false);
       setAchatAnnuler(null);
       fetchAchats();
-    } catch (e) {
-      showNotification((e as Error).message, "error");
+    } catch (e: any) {
+      showNotification(e.message || "Erreur de connexion au serveur", "error");
     }
   };
 
@@ -1271,7 +1281,10 @@ export default function AchatPage() {
 
       {confirmationModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded shadow-lg w-96" style={{width: '60%'}}>
+          <div
+            className="bg-white p-6 rounded shadow-lg w-96"
+            style={{ width: "60%" }}
+          >
             <h2 className="text-lg font-semibold mb-4">Confirmer la vente</h2>
             <select
               value={venteType}
@@ -1318,7 +1331,10 @@ export default function AchatPage() {
       {/* ✅ Modal de confirmation d’annulation */}
       {showModalAnnulation && achatAnnuler && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-96 text-center" style={{width: '72%'}}>
+          <div
+            className="bg-white p-6 rounded-lg shadow-lg w-96 text-center"
+            style={{ width: "72%" }}
+          >
             <h3 className="text-lg font-bold mb-4 text-gray-800">
               Annuler l'achat #{achatAnnuler.id} ?
             </h3>
@@ -1344,20 +1360,18 @@ export default function AchatPage() {
         </div>
       )}
 
-      {notification.message && (
+      {/* ✅ Notification */}
+      {notification && (
         <div
-          className={`fixed top-4 right-4 px-4 py-2 rounded text-white shadow-lg transition-all duration-300
-      ${notification.type === "success" ? "bg-green-500" : "bg-red-500"}`}
+          className={`fixed top-5 right-5 px-4 py-2 rounded shadow-lg z-50 ${
+            notification.type === "success"
+              ? "bg-green-500 text-white"
+              : "bg-red-500 text-white"
+          }`}
         >
           {notification.message}
         </div>
       )}
-
-      {/* {notification && (
-        <div className="fixed top-5 right-5 bg-green-500 text-white px-4 py-2 rounded shadow-lg z-50">
-          {notification}
-        </div>
-      )} */}
     </DashboardLayout>
   );
 }

@@ -162,7 +162,7 @@ export default function ProduitTable({
   );
   const [produitAChangerStatut, setProduitAChangerStatut] =
     useState<Produit | null>(null);
-  const itemsPerPage = 2;
+  const itemsPerPage = 5;
 
   const filteredProduit = Array.isArray(produits)
     ? produits.filter((produit) => {

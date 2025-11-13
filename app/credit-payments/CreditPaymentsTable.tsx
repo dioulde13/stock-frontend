@@ -101,14 +101,6 @@ export default function CreditPaymentsTable({
                    Annuler
                   </button>
                 </td>
-                {/* <td className="px-6 py-4">
-                  <button
-                    onClick={() => handleDelete(p.id)}
-                    className="text-red-600 hover:text-red-900"
-                  >
-                    <i className="ri-delete-bin-line"></i>
-                  </button>
-                </td> */}
               </tr>
             ))}
             {payments.length === 0 && (

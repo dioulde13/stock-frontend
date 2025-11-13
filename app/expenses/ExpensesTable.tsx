@@ -37,21 +37,20 @@ export default function ExpensesTable({
   const [showModal, setShowModal] = useState(false);
   const [selectedExpense, setSelectedExpense] = useState<Depense | null>(null);
 
-  // 🔹 Notification (toast)
-  const [notification, setNotification] = useState<string | null>(null);
-  const [notificationType, setNotificationType] = useState<"success" | "error">(
-    "success"
-  );
-
   const [utilisateur, setUtilisateur] = useState<any>({});
+
+  // 🟢 Affichage des notifications
+  const [notification, setNotification] = useState<{
+    message: string;
+    type: "success" | "error";
+  } | null>(null);
 
   const showNotification = (
     message: string,
     type: "success" | "error" = "success"
   ) => {
-    setNotification(message);
-    setNotificationType(type);
-    setTimeout(() => setNotification(null), 3000); // disparaît après 3s
+    setNotification({ message, type });
+    setTimeout(() => setNotification(null), 2000); // 2s pour que ce soit plus visible
   };
 
   // 🔹 Récupération des dépenses
@@ -79,18 +78,6 @@ export default function ExpensesTable({
     }
   }, [refreshTrigger]);
 
-  // 🔹 Suppression d’une dépense
-  // const handleDelete = async (id: number) => {
-  //   if (!confirm("Voulez-vous vraiment supprimer cette dépense ?")) return;
-  //   try {
-  //     await deleteDepense(id);
-  //     setExpenses((prev) => prev.filter((d) => d.id !== id));
-  //     showNotification("Dépense supprimée avec succès", "success");
-  //   } catch (error) {
-  //     console.error(error);
-  //     showNotification("Erreur lors de la suppression", "error");
-  //   }
-  // };
 
   // 🔹 Clic sur "Annuler"
   const handleAnnulerClick = (expense: Depense) => {
@@ -148,16 +135,18 @@ export default function ExpensesTable({
 
   return (
     <div className="relative bg-white rounded-lg shadow-lg border border-gray-200">
-      {/* 🔹 Notification (toast) */}
-      {notification && (
-        <div
-          className={`fixed top-5 right-5 px-4 py-2 rounded-lg shadow-lg text-white z-50 transition-all duration-300 ${
-            notificationType === "success" ? "bg-green-600" : "bg-red-600"
-          }`}
-        >
-          {notification}
-        </div>
-      )}
+     {/* ✅ Notification */}
+        {notification && (
+          <div
+            className={`fixed top-5 right-5 px-4 py-2 rounded shadow-lg z-50 ${
+              notification.type === "success"
+                ? "bg-green-500 text-white"
+                : "bg-red-500 text-white"
+            }`}
+          >
+            {notification.message}
+          </div>
+        )}
 
       {/* 🔹 Filtres */}
       <div className="p-6 border-b border-gray-200 flex flex-col sm:flex-row gap-4 items-end flex-wrap">

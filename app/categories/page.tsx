@@ -12,7 +12,6 @@ export default function CategoriePage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCategorie, setSelectedCategorie] = useState<any>(null);
   const [categories, setCategories] = useState<any[]>([]);
-  const [notification, setNotification] = useState<string | null>(null);
   const [formData, setFormData] = useState({ nom: "", utilisateurId: "" });
   const [utilisateur, setUtilisateur] = useState<any[]>([]);
 
@@ -57,9 +56,17 @@ export default function CategoriePage() {
   };
 
   // 🟢 Affichage des notifications
-  const showNotification = (message: string) => {
-    setNotification(message);
-    setTimeout(() => setNotification(null), 1000);
+  const [notification, setNotification] = useState<{
+    message: string;
+    type: "success" | "error";
+  } | null>(null);
+
+  const showNotification = (
+    message: string,
+    type: "success" | "error" = "success"
+  ) => {
+    setNotification({ message, type });
+    setTimeout(() => setNotification(null), 2000); // 2s pour que ce soit plus visible
   };
 
   // 🟢 Ouvrir la modale d'ajout/modification
@@ -138,39 +145,80 @@ export default function CategoriePage() {
                 if (!payload.utilisateurId)
                   return alert("Utilisateur non trouvé !");
 
-                if (selectedCategorie) {
-                  // 🔄 Modifier
-                  await fetch(
-                    `${APP_URL}/api/categorie/${selectedCategorie.id}`,
-                    {
-                      method: "PUT",
-                      headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${token}`,
-                      },
-                      body: JSON.stringify(payload),
+                try {
+                  if (selectedCategorie) {
+                    // 🔄 Modifier
+                    const response = await fetch(
+                      `${APP_URL}/api/categorie/${selectedCategorie.id}`,
+                      {
+                        method: "PUT",
+                        headers: {
+                          "Content-Type": "application/json",
+                          Authorization: `Bearer ${token}`,
+                        },
+                        body: JSON.stringify(payload),
+                      }
+                    );
+
+                    const data = await response.json();
+
+                    if (!response.ok) {
+                      showNotification(
+                        data.message || "Erreur lors de la modification.",
+                        "error"
+                      );
+                    } else {
+                      showNotification(
+                        data.message || "Catégorie modifiée avec succès.",
+                        "success"
+                      );
                     }
+                  } else {
+                    // ➕ Créer
+                    const response = await fetch(
+                      `${APP_URL}/api/categorie/create`,
+                      {
+                        method: "POST",
+                        headers: {
+                          "Content-Type": "application/json",
+                          Authorization: `Bearer ${token}`,
+                        },
+                        body: JSON.stringify(payload),
+                      }
+                    );
+
+                    const data = await response.json();
+
+                    if (!response.ok) {
+                      showNotification(
+                        data.message || "Erreur lors de l'ajout.",
+                        "error"
+                      );
+                    } else {
+                      setIsModalOpen(false);
+                      showNotification(
+                        data.message || "Catégorie ajoutée avec succès.",
+                        "success"
+                      );
+                    }
+                  }
+                } catch (error: any) {
+                  console.error(error);
+                  showNotification(
+                    error.message || "Une erreur est survenue.",
+                    "error"
                   );
-                  showNotification("Catégorie modifiée avec succès.");
-                } else {
-                  // ➕ Créer
-                  await fetch(`${APP_URL}/api/categorie/create`, {
-                    method: "POST",
-                    headers: {
-                      "Content-Type": "application/json",
-                      Authorization: `Bearer ${token}`,
-                    },
-                    body: JSON.stringify(payload),
-                  });
-                  showNotification("Catégorie ajoutée avec succès.");
                 }
 
                 await fetchCategories();
                 setSelectedCategorie(null);
                 setFormData({ nom: "", utilisateurId: "" });
-                setIsModalOpen(false);
               } catch (error) {
-                console.error("Erreur API catégorie :", error);
+                console.error(error);
+                showNotification(
+                  "Impossible de modifier la catégorie.",
+                  "error"
+                );
               }
             }}
           />
@@ -178,8 +226,14 @@ export default function CategoriePage() {
 
         {/* ✅ Notification */}
         {notification && (
-          <div className="fixed top-5 right-5 bg-green-500 text-white px-4 py-2 rounded shadow-lg z-50">
-            {notification}
+          <div
+            className={`fixed top-5 right-5 px-4 py-2 rounded shadow-lg z-50 ${
+              notification.type === "success"
+                ? "bg-green-500 text-white"
+                : "bg-red-500 text-white"
+            }`}
+          >
+            {notification.message}
           </div>
         )}
       </div>

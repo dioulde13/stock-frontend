@@ -1,28 +1,41 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import FournisseursTable from './FournisseursTable';
-import FournisseursModal from './FournisseursModal';
-import DashboardLayout from '../components/Layout/DashboardLayout';
-import { APP_URL } from '../environnement/environnements';
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import FournisseursTable from "./FournisseursTable";
+import FournisseursModal from "./FournisseursModal";
+import DashboardLayout from "../components/Layout/DashboardLayout";
+import { APP_URL } from "../environnement/environnements";
 
 export default function FournisseurPage() {
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedFournisseur, setSelectedFournisseur] = useState<any>(null);
   const [fournisseur, setFournisseurs] = useState<any[]>([]);
-  const [notification, setNotification] = useState<string | null>(null);
   const [formData, setFormData] = useState({
-    nom: '',
+    nom: "",
     telephone: 0,
-    utilisateurId: ''
+    utilisateurId: "",
   });
 
+  // 🟢 Affichage des notifications
+  const [notification, setNotification] = useState<{
+    message: string;
+    type: "success" | "error";
+  } | null>(null);
+
+  const showNotification = (
+    message: string,
+    type: "success" | "error" = "success"
+  ) => {
+    setNotification({ message, type });
+    setTimeout(() => setNotification(null), 2000); // 2s pour que ce soit plus visible
+  };
+
   useEffect(() => {
-    const isAuthenticated = localStorage.getItem('isAuthenticated');
+    const isAuthenticated = localStorage.getItem("isAuthenticated");
     if (!isAuthenticated) {
-      router.push('/login');
+      router.push("/login");
     } else {
       fetchFournisseurs();
     }
@@ -31,18 +44,18 @@ export default function FournisseurPage() {
   const fetchFournisseurs = async () => {
     try {
       const token = localStorage.getItem("token");
- if (!token) {
+      if (!token) {
         // Redirection automatique si token manquant
         window.location.href = "/login";
         return; // On arrête l'exécution
       }
       const res = await fetch(`${APP_URL}/api/fournisseur/liste`, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`, // 🔑 ajout du token ici
-                },
-            });
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, // 🔑 ajout du token ici
+        },
+      });
 
       const data = await res.json();
       console.log(data);
@@ -52,35 +65,29 @@ export default function FournisseurPage() {
     }
   };
 
-  const showNotification = (message: string) => {
-    setNotification(message);
-    setTimeout(() => setNotification(null), 1000);
-  };
-
   const handleOpenModal = (fournisseur: any = null) => {
     setSelectedFournisseur(fournisseur);
 
-    const user = localStorage.getItem('utilisateur');
-    let utilisateurId = '';
+    const user = localStorage.getItem("utilisateur");
+    let utilisateurId = "";
     if (user) {
       try {
         const parsedUser = JSON.parse(user);
-        utilisateurId = parsedUser.id ? String(parsedUser.id) : '';
-      } catch { }
+        utilisateurId = parsedUser.id ? String(parsedUser.id) : "";
+      } catch {}
     }
 
     if (fournisseur) {
-
       setFormData({
-        nom: fournisseur.nom || '',
+        nom: fournisseur.nom || "",
         telephone: fournisseur.telephone || 0,
-        utilisateurId: String(fournisseur.utilisateurId || utilisateurId)
+        utilisateurId: String(fournisseur.utilisateurId || utilisateurId),
       });
     } else {
       setFormData({
-        nom: '',
+        nom: "",
         telephone: 0,
-        utilisateurId
+        utilisateurId,
       });
     }
 
@@ -122,52 +129,96 @@ export default function FournisseurPage() {
                 const payload = {
                   nom: formData.nom,
                   telephone: formData.telephone,
-                  utilisateurId: Number(formData.utilisateurId
-                  )
+                  utilisateurId: Number(formData.utilisateurId),
                 };
-                if (!payload.utilisateurId) return alert("Utilisateur non trouvé !");
 
+                if (!payload.utilisateurId) {
+                setIsModalOpen(false);
+                  return showNotification("Utilisateur non trouvé !", "error");
+                }
+
+                const token = localStorage.getItem("token");
+                if (!token) {
+                  window.location.href = "/login";
+                  return;
+                }
+
+                let res, data;
                 if (selectedFournisseur) {
-                   const token = localStorage.getItem("token");
-
-                  await fetch(`${APP_URL}/api/fournisseur/modifier/${selectedFournisseur.id}`, {
-                    method: "PUT",
-                    headers: { 
-                      "Content-Type": "application/json",
-                      Authorization: `Bearer ${token}`, 
-                     },
-                    body: JSON.stringify(payload),
-                  });
-                  showNotification("Fournisseur modifiée avec succès.");
+                  // 🔄 Modifier
+                  res = await fetch(
+                    `${APP_URL}/api/fournisseur/modifier/${selectedFournisseur.id}`,
+                    {
+                      method: "PUT",
+                      headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                      },
+                      body: JSON.stringify(payload),
+                    }
+                  );
+                setIsModalOpen(false);
+                  data = await res.json();
+                  if (!res.ok)
+                    return showNotification(
+                      data.message || "Erreur lors de la modification",
+                      "error"
+                    );
+                  showNotification(
+                    data.message || "Fournisseur modifié avec succès.",
+                    "success"
+                  );
                 } else {
-                  const token = localStorage.getItem("token");
-                
-                  await fetch(`${APP_URL}/api/fournisseur/create`, {
+                  // ➕ Créer
+                  res = await fetch(`${APP_URL}/api/fournisseur/create`, {
                     method: "POST",
-                    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}`, },
+                    headers: {
+                      "Content-Type": "application/json",
+                      Authorization: `Bearer ${token}`,
+                    },
                     body: JSON.stringify(payload),
                   });
-                  showNotification("Fournisseur ajouté avec succès.");
+                  data = await res.json();
+                setIsModalOpen(false);
+                  if (!res.ok)
+                    return showNotification(
+                      data.message || "Erreur lors de l'ajout",
+                      "error"
+                    );
+                  showNotification(
+                    data.message || "Fournisseur ajouté avec succès.",
+                    "success"
+                  );
                 }
 
                 await fetchFournisseurs();
                 setSelectedFournisseur(null);
                 setFormData({
-                  nom: '',
+                  nom: "",
                   telephone: 0,
-                  utilisateurId: ''
+                  utilisateurId: "",
                 });
-                setIsModalOpen(false);
-              } catch (error) {
-                console.error("Erreur API catégorie :", error);
+              } catch (error: any) {
+                console.error("Erreur API fournisseur :", error);
+                showNotification(
+                  error.message || "Erreur de connexion au serveur",
+                  "error"
+                );
               }
             }}
           />
         )}
 
+        {/* ✅ Notification */}
         {notification && (
-          <div className="fixed top-5 right-5 bg-green-500 text-white px-4 py-2 rounded shadow-lg z-50">
-            {notification}
+          <div
+            className={`fixed top-5 right-5 px-4 py-2 rounded shadow-lg z-50 ${
+              notification.type === "success"
+                ? "bg-green-500 text-white"
+                : "bg-red-500 text-white"
+            }`}
+          >
+            {notification.message}
           </div>
         )}
       </div>

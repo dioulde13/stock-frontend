@@ -1,7 +1,8 @@
-'use client';
-import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+"use client";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import Image from "next/image";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -17,19 +18,27 @@ interface Utilisateur {
 }
 
 const menuItems = [
-  { href: '/dashboard', icon: 'ri-dashboard-line', label: 'Tableau de bord' },
-  { href: '/categories', icon: 'ri-box-3-line', label: 'Catégories' },
-  { href: '/products', icon: 'ri-box-3-line', label: 'Produits' },
-  { href: '/mouvement-stock', icon: 'ri-box-3-line', label: 'Mouvement stock' },
-  { href: '/stock-minimum', icon: 'ri-box-3-line', label: 'Stock minimum' },
-  { href: '/ventes', icon: 'ri-shopping-cart-line', label: 'Ventes' },
-  { href: '/achats', icon: 'ri-shopping-bag-line', label: 'Achats' },
-  { href: '/clients', icon: 'ri-user-line', label: 'Clients' },
-  { href: '/fournisseurs', icon: 'ri-truck-line', label: 'Fournisseurs' },
-  { href: '/credits', icon: 'ri-bank-card-line', label: 'Crédits' },
-  { href: '/credit-payments', icon: 'ri-money-dollar-circle-line', label: 'Paiement crédits' },
-  { href: '/expenses', icon: 'ri-money-dollar-box-line', label: 'Dépenses' },
-  { href: '/utilisateurs', icon: 'ri-user-settings-line', label: 'Utilisateurs' },
+  { href: "/dashboard", icon: "ri-dashboard-line", label: "Tableau de bord" },
+  { href: "/categories", icon: "ri-box-3-line", label: "Catégories" },
+  { href: "/products", icon: "ri-box-3-line", label: "Produits" },
+  { href: "/mouvement-stock", icon: "ri-box-3-line", label: "Mouvement stock" },
+  { href: "/stock-minimum", icon: "ri-box-3-line", label: "Stock minimum" },
+  { href: "/ventes", icon: "ri-shopping-cart-line", label: "Ventes" },
+  { href: "/achats", icon: "ri-shopping-bag-line", label: "Achats" },
+  { href: "/clients", icon: "ri-user-line", label: "Clients" },
+  { href: "/fournisseurs", icon: "ri-truck-line", label: "Fournisseurs" },
+  { href: "/credits", icon: "ri-bank-card-line", label: "Crédits" },
+  {
+    href: "/credit-payments",
+    icon: "ri-money-dollar-circle-line",
+    label: "Paiement crédits",
+  },
+  { href: "/expenses", icon: "ri-money-dollar-box-line", label: "Dépenses" },
+  {
+    href: "/utilisateurs",
+    icon: "ri-user-settings-line",
+    label: "Utilisateurs",
+  },
 ];
 
 export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
@@ -38,25 +47,25 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
   const [utilisateur, setUtilisateur] = useState<Utilisateur | null>(null);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    const userString = localStorage.getItem('utilisateur');
+    const token = localStorage.getItem("token");
+    const userString = localStorage.getItem("utilisateur");
 
     if (!token) {
-      router.push('/login');
+      router.push("/login");
       return;
     }
 
     try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
+      const payload = JSON.parse(atob(token.split(".")[1]));
       const isExpired = payload.exp * 1000 < Date.now();
       if (isExpired) {
-        localStorage.removeItem('token');
-        router.push('/login');
+        localStorage.removeItem("token");
+        router.push("/login");
         return;
       }
     } catch (error) {
-      localStorage.removeItem('token');
-      router.push('/login');
+      localStorage.removeItem("token");
+      router.push("/login");
       return;
     }
 
@@ -70,9 +79,10 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
     }
   }, [router]);
 
-  const filteredMenuItems = utilisateur?.role === 'VENDEUR'
-    ? menuItems.filter(item => item.href !== '/utilisateurs')
-    : menuItems;
+  const filteredMenuItems =
+    utilisateur?.role === "VENDEUR"
+      ? menuItems.filter((item) => item.href !== "/utilisateurs")
+      : menuItems;
 
   return (
     <>
@@ -89,14 +99,20 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
         className={`
           fixed top-0 left-0 h-full bg-white border-r border-gray-200 z-50
           transform transition-transform duration-300 ease-in-out
-          ${isOpen ? 'translate-x-0' : '-translate-x-full'}
+          ${isOpen ? "translate-x-0" : "-translate-x-full"}
           lg:translate-x-0 lg:fixed lg:z-auto
           w-64 flex flex-col
         `}
       >
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-gray-200">
-          <h1 className="text-xl font-bold font-pacifico text-gray-800">Logo</h1>
+          <Image
+            src="/logo.webp" 
+            alt="Logo"
+            width={150} 
+            height={60}
+            className="rounded-full"
+          />
           <button
             onClick={onToggle}
             className="lg:hidden p-2 rounded-lg hover:bg-gray-100"
@@ -113,9 +129,10 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
               href={item.href}
               className={`
                 flex items-center px-4 py-3 rounded-lg transition-colors duration-200
-                ${pathname === item.href
-                  ? 'bg-blue-50 text-blue-700 border-r-2 border-blue-700'
-                  : 'text-gray-700 hover:bg-gray-100'
+                ${
+                  pathname === item.href
+                    ? "bg-blue-50 text-blue-700 border-r-2 border-blue-700"
+                    : "text-gray-700 hover:bg-gray-100"
                 }
               `}
               onClick={() => window.innerWidth < 1024 && onToggle()}
@@ -134,8 +151,8 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
             href="/login"
             className="flex items-center px-4 py-3 rounded-lg text-red-600 hover:bg-red-50 transition-colors duration-200"
             onClick={() => {
-              localStorage.removeItem('token');
-              localStorage.removeItem('utilisateur');
+              localStorage.removeItem("token");
+              localStorage.removeItem("utilisateur");
               window.innerWidth < 1024 && onToggle();
             }}
           >

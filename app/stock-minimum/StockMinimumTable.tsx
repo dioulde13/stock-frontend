@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import React, { useMemo, useState } from 'react';
-import ReactPaginate from 'react-paginate';
+import React, { useMemo, useState } from "react";
+import ReactPaginate from "react-paginate";
 
 interface Produit {
   id: number;
@@ -17,10 +17,12 @@ interface MouvemntTableProps {
   stockMinimum: Produit[] | any;
 }
 
-export default function MouvementStocTable({ stockMinimum }: MouvemntTableProps) {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [dateDebut, setDateDebut] = useState('');
-  const [dateFin, setDateFin] = useState('');
+export default function MouvementStocTable({
+  stockMinimum,
+}: MouvemntTableProps) {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [dateDebut, setDateDebut] = useState("");
+  const [dateFin, setDateFin] = useState("");
   const [currentPage, setCurrentPage] = useState(0);
   const itemsPerPage = 5;
 
@@ -29,11 +31,21 @@ export default function MouvementStocTable({ stockMinimum }: MouvemntTableProps)
     if (!Array.isArray(stockMinimum)) return [];
 
     return stockMinimum.filter((produit: Produit) => {
-      const matchNom = produit.nom?.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchNom = produit.nom
+        ?.toLowerCase()
+        .includes(searchTerm.toLowerCase());
 
       const dateProd = produit.createdAt ? new Date(produit.createdAt) : null;
-      const matchDateDebut = dateDebut ? (dateProd ? dateProd >= new Date(dateDebut) : false) : true;
-      const matchDateFin = dateFin ? (dateProd ? dateProd <= new Date(dateFin) : false) : true;
+      const matchDateDebut = dateDebut
+        ? dateProd
+          ? dateProd >= new Date(dateDebut)
+          : false
+        : true;
+      const matchDateFin = dateFin
+        ? dateProd
+          ? dateProd <= new Date(dateFin)
+          : false
+        : true;
 
       return matchNom && matchDateDebut && matchDateFin;
     });
@@ -51,16 +63,17 @@ export default function MouvementStocTable({ stockMinimum }: MouvemntTableProps)
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200">
       {/* 🔍 Barre de recherche et filtres */}
+      {/* 🔍 Barre de recherche et filtres */}
       <div className="p-6 border-b border-gray-200">
-        <div className="flex flex-col sm:flex-row flex-wrap gap-4">
+        <div className="flex flex-col sm:flex-row gap-4 items-end">
           {/* Recherche par nom */}
           <div className="flex-1 relative min-w-[200px]">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <i className="ri-search-line text-gray-400"></i>
-            </div>
+            <span className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+              <i className="ri-search-line text-gray-400 text-lg"></i>
+            </span>
             <input
               type="text"
-              placeholder="Rechercher un produit..."
+              placeholder="Rechercher un motif..."
               className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -68,24 +81,26 @@ export default function MouvementStocTable({ stockMinimum }: MouvemntTableProps)
           </div>
 
           {/* Date début */}
-          <div>
-            <label className="block text-xs text-gray-600 mb-1">Date début</label>
+          <div className="flex-1 sm:flex-none sm:w-40">
+            <label className="block text-xs text-gray-600 mb-1">
+              Date début
+            </label>
             <input
               type="date"
               value={dateDebut}
               onChange={(e) => setDateDebut(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
             />
           </div>
 
           {/* Date fin */}
-          <div>
+          <div className="flex-1 sm:flex-none sm:w-40">
             <label className="block text-xs text-gray-600 mb-1">Date fin</label>
             <input
               type="date"
               value={dateFin}
               onChange={(e) => setDateFin(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
             />
           </div>
         </div>
@@ -120,12 +135,22 @@ export default function MouvementStocTable({ stockMinimum }: MouvemntTableProps)
             {currentItems.map((produit: Produit) => (
               <tr key={produit.id} className="hover:bg-gray-50">
                 <td className="px-6 py-4 whitespace-nowrap">{produit.nom}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{produit.prix_achat}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{produit.prix_vente}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{produit.stock_actuel}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{produit.stock_minimum}</td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  {produit.prix_achat}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  {produit.prix_vente}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  {produit.stock_actuel}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  {produit.stock_minimum}
+                </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                  {produit.createdAt ? new Date(produit.createdAt).toLocaleDateString() : '—'}
+                  {produit.createdAt
+                    ? new Date(produit.createdAt).toLocaleDateString()
+                    : "—"}
                 </td>
               </tr>
             ))}
@@ -136,8 +161,12 @@ export default function MouvementStocTable({ stockMinimum }: MouvemntTableProps)
         {filteredStock.length === 0 && (
           <div className="text-center py-12">
             <i className="ri-box-3-line text-4xl text-gray-400 mb-4"></i>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">Aucun produit trouvé</h3>
-            <p className="text-gray-500">Essayez de modifier vos critères de recherche.</p>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">
+              Aucun produit trouvé
+            </h3>
+            <p className="text-gray-500">
+              Essayez de modifier vos critères de recherche.
+            </p>
           </div>
         )}
       </div>

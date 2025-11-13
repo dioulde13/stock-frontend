@@ -1,6 +1,7 @@
 'use client';
 
 import React, { Dispatch, SetStateAction } from 'react';
+import { APP_URL } from '../environnement/environnements';
 
 interface CategorieTableProps {
     categories: any[];
@@ -27,7 +28,7 @@ export default function CategorieTable({
     const handleDelete = async (id: number) => {
         if (!confirm("Voulez-vous vraiment supprimer cette catégorie ?")) return;
         try {
-            await fetch(`http://localhost:3000/api/categorie/supprimer/${id}`, { method: "DELETE" });
+            await fetch(`${APP_URL}/api/categorie/supprimer/${id}`, { method: "DELETE" });
             await fetchCategories();
             showNotification('Catégorie supprimée avec succès.');
         } catch (error) {

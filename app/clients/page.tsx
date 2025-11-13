@@ -25,12 +25,25 @@ export default function ClientPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [clients, setClients] = useState<Client[]>([]);
-  const [notification, setNotification] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     nom: "",
     telephone: 0,
     utilisateurId: "",
   });
+
+  // 🟢 Affichage des notifications
+  const [notification, setNotification] = useState<{
+    message: string;
+    type: "success" | "error";
+  } | null>(null);
+
+  const showNotification = (
+    message: string,
+    type: "success" | "error" = "success"
+  ) => {
+    setNotification({ message, type });
+    setTimeout(() => setNotification(null), 2000); // 2s pour que ce soit plus visible
+  };
 
   // ✅ Vérification de l’authentification + chargement initial
   useEffect(() => {
@@ -66,12 +79,6 @@ export default function ClientPage() {
     } catch (error) {
       console.error("Erreur lors du fetch des clients:", error);
     }
-  };
-
-  // ✅ Notification avec disparition automatique
-  const showNotification = (message: string) => {
-    setNotification(message);
-    setTimeout(() => setNotification(null), 1500);
   };
 
   // ✅ Ouvrir le modal pour créer ou modifier un client
@@ -116,8 +123,8 @@ export default function ClientPage() {
       };
 
       if (!payload.utilisateurId) {
-        alert("Utilisateur non trouvé !");
-        return;
+        setIsModalOpen(false);
+        return showNotification("Utilisateur non trouvé !", "error");
       }
 
       const token = localStorage.getItem("token");
@@ -141,20 +148,34 @@ export default function ClientPage() {
         body: JSON.stringify(payload),
       });
 
-      if (!res.ok) throw new Error(`Erreur API (${res.status})`);
+      const data = await res.json();
+
+      if (!res.ok) {
+        return showNotification(
+          data.message || `Erreur API (${res.status})`,
+          "error"
+        );
+      }
+      setIsModalOpen(false);
 
       showNotification(
-        selectedClient
-          ? "Client modifié avec succès."
-          : "Client ajouté avec succès."
+        data.message ||
+          (selectedClient
+            ? "Client modifié avec succès."
+            : "Client ajouté avec succès."),
+        "success"
       );
 
       await fetchClients();
       setSelectedClient(null);
       setFormData({ nom: "", telephone: 0, utilisateurId: "" });
+    } catch (error: any) {
       setIsModalOpen(false);
-    } catch (error) {
       console.error("Erreur API client :", error);
+      showNotification(
+        error.message || "Erreur de connexion au serveur",
+        "error"
+      );
     }
   };
 
@@ -197,10 +218,16 @@ export default function ClientPage() {
           />
         )}
 
-        {/* 🔔 Notification */}
+        {/* ✅ Notification */}
         {notification && (
-          <div className="fixed top-5 right-5 bg-green-500 text-white px-4 py-2 rounded shadow-lg z-50">
-            {notification}
+          <div
+            className={`fixed top-5 right-5 px-4 py-2 rounded shadow-lg z-50 ${
+              notification.type === "success"
+                ? "bg-green-500 text-white"
+                : "bg-red-500 text-white"
+            }`}
+          >
+            {notification.message}
           </div>
         )}
       </div>

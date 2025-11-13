@@ -3,7 +3,7 @@
 import { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import CreditsTable from "./CreditsTable";
-import './credit.css';
+import "./credit.css";
 
 import {
   getCredits,
@@ -35,8 +35,6 @@ export default function CreditsPage() {
   const [montantPaye, setMontantPaye] = useState<number>(0);
 
   const [modalMessage, setModalMessage] = useState("");
-  const [modalVisible, setModalVisible] = useState(false);
-  const [modalType, setModalType] = useState("");
 
   // 🔍 Filtres
   const [filterType, setFilterType] = useState("");
@@ -114,10 +112,7 @@ export default function CreditsPage() {
 
   const handleAdd = async () => {
     if (!formData.clientId || !formData.type || !formData.montant) {
-      // setModalType("error");
-      setModalMessage("Veuillez remplir tous les champs");
-      // setModalVisible(true);
-      return;
+      return showNotification("Veuillez remplir tous les champs", "error");
     }
 
     try {
@@ -129,24 +124,35 @@ export default function CreditsPage() {
         typeCredit: formData.typeCredit,
         montant: Number(formData.montant),
       });
-
-      showNotification(response.message);
-
       setShowForm(false);
+
+      // Affiche le message renvoyé par l'API
+      showNotification(
+        response.message || "Crédit créé avec succès",
+        "success"
+      );
+
       resetForm();
       fetchCredits();
-    } catch (err) {
+    } catch (err: any) {
       console.error("Erreur lors de la création du crédit :", err);
+      showNotification(
+        err.message || "Erreur de connexion au serveur",
+        "error"
+      );
     }
   };
 
   const handleEdit = async () => {
     if (editingId === null) return;
+
     if (!formData.clientId || !formData.type || !formData.montant) {
-      return showNotification("Veuillez remplir tous les champs");
+       setShowForm(false);
+      return showNotification("Veuillez remplir tous les champs", "error");
     }
+
     try {
-      await updateCredit(editingId, {
+      const response = await updateCredit(editingId, {
         utilisateurId: Number(formData.utilisateurId),
         clientId: Number(formData.clientId),
         type: formData.type,
@@ -154,15 +160,23 @@ export default function CreditsPage() {
         description: formData.description,
         montant: Number(formData.montant),
       });
-      showNotification("Update reussi avec success");
-      setShowForm(false);
+ setShowForm(false);
+      showNotification(
+        response?.message || "Modification réussie avec succès",
+        "success"
+      );
+
+     
       setEditingId(null);
       setMontantPaye(0);
       resetForm();
       fetchCredits();
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      showNotification("Erreur lors de la modification du crédit");
+      showNotification(
+        err.message || "Erreur lors de la modification du crédit",
+        "error"
+      );
     }
   };
 
@@ -272,18 +286,32 @@ export default function CreditsPage() {
     0
   );
 
-  const [notification, setNotification] = useState<string | null>(null);
+  // 🟢 Affichage des notifications
+  const [notification, setNotification] = useState<{
+    message: string;
+    type: "success" | "error";
+  } | null>(null);
 
-  const showNotification = (message: string) => {
-    setNotification(message);
-    setTimeout(() => setNotification(null), 1000);
+  const showNotification = (
+    message: string,
+    type: "success" | "error" = "success"
+  ) => {
+    setNotification({ message, type });
+    setTimeout(() => setNotification(null), 2000); // 2s pour que ce soit plus visible
   };
 
   return (
     <DashboardLayout title="Crédits">
+      {/* ✅ Notification */}
       {notification && (
-        <div className="fixed top-5 right-5 bg-green-500 text-white px-4 py-2 rounded shadow-lg z-50">
-          {notification}
+        <div
+          className={`fixed top-5 right-5 px-4 py-2 rounded shadow-lg z-50 ${
+            notification.type === "success"
+              ? "bg-green-500 text-white"
+              : "bg-red-500 text-white"
+          }`}
+        >
+          {notification.message}
         </div>
       )}
 

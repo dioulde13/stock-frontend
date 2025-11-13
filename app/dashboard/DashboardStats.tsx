@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { useState, useEffect } from "react";
 import { APP_URL } from "../environnement/environnements";
@@ -41,11 +41,8 @@ export default function Home() {
   const [newCaisseSolde, setNewCaisseSolde] = useState<number>(0);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showListModal, setShowListModal] = useState(false);
-  const [formUtilisateurId, setFormUtilisateurId] = useState<number | null>(
-    null
-  );
+  const [formUtilisateurId, setFormUtilisateurId] = useState<number | null>(null);
 
-  // 🧩 Initialisation
   useEffect(() => {
     const user = localStorage.getItem("utilisateur");
     if (user) {
@@ -66,23 +63,20 @@ export default function Home() {
     setHydrated(true);
   }, []);
 
-  // 🧾 Fetch stats et caisses
   useEffect(() => {
     if (!hydrated || !dateDebut || !dateFin) return;
     fetchStats(dateDebut, dateFin);
     fetchCaisses();
   }, [hydrated, dateDebut, dateFin]);
 
-  // 📊 Récupération des statistiques
   const fetchStats = async (start: string, end: string) => {
     setLoading(true);
     setError(null);
     try {
       const token = localStorage.getItem("token");
       if (!token) {
-        // Redirection automatique si token manquant
         window.location.href = "/login";
-        return; // On arrête l'exécution
+        return;
       }
 
       const res = await fetch(
@@ -104,7 +98,6 @@ export default function Home() {
     }
   };
 
-  // 💰 Récupération des caisses selon rôle utilisateur
   const fetchCaisses = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -126,7 +119,6 @@ export default function Home() {
     }
   };
 
-  // ➕ Ajouter une caisse
   const handleAddCaisse = async () => {
     if (!newCaisseType.trim()) {
       alert("Le type de la caisse est obligatoire");
@@ -165,109 +157,72 @@ export default function Home() {
   if (loading) return <p className="p-6">Chargement...</p>;
   if (error) return <p className="p-6 text-red-600">Erreur : {error}</p>;
 
-  // 🧮 Données à afficher
   const displayStats = [
-    // { title: 'Argent encaissé lors des ventes', value: caisses.PRINCIPALE ?? 0, color: 'bg-gray-400', icon: 'ri-bank-line' },
-    // { title: 'Bénéfice', value: caisses.BENEFICE ?? 0, color: 'bg-purple-500', icon: 'ri-money-dollar-circle-line' },
     {
       title: "Valeur du stock",
       value: caisses.VALEUR_STOCK_PUR ?? 0,
-      color: "bg-gray-400",
-      icon: "ri-bank-line",
+      color: "bg-indigo-500",
+      bgCardColor: "bg-indigo-50",
+      icon: "ri-stack-line",
     },
     {
       title: "Produits en stock",
       value: stats.produitsEnStock,
       color: "bg-green-500",
+      bgCardColor: "bg-green-50",
       icon: "ri-box-3-line",
     },
     {
       title: "Ruptures de stock",
       value: stats.rupturesStock,
       color: "bg-red-500",
+      bgCardColor: "bg-red-50",
       icon: "ri-alert-line",
     },
     {
       title: "Alertes stock min",
       value: stats.alertesStock,
-      color: "bg-orange-500",
+      color: "bg-yellow-500",
+      bgCardColor: "bg-yellow-50",
       icon: "ri-error-warning-line",
     },
     {
       title: "Crédit espèce entré",
       value: caisses.CREDIT_ESPECE_ENTRE ?? 0,
-      color: "bg-gray-400",
-      icon: "ri-bank-line",
+      color: "bg-teal-500",
+      bgCardColor: "bg-teal-50",
+      icon: "ri-money-dollar-box-line",
     },
     {
       title: "Crédit espèce sortie",
       value: caisses.CREDIT_ESPECE ?? 0,
-      color: "bg-gray-400",
-      icon: "ri-bank-line",
+      color: "bg-blue-500",
+      bgCardColor: "bg-blue-50",
+      icon: "ri-money-dollar-box-line",
     },
     {
       title: "Argent des ventes à crédit",
       value: caisses.CREDIT_VENTE ?? 0,
-      color: "bg-gray-400",
-      icon: "ri-bank-line",
+      color: "bg-purple-500",
+      bgCardColor: "bg-purple-50",
+      icon: "ri-coin-line",
     },
     {
       title: "Crédit total",
       value: (caisses.CREDIT_ESPECE ?? 0) + (caisses.CREDIT_VENTE ?? 0),
       color: "bg-gray-500",
-      icon: "ri-stack-line",
+      bgCardColor: "bg-gray-50",
+      icon: "ri-bank-line",
     },
-    // { title: 'Crédit pour achats', value: caisses.CREDIT_ACHAT ?? 0, color: 'bg-gray-400', icon: 'ri-bank-line' },
-    // { title: 'Argent utilisé pour achat via espèce', value: caisses.ACHAT_ESPACE ?? 0, color: 'bg-gray-400', icon: 'ri-bank-line' },
   ];
 
   return (
     <div className="p-6">
-      {/* 📅 Filtres de dates */}
-      {/* <div className="flex flex-wrap justify-between mb-6 items-center gap-4">
-        <div className="bg-white shadow-lg rounded-2xl p-6 flex flex-wrap gap-6">
-          <div className="flex flex-col">
-            <label htmlFor="dateDebut" className="font-medium mb-1">
-              Date début
-            </label>
-            <input
-              type="date"
-              id="dateDebut"
-              value={dateDebut}
-              onChange={(e) => setDateDebut(e.target.value)}
-              className="border rounded-lg px-3 py-2"
-            />
-          </div>
-          <div className="flex flex-col">
-            <label htmlFor="dateFin" className="font-medium mb-1">
-              Date fin
-            </label>
-            <input
-              type="date"
-              id="dateFin"
-              value={dateFin}
-              onChange={(e) => setDateFin(e.target.value)}
-              className="border rounded-lg px-3 py-2"
-            />
-          </div>
-        </div>
-
-        <div className="flex gap-2">
-          <button className="bg-blue-500 text-white px-4 py-2 rounded-lg" onClick={() => setShowAddModal(true)}>
-            Ajouter une caisse
-          </button>
-          <button className="bg-gray-500 text-white px-4 py-2 rounded-lg" onClick={() => setShowListModal(true)}>
-            Liste des caisses
-          </button>
-        </div>
-      </div> */}
-
-      {/* 🧾 Cartes statistiques */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {displayStats.map((stat, idx) => (
           <div
             key={idx}
-            className="bg-white rounded-lg shadow-sm border border-gray-200 p-6"
+            className={`${stat.bgCardColor} rounded-lg shadow-sm border border-gray-200 p-6`}
           >
             <div className="flex items-center justify-between">
               <div>
@@ -286,7 +241,6 @@ export default function Home() {
         ))}
       </div>
 
-      {/* 🪙 Modal Ajouter Caisse */}
       {showAddModal && (
         <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-96">
@@ -343,7 +297,6 @@ export default function Home() {
         </div>
       )}
 
-      {/* 📋 Modal Liste des caisses */}
       {showListModal && (
         <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-96">

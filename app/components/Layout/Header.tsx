@@ -29,7 +29,10 @@ interface HeaderProps {
   title?: string;
 }
 
-export default function Header({ onMenuClick, title = "Tableau de bord" }: HeaderProps) {
+export default function Header({
+  onMenuClick,
+  title = "Tableau de bord",
+}: HeaderProps) {
   const [caisses, setCaisses] = useState<{ CAISSE?: number }>({});
   const [prevCaisse, setPrevCaisse] = useState<number>(0);
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -92,7 +95,7 @@ export default function Header({ onMenuClick, title = "Tableau de bord" }: Heade
       try {
         const res = await fetch(`${APP_URL}/api/notification/${utilisateurId}`);
         const data: Notification[] = await res.json();
-        setNotifications(data.map(n => ({ ...n, read: n.read ?? false })));
+        setNotifications(data.map((n) => ({ ...n, read: n.read ?? false })));
       } catch (err) {
         console.error("Erreur fetch notifications :", err);
       }
@@ -104,7 +107,7 @@ export default function Header({ onMenuClick, title = "Tableau de bord" }: Heade
   useEffect(() => {
     if (!utilisateurId) return;
 
-    const s = io("http://localhost:3000");
+    const s = io("https://stock-frontend-phi.vercel.app");
     setSocket(s);
 
     s.on("connect", () => {
@@ -113,20 +116,23 @@ export default function Header({ onMenuClick, title = "Tableau de bord" }: Heade
     });
 
     s.on("notification", (data: Notification) => {
-      setNotifications(prev => [{ ...data, read: false }, ...prev]);
+      setNotifications((prev) => [{ ...data, read: false }, ...prev]);
       play();
     });
 
-    s.on("notificationGlobale", (data: { message: string; timestamp: string }) => {
-      const notif: Notification = {
-        message: data.message,
-        type: "globale",
-        timestamp: data.timestamp,
-        read: false,
-      };
-      setNotifications(prev => [notif, ...prev]);
-      play();
-    });
+    s.on(
+      "notificationGlobale",
+      (data: { message: string; timestamp: string }) => {
+        const notif: Notification = {
+          message: data.message,
+          type: "globale",
+          timestamp: data.timestamp,
+          read: false,
+        };
+        setNotifications((prev) => [notif, ...prev]);
+        play();
+      }
+    );
 
     s.on("caisseMisAJour", () => {
       fetchCaisses();
@@ -164,9 +170,9 @@ export default function Header({ onMenuClick, title = "Tableau de bord" }: Heade
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const unreadCount = notifications.filter(n => !n.read).length;
-  const toggleNotif = () => setIsNotifOpen(prev => !prev);
-  const toggleUserMenu = () => setIsUserMenuOpen(prev => !prev);
+  const unreadCount = notifications.filter((n) => !n.read).length;
+  const toggleNotif = () => setIsNotifOpen((prev) => !prev);
+  const toggleUserMenu = () => setIsUserMenuOpen((prev) => !prev);
 
   // === Déconnexion ===
   const handleLogout = () => {
@@ -179,29 +185,24 @@ export default function Header({ onMenuClick, title = "Tableau de bord" }: Heade
     <header className="bg-white border-b border-gray-200 px-6 py-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center">
-          <button onClick={onMenuClick} className="lg:hidden p-2 rounded-lg hover:bg-gray-100 mr-4">
+          {/* Bouton menu (seulement sur mobile) */}
+          <button
+            onClick={onMenuClick}
+            className="lg:hidden p-2 rounded-lg hover:bg-gray-100 mr-4"
+          >
             <i className="ri-menu-line text-xl text-gray-600"></i>
           </button>
-          <h1 className="text-xl font-semibold text-gray-800">{title}</h1>
-        </div>
 
-        <div>
-          <span style={{ fontWeight: "bold", fontSize: "20px" }}>
-            Caisse: {(caisses?.CAISSE ?? 0).toLocaleString()} GNF
-          </span>
+          {/* Bloc titre + caisse verticalement */}
+          <div className="flex flex-col">
+            <h1 className="text-xl font-semibold text-gray-800">{title}</h1>
+            <span className="text-gray-700 font-bold text-lg">
+              Caisse: {(caisses?.CAISSE ?? 0).toLocaleString()} GNF
+            </span>
+          </div>
         </div>
 
         <div className="flex items-center space-x-4 relative">
-          {/* --- Notifications --- */}
-          {/* <button id="notif-button" onClick={toggleNotif} className="p-2 rounded-lg hover:bg-gray-100 relative">
-            <i className="ri-notification-line text-xl text-gray-600"></i>
-            {unreadCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                {unreadCount}
-              </span>
-            )}
-          </button> */}
-
           {isNotifOpen && (
             <div
               id="notif-dropdown"
@@ -246,7 +247,7 @@ export default function Header({ onMenuClick, title = "Tableau de bord" }: Heade
                 className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded shadow-lg z-50"
               >
                 <button
-                  onClick={() => window.location.href = "/profil"}
+                  onClick={() => (window.location.href = "/profil")}
                   className="block w-full text-left px-4 py-2 hover:bg-gray-100 text-gray-700"
                 >
                   Profil
@@ -262,8 +263,12 @@ export default function Header({ onMenuClick, title = "Tableau de bord" }: Heade
           </div>
 
           <div className="hidden md:block text-right">
-            <p className="text-sm font-medium text-gray-800">{utilisateur?.role}</p>
-            <p className="text-sm font-medium text-gray-800">{utilisateur?.boutique}</p>
+            <p className="text-sm font-medium text-gray-800">
+              {utilisateur?.role}
+            </p>
+            <p className="text-sm font-medium text-gray-800">
+              {utilisateur?.boutique}
+            </p>
             <p className="text-xs text-gray-500">{utilisateur?.email}</p>
             <p className="text-xs text-gray-500">{utilisateur?.nom}</p>
           </div>

@@ -79,9 +79,7 @@ export default function VentesPage() {
 
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
-  const ventesParPage = 2;
-
-  
+  const ventesParPage = 5;
 
   useEffect(() => {
     const user = localStorage.getItem("utilisateur");
@@ -99,7 +97,7 @@ export default function VentesPage() {
     setError(null);
     try {
       const token = localStorage.getItem("token");
-       if (!token) {
+      if (!token) {
         // Redirection automatique si token manquant
         window.location.href = "/login";
         return; // On arrête l'exécution
@@ -129,44 +127,43 @@ export default function VentesPage() {
   };
 
   // utilitaire pour parser YYYY-MM-DD en date locale sans effet UTC
-const parseLocalDate = (yyyyMmDd: string) => {
-  const [y, m, d] = yyyyMmDd.split("-").map(Number);
-  return new Date(y, m - 1, d); // construit en local
-};
+  const parseLocalDate = (yyyyMmDd: string) => {
+    const [y, m, d] = yyyyMmDd.split("-").map(Number);
+    return new Date(y, m - 1, d); // construit en local
+  };
 
-// Filtre par défaut : mois en cours
-const today = new Date();
-const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-const [dateDebut, setDateDebut] = useState(
-  firstDayOfMonth.toISOString().split("T")[0]
-);
-const [dateFin, setDateFin] = useState(
-  lastDayOfMonth.toISOString().split("T")[0]
-);
-const [typeVenteFilter, setTypeVenteFilter] = useState<
-  "ACHAT" | "CREDIT" | ""
->("");
-const [boutiqueFilter, setBoutiqueFilter] = useState<string>("");
+  // Filtre par défaut : mois en cours
+  const today = new Date();
+  const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+  const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+  const [dateDebut, setDateDebut] = useState(
+    firstDayOfMonth.toISOString().split("T")[0]
+  );
+  const [dateFin, setDateFin] = useState(
+    lastDayOfMonth.toISOString().split("T")[0]
+  );
+  const [typeVenteFilter, setTypeVenteFilter] = useState<
+    "ACHAT" | "CREDIT" | ""
+  >("");
+  const [boutiqueFilter, setBoutiqueFilter] = useState<string>("");
 
-// Filtrage (avec inclusion de toute la journée `dateFin`)
-const filteredVentes = useMemo(() => {
-  return ventes.filter((v) => {
-    const vDate = new Date(v.createdAt);
+  // Filtrage (avec inclusion de toute la journée `dateFin`)
+  const filteredVentes = useMemo(() => {
+    return ventes.filter((v) => {
+      const vDate = new Date(v.createdAt);
 
-    const debut = parseLocalDate(dateDebut);
-    debut.setHours(0, 0, 0, 0); // début de journée
+      const debut = parseLocalDate(dateDebut);
+      debut.setHours(0, 0, 0, 0); // début de journée
 
-    const fin = parseLocalDate(dateFin);
-    fin.setHours(23, 59, 59, 999); // fin de journée (inclus)
+      const fin = parseLocalDate(dateFin);
+      fin.setHours(23, 59, 59, 999); // fin de journée (inclus)
 
-    if (vDate < debut || vDate > fin) return false;
-    if (typeVenteFilter && v.type !== typeVenteFilter) return false;
-    if (boutiqueFilter && v.boutiqueNom !== boutiqueFilter) return false;
-    return true;
-  });
-}, [ventes, dateDebut, dateFin, typeVenteFilter, boutiqueFilter]);
-
+      if (vDate < debut || vDate > fin) return false;
+      if (typeVenteFilter && v.type !== typeVenteFilter) return false;
+      if (boutiqueFilter && v.boutiqueNom !== boutiqueFilter) return false;
+      return true;
+    });
+  }, [ventes, dateDebut, dateFin, typeVenteFilter, boutiqueFilter]);
 
   // Total filtré
   const totalFiltre = useMemo(() => {
@@ -199,6 +196,24 @@ const filteredVentes = useMemo(() => {
       }, 0);
   }, [filteredVentes]);
   console.log(filteredVentes);
+
+  // Total filtré
+  const totalFiltreAchat = useMemo(() => {
+    return filteredVentes
+      .filter((v: any) => v.status !== "ANNULER") // 🟢 exclure les ventes annulées
+      .reduce((acc, v) => {
+        return (
+          acc +
+          v.LigneVentes.reduce(
+            (sum, l) => sum + l.quantite * (l.prix_achat ?? 0),
+            0
+          )
+        );
+      }, 0);
+  }, [filteredVentes]);
+  console.log(filteredVentes);
+
+  const beneficeTotal = totalFiltre - totalFiltreAchat;
 
   // Pagination
   const indexDerniereVente = currentPage * ventesParPage;
@@ -243,7 +258,7 @@ const filteredVentes = useMemo(() => {
   const fetchClients = async () => {
     try {
       const token = localStorage.getItem("token");
-       if (!token) {
+      if (!token) {
         // Redirection automatique si token manquant
         window.location.href = "/login";
         return; // On arrête l'exécution
@@ -266,7 +281,7 @@ const filteredVentes = useMemo(() => {
   const fetchProduits = async () => {
     try {
       const token = localStorage.getItem("token");
-       if (!token) {
+      if (!token) {
         // Redirection automatique si token manquant
         window.location.href = "/login";
         return; // On arrête l'exécution
@@ -291,22 +306,44 @@ const filteredVentes = useMemo(() => {
     }
   };
 
+  // 🟢 Affichage des notifications
+  const [notification, setNotification] = useState<{
+    message: string;
+    type: "success" | "error";
+  } | null>(null);
+
+  const showNotification = (
+    message: string,
+    type: "success" | "error" = "success"
+  ) => {
+    setNotification({ message, type });
+    setTimeout(() => setNotification(null), 2000); // 2s pour que ce soit plus visible
+  };
+
+
+  const [isLoading, setIsLoading] = useState(false);
+
+
   const creerVenteAvecType = async (
     type: "ACHAT" | "CREDIT",
     clientId: number | null
   ) => {
     if (lignesVente.length === 0) {
-      alert("Ajoutez au moins une ligne de vente.");
-      return;
+      return showNotification("Ajoutez au moins une ligne de vente.", "error");
     }
+
     const lignesValides = lignesVente.every(
       (ligne) =>
         ligne.produitId > 0 && ligne.quantite > 0 && ligne.prix_vente > 0
     );
+
     if (!lignesValides) {
-      alert("Veuillez remplir correctement toutes les lignes de vente.");
-      return;
+      return showNotification(
+        "Veuillez remplir correctement toutes les lignes de vente.",
+        "error"
+      );
     }
+
     const { utilisateurId } = lignesVente[0];
     const lignesFormattees = lignesVente.map((ligne) => ({
       produitId: ligne.produitId,
@@ -314,20 +351,21 @@ const filteredVentes = useMemo(() => {
       prix_achat: ligne.prix_achat,
       prix_vente: ligne.prix_vente,
     }));
+
     const payload = {
       utilisateurId,
       lignes: lignesFormattees,
       type,
       clientId: type === "CREDIT" ? clientId : undefined,
     };
-    setCreating(true);
+setIsLoading(true); 
     try {
       const token = localStorage.getItem("token");
       if (!token) {
-        // Redirection automatique si token manquant
         window.location.href = "/login";
-        return; // On arrête l'exécution
+        return;
       }
+
       const res = await fetch(`${APP_URL}/api/vente/create`, {
         method: "POST",
         headers: {
@@ -336,17 +374,25 @@ const filteredVentes = useMemo(() => {
         },
         body: JSON.stringify(payload),
       });
+
+      const data = await res.json();
+
       if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.message || "Erreur inconnue");
+        setIsLoading(false);
+        fermerConfirmationModal();
+        return showNotification(data.message || "Erreur inconnue", "error");
       }
-      alert("Vente créée avec succès !");
+      setIsLoading(false);
+      fermerConfirmationModal();
+
+      showNotification(data.message || "Vente créée avec succès !", "success");
       setLignesVente([]);
       fetchVentes();
-    } catch (e) {
-      alert((e as Error).message);
+    } catch (e: any) {
+      setIsLoading(false);
+      showNotification(e.message || "Erreur de connexion au serveur", "error");
     } finally {
-      setCreating(false);
+      setIsLoading(false);
     }
   };
 
@@ -431,34 +477,12 @@ const filteredVentes = useMemo(() => {
   const [showModalAnnulation, setShowModalAnnulation] = useState(false);
   const [venteAAnnuler, setVenteAAnnuler] = useState<Vente | null>(null);
 
-  // const [notification, setNotification] = useState<string | null>(null);
-  // const showNotification = (msg: string) => {
-  //   setNotification(msg);
-  //   setTimeout(() => setNotification(null), 1500);
-  // };
-
-  const [notification, setNotification] = useState<{
-    message: string;
-    type: "success" | "error" | null;
-  }>({
-    message: "",
-    type: null,
-  });
-
-  const showNotification = (
-    msg: string,
-    type: "success" | "error" = "success"
-  ) => {
-    setNotification({ message: msg, type });
-    setTimeout(() => setNotification({ message: "", type: null }), 1500);
-  };
-
   // 🔹 Annulation d'une vente
   const handleAnnulerVente = async () => {
     if (!venteAAnnuler) return;
     try {
       const token = localStorage.getItem("token");
-       if (!token) {
+      if (!token) {
         // Redirection automatique si token manquant
         window.location.href = "/login";
         return; // On arrête l'exécution
@@ -693,10 +717,13 @@ const filteredVentes = useMemo(() => {
                 </div>
                 <div className="flex flex-wrap gap-4 bg-white border rounded-lg mt-2 p-4 text-sm">
                   <h4 className="mt-2 font-semibold">
-                    Total Valider : {totalFiltre.toLocaleString()} GNF
+                    Total valider : {totalFiltre.toLocaleString()} GNF
                   </h4>
                   <h4 className="mt-2 font-semibold">
-                    Total Annuler: {totalAnnulerFiltre.toLocaleString()} GNF
+                    Total bénéfice : {beneficeTotal.toLocaleString()} GNF
+                  </h4>
+                  <h4 className="mt-2 font-semibold">
+                    Total annuler: {totalAnnulerFiltre.toLocaleString()} GNF
                   </h4>
                 </div>
               </section>
@@ -914,7 +941,10 @@ const filteredVentes = useMemo(() => {
 
       {modalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded shadow-lg w-96" style={{width: '72%'}}>
+          <div
+            className="bg-white p-6 rounded shadow-lg w-96"
+            style={{ width: "72%" }}
+          >
             <h2 className="text-lg font-semibold mb-4">
               {editingIndex !== null
                 ? "Modifier la ligne"
@@ -982,7 +1012,10 @@ const filteredVentes = useMemo(() => {
 
       {confirmationModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded shadow-lg w-96" style={{width: '72%'}}>
+          <div
+            className="bg-white p-6 rounded shadow-lg w-96"
+            style={{ width: "72%" }}
+          >
             <h2 className="text-lg font-semibold mb-4">Confirmer la vente</h2>
             <select
               value={venteType}
@@ -1015,11 +1048,13 @@ const filteredVentes = useMemo(() => {
               >
                 Annuler
               </button>
+
               <button
                 onClick={() => creerVenteAvecType(venteType, clientId)}
+                disabled={isLoading}
                 className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded"
               >
-                Valider
+                {isLoading ? "Création..." : "Créer la vente"}
               </button>
             </div>
           </div>
@@ -1029,7 +1064,10 @@ const filteredVentes = useMemo(() => {
       {/* ✅ Modal de confirmation d’annulation */}
       {showModalAnnulation && venteAAnnuler && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-96 text-center" style={{width: '72%'}}>
+          <div
+            className="bg-white p-6 rounded-lg shadow-lg w-96 text-center"
+            style={{ width: "72%" }}
+          >
             <h3 className="text-lg font-bold mb-4 text-gray-800">
               Annuler la vente #{venteAAnnuler.id} ?
             </h3>
@@ -1055,10 +1093,14 @@ const filteredVentes = useMemo(() => {
         </div>
       )}
 
-      {notification.message && (
+      {/* ✅ Notification */}
+      {notification && (
         <div
-          className={`fixed top-4 right-4 px-4 py-2 rounded text-white shadow-lg transition-all duration-300
-      ${notification.type === "success" ? "bg-green-500" : "bg-red-500"}`}
+          className={`fixed top-5 right-5 px-4 py-2 rounded shadow-lg z-50 ${
+            notification.type === "success"
+              ? "bg-green-500 text-white"
+              : "bg-red-500 text-white"
+          }`}
         >
           {notification.message}
         </div>

@@ -20,7 +20,7 @@ export default function MouvementPage() {
   const [mouvement, setMouvement] = useState<any[]>([]);
   const [dataProduit, setProduit] = useState<any[]>([]);
   const [dataType, setTypeMouvement] = useState<any[]>([]);
-  const [notification, setNotification] = useState<string | null>(null);
+  // const [notification, setNotification] = useState<string | null>(null);
 
   const [dataTypeMvt, setDataTypeMvt] = useState<TypeMvt[]>([]);
   const [loading, setLoading] = useState(false);
@@ -66,7 +66,7 @@ export default function MouvementPage() {
   const fetchProduit = async () => {
     try {
       const token = localStorage.getItem("token"); // ou sessionStorage / cookie
- if (!token) {
+      if (!token) {
         // Redirection automatique si token manquant
         window.location.href = "/login";
         return; // On arrête l'exécution
@@ -93,7 +93,7 @@ export default function MouvementPage() {
   const fetchTypeMouvemnt = async () => {
     try {
       const token = localStorage.getItem("token");
- if (!token) {
+      if (!token) {
         // Redirection automatique si token manquant
         window.location.href = "/login";
         return; // On arrête l'exécution
@@ -115,21 +115,18 @@ export default function MouvementPage() {
   const fetchMouvement = async () => {
     try {
       const token = localStorage.getItem("token");
- if (!token) {
+      if (!token) {
         // Redirection automatique si token manquant
         window.location.href = "/login";
         return; // On arrête l'exécution
       }
-      const res = await fetch(
-        `${APP_URL}/api/mouvementStock/liste`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`, // 🔑 ajout du token ici
-          },
-        }
-      );
+      const res = await fetch(`${APP_URL}/api/mouvementStock/liste`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, // 🔑 ajout du token ici
+        },
+      });
       let data = await res.json();
 
       data = data.filter((mvt: any) => mvt.status !== "ANNULER");
@@ -140,9 +137,18 @@ export default function MouvementPage() {
     }
   };
 
-  const showNotification = (message: string) => {
-    setNotification(message);
-    setTimeout(() => setNotification(null), 1000);
+  // 🟢 Affichage des notifications
+  const [notification, setNotification] = useState<{
+    message: string;
+    type: "success" | "error";
+  } | null>(null);
+
+  const showNotification = (
+    message: string,
+    type: "success" | "error" = "success"
+  ) => {
+    setNotification({ message, type });
+    setTimeout(() => setNotification(null), 2000); // 2s pour que ce soit plus visible
   };
 
   const handleOpenModal = (mouvement: any = null) => {
@@ -236,9 +242,6 @@ export default function MouvementPage() {
     <DashboardLayout title="Liste des mouvements de stocks">
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          {/* <h2 className="text-2xl font-bold text-gray-900">
-            Gestion des mouvements de stocks
-          </h2> */}
           <button
             onClick={() => openModal("addTypeMvt")}
             className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
@@ -331,10 +334,16 @@ export default function MouvementPage() {
                 if (!payload.utilisateurId)
                   return alert("Utilisateur non trouvé !");
 
-                let response;
-                if (selectedMouvement) {
-                  const token = localStorage.getItem("token");
+                const token = localStorage.getItem("token");
+                if (!token) {
+                  window.location.href = "/login";
+                  return;
+                }
 
+                let response;
+
+                if (selectedMouvement) {
+                  // 🔄 Modifier
                   response = await fetch(
                     `${APP_URL}/api/mouvementStock/modifier/${selectedMouvement.id}`,
                     {
@@ -347,8 +356,7 @@ export default function MouvementPage() {
                     }
                   );
                 } else {
-                  const token = localStorage.getItem("token");
-
+                  // ➕ Créer
                   response = await fetch(
                     `${APP_URL}/api/mouvementStock/create`,
                     {
@@ -363,11 +371,24 @@ export default function MouvementPage() {
                 }
 
                 const data = await response.json();
+
                 if (!response.ok) {
-                  return showNotification(data.message || "Erreur inconnue");
+                setIsModalOpen(false);
+                  return showNotification(
+                    data.message || "Erreur inconnue",
+                    "error"
+                  );
                 }
 
-                showNotification(data.message);
+                showNotification(
+                  data.message ||
+                    (selectedMouvement
+                      ? "Mouvement modifié avec succès."
+                      : "Mouvement ajouté avec succès."),
+                  "success"
+                );
+
+                setIsModalOpen(false);
                 await fetchMouvement();
                 setSelectedMouvement(null);
                 setFormData({
@@ -377,18 +398,28 @@ export default function MouvementPage() {
                   produitId: 0,
                   utilisateurId: "",
                 });
+              } catch (error: any) {
                 setIsModalOpen(false);
-              } catch (error) {
                 console.error("Erreur API mouvement :", error);
-                showNotification("Erreur de connexion au serveur");
+                showNotification(
+                  error.message || "Erreur de connexion au serveur",
+                  "error"
+                );
               }
             }}
           />
         )}
 
+        {/* ✅ Notification */}
         {notification && (
-          <div className="fixed top-5 right-5 bg-green-500 text-white px-4 py-2 rounded shadow-lg z-50">
-            {notification}
+          <div
+            className={`fixed top-5 right-5 px-4 py-2 rounded shadow-lg z-50 ${
+              notification.type === "success"
+                ? "bg-green-500 text-white"
+                : "bg-red-500 text-white"
+            }`}
+          >
+            {notification.message}
           </div>
         )}
       </div>

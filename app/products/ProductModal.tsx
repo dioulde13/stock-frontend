@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import "./ProduitModal.css"; // ✅ Import du CSS
 
 interface CategorieModalProps {
@@ -28,6 +28,18 @@ export default function ProduitModal({
   dataCategorie,
   dataBoutique,
 }: CategorieModalProps) {
+  const [isLoading, setIsLoading] = useState(false); // 🚀 état loading
+
+  const handleFormSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true); // démarre le loading
+    try {
+      await handleSubmit(); // attend que l'API se termine
+    } finally {
+      setIsLoading(false); // termine le loading
+    }
+  };
+
   return (
     <div className="modal-overlay">
       <div className="modal-container">
@@ -38,13 +50,7 @@ export default function ProduitModal({
           </button>
         </div>
 
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            handleSubmit();
-          }}
-          className="modal-form"
-        >
+        <form onSubmit={handleFormSubmit} className="modal-form">
           {/* Nom du produit */}
           <div className="form-group">
             <label>Nom du produit</label>
@@ -188,12 +194,24 @@ export default function ProduitModal({
 
           {/* Boutons */}
           <div className="form-actions">
-            <button type="button" onClick={onClose} className="cancel-btn">
+            <button 
+            type="button" 
+            onClick={onClose} 
+            className="cancel-btn"
+            disabled={isLoading}
+            >
               Annuler
             </button>
-            <button type="submit" className="submit-btn">
-              Valider
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+            >
+              {isLoading ? "Ajout en cours..." : "Ajouter"}
             </button>
+            {/* <button type="submit" className="submit-btn">
+              Valider
+            </button> */}
           </div>
         </form>
       </div>
