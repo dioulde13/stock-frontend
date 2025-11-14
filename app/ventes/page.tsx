@@ -320,9 +320,7 @@ export default function VentesPage() {
     setTimeout(() => setNotification(null), 2000); // 2s pour que ce soit plus visible
   };
 
-
   const [isLoading, setIsLoading] = useState(false);
-
 
   const creerVenteAvecType = async (
     type: "ACHAT" | "CREDIT",
@@ -358,7 +356,7 @@ export default function VentesPage() {
       type,
       clientId: type === "CREDIT" ? clientId : undefined,
     };
-setIsLoading(true); 
+    setIsLoading(true);
     try {
       const token = localStorage.getItem("token");
       if (!token) {
@@ -1049,10 +1047,15 @@ setIsLoading(true);
                 Annuler
               </button>
 
+
               <button
                 onClick={() => creerVenteAvecType(venteType, clientId)}
+                className={`px-4 py-2 rounded-md text-white ${
+                  isLoading
+                    ? "bg-blue-400 cursor-not-allowed"
+                    : "bg-blue-600 hover:bg-blue-700"
+                }`}
                 disabled={isLoading}
-                className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded"
               >
                 {isLoading ? "Création..." : "Créer la vente"}
               </button>

@@ -369,6 +369,8 @@ export default function AchatPage() {
     setTimeout(() => setNotification(null), 2000); // 2s pour que ce soit plus visible
   };
 
+  
+
   const creerAchatAvecType = async (
     type: "ACHAT" | "CREDIT",
     clientId: number | null
@@ -1319,9 +1321,14 @@ export default function AchatPage() {
               </button>
               <button
                 onClick={() => creerAchatAvecType(venteType, clientId)}
-                className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded"
+                 className={`px-4 py-2 rounded-md text-white ${
+                  creating
+                    ? "bg-blue-400 cursor-not-allowed"
+                    : "bg-blue-600 hover:bg-blue-700"
+                }`}
+                disabled={creating}
               >
-                Valider
+              {creating ? "Création en cours..." : "Ajouter"}
               </button>
             </div>
           </div>

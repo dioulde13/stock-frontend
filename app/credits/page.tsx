@@ -34,7 +34,7 @@ export default function CreditsPage() {
   const [dataClient, setClients] = useState<any[]>([]);
   const [montantPaye, setMontantPaye] = useState<number>(0);
 
-  const [modalMessage, setModalMessage] = useState("");
+  // const [modalMessage, setModalMessage] = useState("");
 
   // 🔍 Filtres
   const [filterType, setFilterType] = useState("");

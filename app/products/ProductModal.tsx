@@ -204,14 +204,15 @@ export default function ProduitModal({
             </button>
             <button
               type="submit"
+              className={`px-4 py-2 rounded-md text-white ${
+                isLoading
+                  ? "bg-blue-400 cursor-not-allowed"
+                  : "bg-blue-600 hover:bg-blue-700"
+              }`}
               disabled={isLoading}
-              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
             >
               {isLoading ? "Ajout en cours..." : "Ajouter"}
             </button>
-            {/* <button type="submit" className="submit-btn">
-              Valider
-            </button> */}
           </div>
         </form>
       </div>

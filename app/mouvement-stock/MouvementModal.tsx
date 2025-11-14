@@ -134,8 +134,16 @@ export default function MouvemntModal({
             >
               Annuler
             </button>
-            <button type="submit" className="submitBtn" disabled={isLoading}>
-              {isLoading ? "Création en cours..." : "Valider"}
+            <button
+              type="submit"
+              className={`px-4 py-2 rounded-md text-white ${
+                isLoading
+                  ? "bg-blue-400 cursor-not-allowed"
+                  : "bg-blue-600 hover:bg-blue-700"
+              }`}
+              disabled={isLoading}
+            >
+              {isLoading ? "Création en cours..." : "Ajouter"}
             </button>
           </div>
         </form>

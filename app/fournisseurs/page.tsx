@@ -12,6 +12,8 @@ export default function FournisseurPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedFournisseur, setSelectedFournisseur] = useState<any>(null);
   const [fournisseur, setFournisseurs] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
   const [formData, setFormData] = useState({
     nom: "",
     telephone: 0,
@@ -63,6 +65,9 @@ export default function FournisseurPage() {
     } catch (error) {
       console.error("Erreur lors du fetch des fournisseurs:", error);
     }
+    finally {
+      setLoading(false);
+    }
   };
 
   const handleOpenModal = (fournisseur: any = null) => {
@@ -93,6 +98,17 @@ export default function FournisseurPage() {
 
     setIsModalOpen(true);
   };
+
+
+   if (loading) {
+      return (
+        <DashboardLayout title="Chargement...">
+          <div className="flex justify-center items-center h-64 text-gray-500">
+            Chargement des données...
+          </div>
+        </DashboardLayout>
+      );
+    }
 
   return (
     <DashboardLayout title="Liste des fournisseurs">

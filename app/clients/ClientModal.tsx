@@ -1,5 +1,6 @@
 'use client';
 import './client.css';
+import { useState } from 'react';
 
 interface ClientModalProps {
   formData: { 
@@ -13,20 +14,32 @@ interface ClientModalProps {
     utilisateurId: string;
   }) => void;
   onClose: () => void;
-  handleSubmit: () => void;
+  handleSubmit: () => Promise<void>; // 🔹 handleSubmit doit retourner une Promise
 }
 
 export default function ClientModal({ formData, setFormData, onClose, handleSubmit }: ClientModalProps) {
+  const [isLoading, setIsLoading] = useState(false); // ⬅️ Loading state
 
   const handleTelephoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let value = e.target.value;
-
     value = value.replace(/\D/g, "");
     if (value.length > 9) value = value.slice(0, 9);
     if (value && value[0] !== "6") value = "6" + value.slice(1);
 
     const numericValue = value ? Number(value) : 0;
     setFormData({ ...formData, telephone: numericValue });
+  };
+
+  const onSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    try {
+      await handleSubmit();
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -37,7 +50,7 @@ export default function ClientModal({ formData, setFormData, onClose, handleSubm
           <button onClick={onClose}><i className="ri-close-line"></i></button>
         </div>
 
-        <form onSubmit={(e) => { e.preventDefault(); handleSubmit(); }} className="modalForm">
+        <form onSubmit={onSubmit} className="modalForm">
           <div>
             <label>Nom</label>
             <input
@@ -46,6 +59,7 @@ export default function ClientModal({ formData, setFormData, onClose, handleSubm
               value={formData.nom}
               onChange={(e) => setFormData({ ...formData, nom: e.target.value })}
               placeholder="Nom du client"
+              disabled={isLoading}
             />
           </div>
 
@@ -58,13 +72,26 @@ export default function ClientModal({ formData, setFormData, onClose, handleSubm
               value={formData.telephone || ""}
               onChange={handleTelephoneChange}
               placeholder="Téléphone du client"
+              disabled={isLoading}
             />
             <p>9 chiffres, doit commencer par 6</p>
           </div>
 
           <div className="modalActions">
-            <button type="button" className="cancelBtn" onClick={onClose}>Annuler</button>
-            <button type="submit" className="submitBtn">Valider</button>
+            <button type="button" className="cancelBtn" onClick={onClose} disabled={isLoading}>
+              Annuler
+            </button>
+            <button
+              type="submit"
+              className={`px-4 py-2 rounded-md text-white ${
+                isLoading
+                  ? "bg-blue-400 cursor-not-allowed"
+                  : "bg-blue-600 hover:bg-blue-700"
+              }`}
+              disabled={isLoading}
+            >
+              {isLoading ? "Création en cours..." : "Ajouter"}
+            </button>
           </div>
         </form>
       </div>

@@ -18,11 +18,13 @@ export default function VersementPage() {
         return; // On arrête l'exécution
       }
 
-      const res = await fetch(`${APP_URL}/api/versement/liste`, {
+      const res = await fetch(`${APP_URL}/api/versement/liste`, 
+        {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      });
+      }
+    );
 
       const data = await res.json();
       setVersements(data);
@@ -30,13 +32,6 @@ export default function VersementPage() {
     } catch (error) {
       console.error("Erreur lors du fetch des catégories:", error);
     }
-    // try {
-    //   const res = await fetch(`${APP_URL}/api/versement/liste`);
-    //   const data = await res.json();
-    //   setVersements(data);
-    // } catch (error) {
-    //   console.error("Erreur de récupération des versements", error);
-    // }
   };
 
   useEffect(() => {

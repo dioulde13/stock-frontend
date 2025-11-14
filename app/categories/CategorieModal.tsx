@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
 import { useState } from "react";
-import './CategorieModal.css';
+import "./CategorieModal.css";
 
 interface CategorieModalProps {
   formData: { nom: string; utilisateurId: string };
@@ -10,16 +10,21 @@ interface CategorieModalProps {
   handleSubmit: () => Promise<void>; // async
 }
 
-export default function CategorieModal({ formData, setFormData, onClose, handleSubmit }: CategorieModalProps) {
+export default function CategorieModal({
+  formData,
+  setFormData,
+  onClose,
+  handleSubmit,
+}: CategorieModalProps) {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);          // 🚀 Démarre le loading
+    setIsLoading(true); // 🚀 Démarre le loading
     try {
-      await handleSubmit();      // attend la fin de la création/modification
+      await handleSubmit(); // attend la fin de la création/modification
     } finally {
-      setIsLoading(false);       // termine le loading
+      setIsLoading(false); // termine le loading
     }
   };
 
@@ -28,7 +33,11 @@ export default function CategorieModal({ formData, setFormData, onClose, handleS
       <div className="modal-container">
         <div className="modal-header">
           <h3>Ajouter / Modifier une catégorie</h3>
-          <button onClick={onClose} className="close-button" disabled={isLoading}>
+          <button
+            onClick={onClose}
+            className="close-button"
+            disabled={isLoading}
+          >
             <i className="ri-close-line"></i>
           </button>
         </div>
@@ -40,18 +49,33 @@ export default function CategorieModal({ formData, setFormData, onClose, handleS
               type="text"
               required
               value={formData.nom}
-              onChange={(e) => setFormData({ ...formData, nom: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, nom: e.target.value })
+              }
               placeholder="Nom de la catégorie"
               disabled={isLoading} // ⛔ désactive le champ pendant la création
             />
           </div>
 
           <div className="modal-footer">
-            <button type="button" onClick={onClose} className="btn-cancel" disabled={isLoading}>
+            <button
+              type="button"
+              onClick={onClose}
+              className="btn-cancel"
+              disabled={isLoading}
+            >
               Annuler
             </button>
-            <button type="submit" className="btn-submit" disabled={isLoading}>
-              {isLoading ? "Création en cours..." : "Valider"} 
+            <button
+              type="submit"
+              className={`px-4 py-2 rounded-md text-white ${
+                isLoading
+                  ? "bg-blue-400 cursor-not-allowed"
+                  : "bg-blue-600 hover:bg-blue-700"
+              }`}
+              disabled={isLoading}
+            >
+              {isLoading ? "Création en cours..." : "Ajouter"}
             </button>
           </div>
         </form>

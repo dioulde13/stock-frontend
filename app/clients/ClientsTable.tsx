@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
+import { APP_URL } from "../environnement/environnements";
 
 interface ClientsTableProps {
   clients: any[];
@@ -38,10 +39,26 @@ export default function ClientsTable({
   const [currentPage, setCurrentPage] = useState(0);
   const itemsPerPage = 10;
 
-  // 🗑️ Suppression client
-  const handleDelete = async (id: number) => {
-    if (!confirm("Voulez-vous vraiment supprimer ce client ?")) return;
 
+   // 🔔 Modal suppression
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [clientToDelete, setClientToDelete] = useState<any>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const openDeleteModal = (client: any) => {
+    setClientToDelete(client);
+    setShowDeleteModal(true);
+  };
+
+  const closeDeleteModal = () => {
+    setClientToDelete(null);
+    setShowDeleteModal(false);
+    setIsDeleting(false);
+  };
+
+  const confirmDelete = async () => {
+    if (!clientToDelete) return;
+    setIsDeleting(true);
     try {
       const token = localStorage.getItem("token");
       if (!token) {
@@ -49,7 +66,7 @@ export default function ClientsTable({
         return;
       }
 
-      await fetch(`http://localhost:3000/api/client/supprimer/${id}`, {
+      await fetch(`${APP_URL}/api/client/supprimer/${clientToDelete.id}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -61,8 +78,11 @@ export default function ClientsTable({
       showNotification("Client supprimé avec succès.");
     } catch (error) {
       console.error("Erreur suppression client :", error);
+    } finally {
+      closeDeleteModal();
     }
   };
+
 
   // 🔍 Filtrage recherche + dates
   const filteredClients = useMemo(() => {
@@ -167,8 +187,8 @@ export default function ClientsTable({
                     >
                       <i className="ri-edit-line"></i>
                     </button>
-                    <button
-                      onClick={() => handleDelete(client.id)}
+                     <button
+                      onClick={() => openDeleteModal(client)}
                       className="text-red-600 hover:text-red-900 p-1 rounded"
                     >
                       <i className="ri-delete-bin-line"></i>
@@ -225,6 +245,38 @@ export default function ClientsTable({
           </button>
         </div>
       )}
+
+        {/* --- MODAL SUPPRESSION --- */}
+      {showDeleteModal && clientToDelete && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50">
+          <div className="bg-white rounded-xl p-6 w-[400px] shadow-lg">
+            <h3 className="text-lg font-semibold mb-4">
+              Supprimer le client
+            </h3>
+            <p className="mb-6">
+              Êtes-vous sûr de vouloir supprimer <strong>{clientToDelete.nom}</strong> ?
+            </p>
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={closeDeleteModal}
+                className="px-4 py-2 bg-gray-300 rounded-lg hover:bg-gray-400"
+                disabled={isDeleting}
+              >
+                Annuler
+              </button>
+              <button
+                onClick={confirmDelete}
+                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+                disabled={isDeleting}
+              >
+                {isDeleting ? "Suppression..." : "Supprimer"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
+    
   );
+  
 }

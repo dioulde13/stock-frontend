@@ -14,6 +14,7 @@ export default function CategoriePage() {
   const [categories, setCategories] = useState<any[]>([]);
   const [formData, setFormData] = useState({ nom: "", utilisateurId: "" });
   const [utilisateur, setUtilisateur] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   // 🔒 Vérification connexion + chargement catégories
   useEffect(() => {
@@ -52,6 +53,8 @@ export default function CategoriePage() {
       setCategories(data);
     } catch (error) {
       console.error("Erreur lors du fetch des catégories:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -93,6 +96,16 @@ export default function CategoriePage() {
 
     setIsModalOpen(true);
   };
+
+  if (loading) {
+    return (
+      <DashboardLayout title="Chargement...">
+        <div className="flex justify-center items-center h-64 text-gray-500">
+          Chargement des données...
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   // 🟢 Rendu principal
   return (

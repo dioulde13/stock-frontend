@@ -15,6 +15,9 @@ interface CategorieTableProps {
     setFormData: Dispatch<SetStateAction<{ nom: string; utilisateurId: string }>>;
 }
 
+
+
+
 export default function CategorieTable({
     categories,
     utilisateur,

@@ -25,6 +25,7 @@ export default function ClientPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [clients, setClients] = useState<Client[]>([]);
+  const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
     nom: "",
     telephone: 0,
@@ -78,6 +79,8 @@ export default function ClientPage() {
       setClients(data);
     } catch (error) {
       console.error("Erreur lors du fetch des clients:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -178,6 +181,16 @@ export default function ClientPage() {
       );
     }
   };
+
+   if (loading) {
+        return (
+          <DashboardLayout title="Chargement...">
+            <div className="flex justify-center items-center h-64 text-gray-500">
+              Chargement des données...
+            </div>
+          </DashboardLayout>
+        );
+      }
 
   return (
     <DashboardLayout title="Liste des clients">
