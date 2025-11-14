@@ -516,6 +516,71 @@ export default function VentesPage() {
     }).format(prix);
   };
 
+
+  const imprimerRecu = (vente: Vente) => {
+  const contenu = `
+    <html>
+      <head>
+        <title>Reçu Vente #${vente.id}</title>
+        <style>
+          body { font-family: Arial, sans-serif; padding: 20px; }
+          h2 { text-align: center; }
+          table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+          th, td { border: 1px solid #000; padding: 8px; text-align: center; }
+          th { background-color: #f0f0f0; }
+        </style>
+      </head>
+      <body>
+        <h2>Reçu Vente #${vente.id}</h2>
+        <p><strong>Date :</strong> ${new Intl.DateTimeFormat("fr-FR", {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+        }).format(new Date(vente.createdAt))}</p>
+        <p><strong>Type :</strong> ${vente.type}</p>
+        <p><strong>Status :</strong> ${vente.status}</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Produit</th>
+              <th>Quantité</th>
+              <th>Prix Achat</th>
+              <th>Prix Vente</th>
+              <th>Total Vente</th>
+              <th>Bénéfice</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${vente.LigneVentes.map(ligne => `
+              <tr>
+                <td>${ligne.produitNom || "Produit inconnu"}</td>
+                <td>${ligne.quantite}</td>
+                <td>${ligne.prix_achat.toLocaleString()} GNF</td>
+                <td>${ligne.prix_vente.toLocaleString()} GNF</td>
+                <td>${(ligne.quantite * ligne.prix_vente).toLocaleString()} GNF</td>
+                <td>${((ligne.quantite * ligne.prix_vente) - (ligne.quantite * ligne.prix_achat)).toLocaleString()} GNF</td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+        <h3>Total : ${vente.total.toLocaleString()} GNF</h3>
+      </body>
+    </html>
+  `;
+
+  const printWindow = window.open("", "_blank");
+  if (printWindow) {
+    printWindow.document.write(contenu);
+    printWindow.document.close();
+    printWindow.focus();
+    printWindow.print();
+    printWindow.close();
+  }
+};
+
+
   return (
     <DashboardLayout>
       <div style={{ display: "flex", justifyContent: "center", padding: 20 }}>
@@ -865,6 +930,9 @@ export default function VentesPage() {
                                         <th className="px-3 py-2 border">
                                           Bénéfice
                                         </th>
+                                        <th className="px-3 py-2 border">
+                                          Action
+                                        </th>
                                       </tr>
                                     </thead>
                                     <tbody>
@@ -903,6 +971,25 @@ export default function VentesPage() {
                                                   (ligne?.prix_achat ?? 0)
                                             )}
                                           </td>
+                                          <td className="px-3 py-2 text-center border">
+
+                                          <button
+                                            onClick={() => imprimerRecu(vente)}
+                                            style={{
+                                              fontSize: 13,
+                                              fontWeight: "bold",
+                                              backgroundColor: "#FFA500",
+                                              color: "white",
+                                              border: "none",
+                                              padding: "5px 10px",
+                                              borderRadius: 4,
+                                              cursor: "pointer",
+                                            }}
+                                          >
+                                            Imprimer
+                                          </button>
+                                          </td>
+
                                         </tr>
                                       ))}
                                     </tbody>
@@ -1046,7 +1133,6 @@ export default function VentesPage() {
               >
                 Annuler
               </button>
-
 
               <button
                 onClick={() => creerVenteAvecType(venteType, clientId)}
