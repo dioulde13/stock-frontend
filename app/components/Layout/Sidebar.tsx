@@ -19,27 +19,29 @@ interface Utilisateur {
 
 const menuItems = [
   { href: "/dashboard", icon: "ri-dashboard-line", label: "Tableau de bord" },
-  { href: "/categories", icon: "ri-box-3-line", label: "Catégories" },
-  { href: "/products", icon: "ri-box-3-line", label: "Produits" },
-  { href: "/mouvement-stock", icon: "ri-box-3-line", label: "Mouvement stock" },
-  { href: "/stock-minimum", icon: "ri-box-3-line", label: "Stock minimum" },
+  { href: "/categories", icon: "ri-folder-2-line", label: "Catégories" },
+  { href: "/products", icon: "ri-archive-2-line", label: "Produits" },
+  { href: "/mouvement-stock", icon: "ri-exchange-box-line", label: "Mouvement stock" },
+  { href: "/stock-minimum", icon: "ri-alert-line", label: "Stock minimum" },
   { href: "/ventes", icon: "ri-shopping-cart-line", label: "Ventes" },
-  { href: "/achats", icon: "ri-shopping-bag-line", label: "Achats" },
-  { href: "/clients", icon: "ri-user-line", label: "Clients" },
+  { href: "/achats", icon: "ri-shopping-bag-3-line", label: "Achats" },
+  { href: "/clients", icon: "ri-user-smile-line", label: "Clients" },
   { href: "/fournisseurs", icon: "ri-truck-line", label: "Fournisseurs" },
   { href: "/credits", icon: "ri-bank-card-line", label: "Crédits" },
   {
     href: "/credit-payments",
-    icon: "ri-money-dollar-circle-line",
+    icon: "ri-cash-line",
     label: "Paiement crédits",
   },
-  { href: "/expenses", icon: "ri-money-dollar-box-line", label: "Dépenses" },
+  { href: "/expenses", icon: "ri-money-dollar-circle-line", label: "Dépenses" },
+  { href: "/rejeter-versement", icon: "ri-money-dollar-circle-line", label: "Vercement" },
   {
     href: "/utilisateurs",
     icon: "ri-user-settings-line",
     label: "Utilisateurs",
   },
 ];
+
 
 export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
   const pathname = usePathname();

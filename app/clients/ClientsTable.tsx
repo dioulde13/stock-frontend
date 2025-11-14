@@ -29,10 +29,6 @@ export default function ClientsTable({
   fetchClients,
   showNotification,
   handleOpenModal,
-  formData,
-  setFormData,
-  selectedClient,
-  setSelectedClient,
 }: ClientsTableProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [dateStart, setDateStart] = useState("");

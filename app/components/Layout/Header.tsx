@@ -107,7 +107,7 @@ export default function Header({
   useEffect(() => {
     if (!utilisateurId) return;
 
-    const s = io("https://stock-frontend-phi.vercel.app");
+    const s = io(`${APP_URL}`);
     setSocket(s);
 
     s.on("connect", () => {
