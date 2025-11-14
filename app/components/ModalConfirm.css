@@ -1,0 +1,102 @@
+/* Overlay du modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.4);
+  backdrop-filter: blur(2px); /* effet blur */
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; /* modal en haut */
+  padding-top: 50px; /* décale pour qu’il soit visible */
+  z-index: 50;
+  overflow-y: auto; /* scroll si contenu trop grand */
+}
+
+/* Contenu du modal */
+.modal-content {
+  background-color: white;
+  border-radius: 12px;
+  padding: 24px;
+  width: 90%;
+  max-width: 400px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Titre et message */
+.modal-content h2 {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.modal-content p {
+  color: #4b5563; /* gris */
+  margin-bottom: 20px;
+}
+
+/* Boutons */
+.modal-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.modal-buttons button {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+}
+
+/* Désactiver boutons lors du loading */
+.modal-buttons button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Bouton Annuler */
+.cancel-btn {
+  background-color: #e5e7eb;
+}
+
+.cancel-btn:hover:not(:disabled) {
+  background-color: #d1d5db;
+}
+
+/* Bouton Confirmer */
+.confirm-btn {
+  background-color: #2563eb;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.confirm-btn:hover:not(:disabled) {
+  background-color: #1d4ed8;
+}
+
+/* Spinner pour loading */
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid white;
+  border-top: 2px solid transparent;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

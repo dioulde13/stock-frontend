@@ -1,5 +1,6 @@
-'use client';
+"use client";
 import React from "react";
+import "./ModalConfirm.css";
 
 interface ModalConfirmProps {
   open: boolean;
@@ -7,7 +8,7 @@ interface ModalConfirmProps {
   message: string;
   onConfirm: () => void;
   onCancel: () => void;
-  loading?: boolean; // 🟢 AJOUT
+  loading?: boolean;
 }
 
 export default function ModalConfirm({
@@ -16,45 +17,29 @@ export default function ModalConfirm({
   message,
   onConfirm,
   onCancel,
-  loading = false
+  loading = false,
 }: ModalConfirmProps) {
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-      <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-md animate-fade">
-        <h2 className="text-lg font-semibold mb-3">{title}</h2>
-        <p className="text-gray-600 mb-5">{message}</p>
+    <div className="modal-overlay">
+      <div className="modal-content">
+        <h2>{title}</h2>
+        <p>{message}</p>
 
-        <div className="flex justify-end gap-3">
-
-          {/* Bouton Annuler */}
-          <button
-            disabled={loading}
-            onClick={onCancel}
-            className={`px-4 py-2 bg-gray-200 rounded-lg ${
-              loading ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-300"
-            }`}
-          >
+        <div className="modal-buttons">
+          <button onClick={onCancel} disabled={loading} className="cancel-btn">
             Annuler
           </button>
 
-          {/* Bouton Confirmer */}
           <button
-            disabled={loading}
             onClick={onConfirm}
-            className={`px-4 py-2 bg-blue-600 text-white rounded-lg flex items-center gap-2 ${
-              loading
-                ? "opacity-50 cursor-not-allowed"
-                : "hover:bg-blue-700"
-            }`}
+            disabled={loading}
+            className="confirm-btn"
           >
-            {loading && (
-              <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-            )}
+            {loading && <span className="spinner"></span>}
             {loading ? "Chargement..." : "Confirmer"}
           </button>
-
         </div>
       </div>
     </div>
