@@ -63,14 +63,12 @@ export default function MouvementStocTable({
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200">
       {/* 🔍 Barre de recherche et filtres */}
-      {/* 🔍 Barre de recherche et filtres */}
       <div className="p-6 border-b border-gray-200">
-        <div className="flex flex-col sm:flex-row gap-4 items-end">
-          {/* Recherche par nom */}
+        <div className="flex flex-col sm:flex-row flex-wrap gap-4">
           <div className="flex-1 relative min-w-[200px]">
-            <span className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-              <i className="ri-search-line text-gray-400 text-lg"></i>
-            </span>
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <i className="ri-search-line text-gray-400"></i>
+            </div>
             <input
               type="text"
               placeholder="Rechercher un motif..."
@@ -80,29 +78,18 @@ export default function MouvementStocTable({
             />
           </div>
 
-          {/* Date début */}
-          <div className="flex-1 sm:flex-none sm:w-40">
-            <label className="block text-xs text-gray-600 mb-1">
-              Date début
-            </label>
-            <input
-              type="date"
-              value={dateDebut}
-              onChange={(e) => setDateDebut(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
-            />
-          </div>
-
-          {/* Date fin */}
-          <div className="flex-1 sm:flex-none sm:w-40">
-            <label className="block text-xs text-gray-600 mb-1">Date fin</label>
-            <input
-              type="date"
-              value={dateFin}
-              onChange={(e) => setDateFin(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
-            />
-          </div>
+          <input
+            type="date"
+            value={dateDebut}
+            onChange={(e) => setDateDebut(e.target.value)}
+            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
+          />
+          <input
+            type="date"
+            value={dateFin}
+            onChange={(e) => setDateFin(e.target.value)}
+            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
+          />
         </div>
       </div>
 

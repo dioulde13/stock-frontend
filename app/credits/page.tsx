@@ -16,6 +16,7 @@ import ReactPaginate from "react-paginate";
 import DashboardLayout from "../components/Layout/DashboardLayout";
 import { formatMontant } from "../components/utils/formatters";
 import { APP_URL } from "../environnement/environnements";
+import ModalConfirm from "../components/ModalConfirm";
 
 export default function CreditsPage() {
   const router = useRouter();
@@ -110,10 +111,13 @@ export default function CreditsPage() {
     }
   };
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const handleAdd = async () => {
     if (!formData.clientId || !formData.type || !formData.montant) {
       return showNotification("Veuillez remplir tous les champs", "error");
     }
+    setIsLoading(true);
 
     try {
       const response = await createCredit({
@@ -140,6 +144,8 @@ export default function CreditsPage() {
         err.message || "Erreur de connexion au serveur",
         "error"
       );
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -147,7 +153,7 @@ export default function CreditsPage() {
     if (editingId === null) return;
 
     if (!formData.clientId || !formData.type || !formData.montant) {
-       setShowForm(false);
+      setShowForm(false);
       return showNotification("Veuillez remplir tous les champs", "error");
     }
 
@@ -160,13 +166,12 @@ export default function CreditsPage() {
         description: formData.description,
         montant: Number(formData.montant),
       });
- setShowForm(false);
+      setShowForm(false);
       showNotification(
         response?.message || "Modification réussie avec succès",
         "success"
       );
 
-     
       setEditingId(null);
       setMontantPaye(0);
       resetForm();
@@ -191,27 +196,51 @@ export default function CreditsPage() {
     });
   };
 
-  const handleDelete = async (id: number) => {
-    if (confirm("Voulez-vous vraiment supprimer ce crédit ?")) {
-      try {
-        await deleteCredit(id);
-        fetchCredits();
-      } catch (err) {
-        console.error(err);
-      }
-    }
+  const [cancelModalOpen, setCancelModalOpen] = useState(false);
+  const [creditIdToCancel, setCreditIdToCancel] = useState<number | null>(null);
+
+  const handleAnnuler = (id: number) => {
+    setCreditIdToCancel(id);
+    setCancelModalOpen(true);
   };
 
-  const handleAnnuler = async (id: number) => {
-    if (confirm("Voulez-vous vraiment annuler ce crédit ?")) {
-      try {
-        await annulerCredit(id);
-        fetchCredits();
-      } catch (err) {
-        console.error(err);
-      }
+  const confirmAnnuler = async () => {
+    if (!creditIdToCancel) return;
+
+    try {
+      await annulerCredit(creditIdToCancel);
+      fetchCredits();
+      showNotification("Crédit annulé avec succès", "success");
+    } catch (err) {
+      console.error(err);
+      showNotification("Erreur lors de l'annulation", "error");
     }
+
+    setCancelModalOpen(false);
+    setCreditIdToCancel(null);
   };
+
+  // const handleDelete = async (id: number) => {
+  //   if (confirm("Voulez-vous vraiment supprimer ce crédit ?")) {
+  //     try {
+  //       await deleteCredit(id);
+  //       fetchCredits();
+  //     } catch (err) {
+  //       console.error(err);
+  //     }
+  //   }
+  // };
+
+  // const handleAnnuler = async (id: number) => {
+  //   if (confirm("Voulez-vous vraiment annuler ce crédit ?")) {
+  //     try {
+  //       await annulerCredit(id);
+  //       fetchCredits();
+  //     } catch (err) {
+  //       console.error(err);
+  //     }
+  //   }
+  // };
 
   const openEditForm = (credit: any) => {
     setFormData({
@@ -302,6 +331,14 @@ export default function CreditsPage() {
 
   return (
     <DashboardLayout title="Crédits">
+      <ModalConfirm
+        open={cancelModalOpen}
+        title="Confirmation"
+        message="Êtes-vous sûr de vouloir annuler ce crédit ?"
+        onCancel={() => setCancelModalOpen(false)}
+        onConfirm={confirmAnnuler}
+      />
+
       {/* ✅ Notification */}
       {notification && (
         <div
@@ -411,7 +448,7 @@ export default function CreditsPage() {
           <>
             <CreditsTable
               credits={paginatedCredits}
-              onDelete={handleDelete}
+              onDelete={handleAnnuler}
               handleAnnuler={handleAnnuler}
               handleEdit={openEditForm}
               utilisateur={utilisateur}
@@ -530,6 +567,36 @@ export default function CreditsPage() {
                   type="button"
                   className="cancelBtn"
                   onClick={() => setShowForm(false)}
+                  disabled={isLoading}
+                >
+                  Annuler
+                </button>
+
+                <button
+                  type="button"
+                  className={`submitBtn ${
+                    isLoading ? "opacity-50 cursor-not-allowed" : ""
+                  }`}
+                  onClick={editingId ? handleEdit : handleAdd}
+                  disabled={isLoading}
+                >
+                  {isLoading ? (
+                    <span className="flex items-center gap-2">
+                      <span className="loader"></span> Chargement...
+                    </span>
+                  ) : editingId ? (
+                    "Modifier"
+                  ) : (
+                    "Ajouter"
+                  )}
+                </button>
+              </div>
+
+              {/* <div className="modalActions">
+                <button
+                  type="button"
+                  className="cancelBtn"
+                  onClick={() => setShowForm(false)}
                 >
                   Annuler
                 </button>
@@ -540,7 +607,7 @@ export default function CreditsPage() {
                 >
                   {editingId ? "Modifier" : "Ajouter"}
                 </button>
-              </div>
+              </div> */}
             </div>
           </div>
         )}

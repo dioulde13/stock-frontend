@@ -54,18 +54,28 @@ export default function ExpensesTable({
   };
 
   // 🔹 Récupération des dépenses
-  const fetchDepenses = async () => {
-    try {
-      const data = await getDepenses();
-      const filteredData = data.filter(
-        (depense: any) => depense.status !== "ANNULER"
-      );
-      setExpenses(filteredData);
-    } catch (error) {
-      console.error(error);
-      showNotification("Erreur lors du chargement des dépenses", "error");
-    }
-  };
+const fetchDepenses = async () => {
+  try {
+    const data = await getDepenses();
+
+    const filteredData = data
+      .filter((depense: any) => depense.status !== "ANNULER")
+      .sort((a: any, b: any) => {
+        // Tri décroissant par createdAt si présent
+        if (a.createdAt && b.createdAt) {
+          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        }
+        // Sinon tri décroissant par id
+        return b.id - a.id;
+      });
+
+    setExpenses(filteredData);
+  } catch (error) {
+    console.error(error);
+    showNotification("Erreur lors du chargement des dépenses", "error");
+  }
+};
+
 
   useEffect(() => {
     fetchDepenses();

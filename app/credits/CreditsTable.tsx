@@ -25,8 +25,6 @@ interface Credit {
 
 export default function CreditsTable({
   credits,
-  utilisateur,
-  // onDelete,
   handleAnnuler,
 }: {
   credits: Credit[];

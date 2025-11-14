@@ -17,29 +17,39 @@ export default function ExpenseModal({
   expense,
   onClose,
   onRefresh,
-  showNotification,
+  showNotification
 }: ExpenseModalProps) {
+  
   const [description, setDescription] = useState('');
   const [formMontant, setFormMontant] = useState<number>(0);
   const [utilisateurId, setUtilisateurId] = useState<number>(0);
+  const [isLoading, setIsLoading] = useState(false);
 
+  // 🔌 Connexion Socket.IO
   useEffect(() => {
-    if (!socket) socket = io('http://localhost:3000', { transports: ['websocket'] });
+    if (!socket) {
+      socket = io('http://localhost:3000', { transports: ['websocket'] });
+    }
 
-    socket.on('caisseMisAJour', () => onRefresh());
-    return () => { socket?.off('caisseMisAJour'); };
+    socket.on('caisseMisAJour', onRefresh);
+
+    return () => {
+      socket?.off('caisseMisAJour');
+    };
   }, [onRefresh]);
 
+  // 📌 Récupérer l'utilisateur
   useEffect(() => {
-    const user = localStorage.getItem('utilisateur');
-    if (user) {
-      try {
-        const parsedUser = JSON.parse(user);
-        if (parsedUser?.id) setUtilisateurId(parsedUser.id);
-      } catch { }
-    }
+    try {
+      const stored = localStorage.getItem('utilisateur');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (parsed?.id) setUtilisateurId(parsed.id);
+      }
+    } catch {}
   }, []);
 
+  // 📝 Pré-remplir si on modifie
   useEffect(() => {
     if (expense) {
       setDescription(expense.description || '');
@@ -51,35 +61,55 @@ export default function ExpenseModal({
     }
   }, [expense, utilisateurId]);
 
+  // 📨 Soumission du formulaire
   const handleSubmit = async () => {
+    if (!description.trim()) {
+      showNotification("La description est obligatoire", "error");
+      return;
+    }
+    if (!formMontant || formMontant <= 0) {
+      showNotification("Le montant doit être supérieur à 0", "error");
+      return;
+    }
+
+    setIsLoading(true);
+
     try {
       if (expense) {
         await updateDepense(expense.id, { description, montant: formMontant, utilisateurId });
-        showNotification('✅ Dépense modifiée', 'success');
+        showNotification("✅ Dépense modifiée", "success");
       } else {
         await createDepense({ description, montant: formMontant, utilisateurId });
-        showNotification('✅ Dépense ajoutée', 'success');
+        showNotification("✅ Dépense ajoutée", "success");
       }
-      socket?.emit('depenseAjoutee', { description, montant: formMontant });
+
+      socket?.emit("depenseAjoutee", { description, montant: formMontant });
+
       onRefresh();
       onClose();
+
     } catch {
-      showNotification('❌ Erreur lors de l’opération', 'error');
+      showNotification("❌ Erreur lors de l’opération", "error");
     }
+
+    setIsLoading(false);
   };
 
   return (
     <div className="modalOverlay">
       <div className="modalContent">
-        <h2>{expense ? 'Modifier la dépense' : 'Nouvelle dépense'}</h2>
 
+        <h2>{expense ? "Modifier la dépense" : "Nouvelle dépense"}</h2>
+
+        {/* Description */}
         <input
           type="text"
           placeholder="Description"
           value={description}
-          onChange={e => setDescription(e.target.value)}
+          onChange={(e) => setDescription(e.target.value)}
         />
 
+        {/* Montant avec formatage */}
         <input
           type="text"
           placeholder="Montant"
@@ -88,18 +118,30 @@ export default function ExpenseModal({
               ? new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 0 }).format(formMontant)
               : ''
           }
-          onChange={e => {
+          onChange={(e) => {
             const rawValue = e.target.value.replace(/\s/g, '');
             setFormMontant(Number(rawValue) || 0);
           }}
         />
 
+        {/* Boutons */}
         <div className="modalActions">
-          <button type="button" className="cancelBtn" onClick={onClose}>Annuler</button>
-          <button type="button" className="submitBtn" onClick={handleSubmit}>
-            {expense ? 'Modifier' : 'Ajouter'}
+          <button type="button" className="cancelBtn" onClick={onClose} disabled={isLoading}>
+            Annuler
+          </button>
+
+          <button
+            type="button"
+            className={`submitBtn ${isLoading ? "loading" : ""}`}
+            onClick={handleSubmit}
+            disabled={isLoading}
+          >
+            {isLoading
+              ? (expense ? "Modification..." : "Création en cours...")
+              : (expense ? "Modifier" : "Ajouter")}
           </button>
         </div>
+
       </div>
     </div>
   );
