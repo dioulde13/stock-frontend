@@ -259,17 +259,14 @@ export default function ProduitTable({
     console.log("📦 Body envoyé :", body);
 
     try {
-      const res = await fetch(
-        `${APP_URL}/api/produit/annuler/${produit.id}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(body),
-        }
-      );
+      const res = await fetch(`${APP_URL}/api/produit/annuler/${produit.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(body),
+      });
 
       if (res.ok) {
         showNotification("Statut changé avec succès.");
@@ -287,35 +284,42 @@ export default function ProduitTable({
 
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-      <div className="p-6 border-b border-gray-200 flex flex-col sm:flex-row gap-4 items-center justify-between">
-        <div className="bg-blue-50 text-blue-700 px-4 py-2 rounded-lg font-semibold border border-blue-200">
+      <div className="p-6 border-b border-gray-200 flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between flex-wrap">
+        {/* Total valeur stock */}
+        <div className="bg-blue-50 text-blue-700 px-4 py-2 rounded-lg font-semibold border border-blue-200 w-50 sm:w-auto text-center sm:text-left">
           Total valeur stock : {formatMontant(totalMontantAchat)}
         </div>
 
-        <div className="flex gap-2 flex-1">
-          <div className="flex-1 relative">
+        {/* Recherches et dates */}
+        <div className="flex flex-col sm:flex-row gap-2 flex-1 w-50">
+          {/* Recherche produit */}
+          <div className="flex-1 relative w-50 sm:w-auto">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <i className="ri-search-line text-gray-400"></i>
             </div>
             <input
               type="text"
               placeholder="Rechercher un produit..."
-              className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+              className="block w-50 pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
+
+          {/* Date début */}
           <input
             type="date"
             value={dateStart}
             onChange={(e) => setDateStart(e.target.value)}
-            className="px-2 py-1 border border-gray-300 rounded-lg text-sm"
+            className="px-2 py-1 border border-gray-300 rounded-lg text-sm w-50 sm:w-auto"
           />
+
+          {/* Date fin */}
           <input
             type="date"
             value={dateEnd}
             onChange={(e) => setDateEnd(e.target.value)}
-            className="px-2 py-1 border border-gray-300 rounded-lg text-sm"
+            className="px-2 py-1 border border-gray-300 rounded-lg text-sm w-50 sm:w-auto"
           />
         </div>
       </div>
