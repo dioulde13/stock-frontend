@@ -73,36 +73,40 @@ export default function CreditPaymentsPage() {
   // };
 
   const handleSubmit = async () => {
-  if (!formData.reference || !formData.utilisateurId || !formData.montant) {
-    setIsModalOpen(false);
-    return showNotification("Veuillez remplir tous les champs", "error");
-  }
+    if (!formData.reference || !formData.utilisateurId || !formData.montant) {
+      setIsModalOpen(false);
+      return showNotification("Veuillez remplir tous les champs", "error");
+    }
 
-  try {
-    setLoading(true);
-    const response = await addPayment({
-      reference: formData.reference,
-      utilisateurId: Number(formData.utilisateurId),
-      montant: Number(formData.montant),
-    });
-    setIsModalOpen(false);
+    try {
+      setLoading(true);
+      const response = await addPayment({
+        reference: formData.reference,
+        utilisateurId: Number(formData.utilisateurId),
+        montant: Number(formData.montant),
+      });
+      setIsModalOpen(false);
 
+      showNotification(
+        response?.message || "Paiement enregistré avec succès !",
+        "success"
+      );
 
-    showNotification(response?.message || "Paiement enregistré avec succès !", "success");
-
-    setFormData({
-      reference: "",
-      utilisateurId: formData.utilisateurId,
-      montant: 0,
-    });
-    await fetchPayments();
-  } catch (error: any) {
-    showNotification(error.message || "Erreur lors de l'enregistrement du paiement", "error");
-  } finally {
-    setLoading(false);
-  }
-};
-
+      setFormData({
+        reference: "",
+        utilisateurId: formData.utilisateurId,
+        montant: 0,
+      });
+      await fetchPayments();
+    } catch (error: any) {
+      showNotification(
+        error.message || "Erreur lors de l'enregistrement du paiement",
+        "error"
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Filtrage + Pagination + Dates
   const filteredPayments = useMemo(() => {
@@ -172,33 +176,37 @@ export default function CreditPaymentsPage() {
         </div>
 
         {/* Total montant */}
-        <div className="bg-white border rounded-lg p-3 text-sm font-medium flex justify-between">
-          <div>
-            Total Montant Valider:{" "}
-            <span className="text-teal-600">{totalMontant} GNF</span>
-          </div>
-          <div>
-            Total Montant Annuler :{" "}
-            <span className="text-teal-600">{totalAnnulerMontant} GNF</span>
-          </div>
-          {/* Filtres */}
-          <div className="flex flex-wrap gap-3 items-end">
+        <div className="bg-white border rounded-lg p-3 text-sm font-medium flex flex-col md:flex-row justify-between gap-3 md:gap-0">
+          {/* Totaux */}
+          <div className="flex flex-col md:flex-row gap-2 md:gap-4">
             <div>
-              <label className="text-sm font-medium">Date début</label>
+              Total Montant Valider:{" "}
+              <span className="text-teal-600">{totalMontant} GNF</span>
+            </div>
+            <div>
+              Total Montant Annuler:{" "}
+              <span className="text-teal-600">{totalAnnulerMontant} GNF</span>
+            </div>
+          </div>
+
+          {/* Filtres */}
+          <div className="flex flex-col md:flex-row flex-wrap gap-2 md:gap-3 items-start md:items-end">
+            <div className="flex flex-col w-full md:w-auto">
+              <label className="text-sm font-medium mb-1">Date début</label>
               <input
                 type="date"
                 value={dateStart}
                 onChange={(e) => setDateStart(e.target.value)}
-                className="border px-2 py-1 rounded"
+                className="border px-2 py-1 rounded w-40"
               />
             </div>
-            <div>
-              <label className="text-sm font-medium">Date fin</label>
+            <div className="flex flex-col w-full md:w-auto">
+              <label className="text-sm font-medium mb-1">Date fin</label>
               <input
                 type="date"
                 value={dateEnd}
                 onChange={(e) => setDateEnd(e.target.value)}
-                className="border px-2 py-1 rounded"
+                className="border px-2 py-1 rounded w-40"
               />
             </div>
           </div>

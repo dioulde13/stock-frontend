@@ -377,18 +377,22 @@ export default function CreditsPage() {
         </div>
 
         {/* 🧭 Filtres */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-2 bg-gray-50 p-3 rounded-lg border">
+        <div
+          className="bg-gray-50 p-3 rounded-lg border
+                grid grid-cols-1 gap-2 space-y-2
+                md:grid-cols-5 md:gap-2 md:space-y-0"
+        >
           <input
             type="text"
             placeholder="Référence"
             value={filterReference}
             onChange={(e) => setFilterReference(e.target.value)}
-            className="px-3 py-2 border rounded-lg text-sm"
+            className="px-3 py-2 border rounded-lg text-sm w-52"
           />
           <select
             value={filterType}
             onChange={(e) => setFilterType(e.target.value)}
-            className="px-3 py-2 border rounded-lg text-sm"
+            className="px-3 py-2 border rounded-lg text-sm w-52"
           >
             <option value="">Tous les types</option>
             <option value="ENTRE">ENTRE</option>
@@ -397,7 +401,7 @@ export default function CreditsPage() {
           <select
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
-            className="px-3 py-2 border rounded-lg text-sm"
+            className="px-3 py-2 border rounded-lg text-sm w-52"
           >
             <option value="">Tous les statuts</option>
             <option value="PAYER">Payé</option>
@@ -408,13 +412,13 @@ export default function CreditsPage() {
             type="date"
             value={dateDebut}
             onChange={(e) => setDateDebut(e.target.value)}
-            className="px-3 py-2 border rounded-lg text-sm"
+            className="px-3 py-2 border rounded-lg text-sm w-52"
           />
           <input
             type="date"
             value={dateFin}
             onChange={(e) => setDateFin(e.target.value)}
-            className="px-3 py-2 border rounded-lg text-sm"
+            className="px-3 py-2 border rounded-lg text-sm w-52"
           />
         </div>
 

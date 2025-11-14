@@ -106,7 +106,7 @@ export default function VersementModal({
       )}
 
       <div className="bg-white rounded-xl p-6 w-[400px] shadow-lg">
-        <h2 className="text-xl font-semibold mb-4">Nouveau Versement</h2>
+        <h2 className="text-xl font-semibold mb-4">Nouveau</h2>
 
         <form onSubmit={handleSubmit} className="space-y-3">
           <input

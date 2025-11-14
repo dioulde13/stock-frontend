@@ -159,44 +159,49 @@ const fetchDepenses = async () => {
         )}
 
       {/* 🔹 Filtres */}
-      <div className="p-6 border-b border-gray-200 flex flex-col sm:flex-row gap-4 items-end flex-wrap">
-        <div className="flex-1 relative">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <i className="ri-search-line text-gray-400"></i>
-          </div>
-          <input
-            type="text"
-            placeholder="Rechercher une dépense..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 text-sm"
-          />
-        </div>
+    <div className="p-6 border-b border-gray-200 flex flex-col sm:flex-row gap-4 items-start sm:items-end flex-wrap">
+  {/* Search */}
+  <div className="flex-1 relative w-full sm:w-auto">
+    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+      <i className="ri-search-line text-gray-400"></i>
+    </div>
+    <input
+      type="text"
+      placeholder="Rechercher une dépense..."
+      value={searchTerm}
+      onChange={(e) => setSearchTerm(e.target.value)}
+      className="block w-50 sm:w-[250px] pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 text-sm"
+    />
+  </div>
 
-        <div>
-          <label className="text-sm font-medium">Date début</label>
-          <input
-            type="date"
-            value={dateStart}
-            onChange={(e) => setDateStart(e.target.value)}
-            className="border px-2 py-1 rounded"
-          />
-        </div>
+  {/* Date début */}
+  <div className="flex flex-col w-50 sm:w-auto">
+    <label className="text-sm font-medium mb-1">Date début</label>
+    <input
+      type="date"
+      value={dateStart}
+      onChange={(e) => setDateStart(e.target.value)}
+      className="border px-2 py-1 rounded w-50 sm:w-auto"
+    />
+  </div>
 
-        <div>
-          <label className="text-sm font-medium">Date fin</label>
-          <input
-            type="date"
-            value={dateEnd}
-            onChange={(e) => setDateEnd(e.target.value)}
-            className="border px-2 py-1 rounded"
-          />
-        </div>
+  {/* Date fin */}
+  <div className="flex flex-col w-50 sm:w-auto">
+    <label className="text-sm font-medium mb-1">Date fin</label>
+    <input
+      type="date"
+      value={dateEnd}
+      onChange={(e) => setDateEnd(e.target.value)}
+      className="border px-2 py-1 rounded w-50 sm:w-auto"
+    />
+  </div>
 
-        <div className="bg-red-50 text-red-700 px-3 py-1 rounded text-sm font-medium">
-          Total Montant : {formatMontant(totalMontant)}
-        </div>
-      </div>
+  {/* Total Montant */}
+  <div className="bg-red-50 text-red-700 px-3 py-1 rounded text-sm font-medium w-50 sm:w-auto text-center sm:text-left">
+    Total Montant : {formatMontant(totalMontant)}
+  </div>
+</div>
+
 
       {/* 🔹 Tableau */}
       <div className="overflow-x-auto">
