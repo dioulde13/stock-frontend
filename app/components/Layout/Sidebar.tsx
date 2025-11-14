@@ -28,20 +28,11 @@ const menuItems = [
   { href: "/clients", icon: "ri-user-smile-line", label: "Clients" },
   { href: "/fournisseurs", icon: "ri-truck-line", label: "Fournisseurs" },
   { href: "/credits", icon: "ri-bank-card-line", label: "Crédits" },
-  {
-    href: "/credit-payments",
-    icon: "ri-cash-line",
-    label: "Paiement crédits",
-  },
+  { href: "/credit-payments", icon: "ri-cash-line", label: "Paiement crédits" },
   { href: "/expenses", icon: "ri-money-dollar-circle-line", label: "Dépenses" },
   { href: "/rejeter-versement", icon: "ri-money-dollar-circle-line", label: "Vercement" },
-  {
-    href: "/utilisateurs",
-    icon: "ri-user-settings-line",
-    label: "Utilisateurs",
-  },
+  { href: "/utilisateurs", icon: "ri-user-settings-line", label: "Utilisateurs" },
 ];
-
 
 export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
   const pathname = usePathname();
@@ -109,9 +100,9 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-gray-200">
           <Image
-            src="/logo.webp" 
+            src="/logo.webp"
             alt="Logo"
-            width={150} 
+            width={150}
             height={60}
             className="rounded-full"
           />
@@ -133,7 +124,7 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
                 flex items-center px-4 py-3 rounded-lg transition-colors duration-200
                 ${
                   pathname === item.href
-                    ? "bg-blue-50 text-blue-700 border-r-2 border-blue-700"
+                    ? "bg-yellow-200 text-yellow-800 border-2 border-yellow-500"
                     : "text-gray-700 hover:bg-gray-100"
                 }
               `}
