@@ -5,6 +5,7 @@ import "./ProduitModal.css"; // ✅ Import du CSS
 interface CategorieModalProps {
   dataCategorie: any;
   dataBoutique: any;
+  utilisateur: any;
   formData: {
     nom: string;
     prix_achat: number;
@@ -27,6 +28,7 @@ export default function ProduitModal({
   handleSubmit,
   dataCategorie,
   dataBoutique,
+  utilisateur
 }: CategorieModalProps) {
   const [isLoading, setIsLoading] = useState(false); // 🚀 état loading
 
@@ -170,35 +172,37 @@ export default function ProduitModal({
               </select>
             </div>
 
-            <div className="form-group">
-              <label>Boutique</label>
-              <select
-                value={formData.boutiqueId}
-                required
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    boutiqueId: Number(e.target.value),
-                  })
-                }
-              >
-                <option value="">-- Boutique --</option>
-                {dataBoutique.map((bout: any) => (
-                  <option key={bout.id} value={bout.id}>
-                    {bout.nom}
-                  </option>
-                ))}
-              </select>
-            </div>
+            {utilisateur?.role && utilisateur?.role === "ADMIN" && (
+              <div className="form-group">
+                <label>Boutique</label>
+                <select
+                  value={formData.boutiqueId}
+                  required
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      boutiqueId: Number(e.target.value),
+                    })
+                  }
+                >
+                  <option value="">-- Boutique --</option>
+                  {dataBoutique.map((bout: any) => (
+                    <option key={bout.id} value={bout.id}>
+                      {bout.nom}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
           </div>
 
           {/* Boutons */}
           <div className="form-actions">
-            <button 
-            type="button" 
-            onClick={onClose} 
-            className="cancel-btn"
-            disabled={isLoading}
+            <button
+              type="button"
+              onClick={onClose}
+              className="cancel-btn"
+              disabled={isLoading}
             >
               Annuler
             </button>

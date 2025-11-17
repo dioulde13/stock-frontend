@@ -7,6 +7,7 @@ import ProduitModal from "./ProductModal";
 import DashboardLayout from "../components/Layout/DashboardLayout";
 import { APP_URL } from "../environnement/environnements";
 
+
 export default function ProductsPage() {
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -14,7 +15,6 @@ export default function ProductsPage() {
   const [dataCategorie, setDataCategorie] = useState<any>(null);
   const [dataBoutique, setDataBoutique] = useState<any>(null);
   const [produits, setProduits] = useState<any[]>([]);
-  // const [notification, setNotification] = useState<string | null>(null);
   const [utilisateur, setUtilisateur] = useState<any[]>([]);
 
   const [formData, setFormData] = useState({
@@ -33,6 +33,7 @@ export default function ProductsPage() {
     if (user) {
       try {
         const parsedUser = JSON.parse(user);
+        console.log(parsedUser);
         setUtilisateur(parsedUser);
       } catch {}
     }
@@ -45,6 +46,9 @@ export default function ProductsPage() {
       fetchBoutiques();
     }
   }, [router]);
+
+    console.log(utilisateur);
+
 
   const fetchBoutiques = async () => {
     try {
@@ -198,6 +202,7 @@ export default function ProductsPage() {
 
         {isModalOpen && (
           <ProduitModal
+            utilisateur={utilisateur}
             dataCategorie={dataCategorie}
             dataBoutique={dataBoutique}
             formData={formData}

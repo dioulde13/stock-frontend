@@ -14,7 +14,7 @@
   border-radius: 10px;
   box-shadow: 0 5px 25px rgba(0, 0, 0, 0.15);
   width: 100%;
-  max-width: 50%;
+  max-width: 70%;
   max-height: 90vh;
   overflow-y: auto;
   animation: fadeInUp 0.3s ease;
@@ -151,5 +151,55 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+/* ====================================================== */
+/*                AJOUT RESPONSIVE DEMANDÉ                */
+/* ====================================================== */
+
+/* 📱 XS — téléphones (modal en haut à gauche + petite) */
+@media (max-width: 480px) {
+  .modal-overlay {
+    justify-content: flex-start;
+    align-items: flex-start;
+  }
+
+  .modal-container {
+    width: 95%;
+    margin: 1rem;
+    max-width: 95%;
+  }
+}
+
+/* 📱 SM — téléphones moyens */
+@media (min-width: 481px) and (max-width: 640px) {
+  .modal-container {
+    width: 90%;
+    max-width: 420px;
+  }
+}
+
+/* 💻 MD — tablettes */
+@media (min-width: 641px) and (max-width: 768px) {
+  .modal-container {
+    width: 80%;
+    max-width: 550px;
+  }
+}
+
+/* 🖥️ LG — laptops */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .modal-container {
+    width: 70%;
+    max-width: 700px;
+  }
+}
+
+/* 🖥️ XL — grands écrans */
+@media (min-width: 1025px) {
+  .modal-container {
+    width: 60%;
+    max-width: 900px;
   }
 }
