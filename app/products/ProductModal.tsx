@@ -87,7 +87,6 @@ export default function ProduitModal({
                 required
               />
             </div>
-
             <div className="form-group">
               <label>Prix de vente</label>
               <input

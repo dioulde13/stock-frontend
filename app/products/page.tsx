@@ -117,6 +117,7 @@ export default function ProductsPage() {
       console.error("Erreur lors du fetch des produits:", error);
     }
   };
+  
 
   // 🟢 Affichage des notifications
   const [notification, setNotification] = useState<{

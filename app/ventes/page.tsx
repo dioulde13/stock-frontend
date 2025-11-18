@@ -196,7 +196,6 @@ export default function VentesPage() {
       }, 0);
   }, [filteredVentes]);
   console.log(filteredVentes);
-
   // Total filtré
   const totalFiltreAchat = useMemo(() => {
     return filteredVentes

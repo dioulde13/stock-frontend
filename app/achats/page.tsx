@@ -1317,6 +1317,7 @@ export default function AchatPage() {
                 onClick={fermerConfirmationModal}
                 className="bg-gray-400 hover:bg-gray-500 text-white px-3 py-1 rounded"
               >
+                
                 Annuler
               </button>
               <button
