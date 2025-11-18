@@ -515,9 +515,8 @@ export default function VentesPage() {
     }).format(prix);
   };
 
-
   const imprimerRecu = (vente: Vente) => {
-  const contenu = `
+    const contenu = `
     <html>
       <head>
         <title>Reçu Vente #${vente.id}</title>
@@ -552,16 +551,23 @@ export default function VentesPage() {
             </tr>
           </thead>
           <tbody>
-            ${vente.LigneVentes.map(ligne => `
+            ${vente.LigneVentes.map(
+              (ligne) => `
               <tr>
                 <td>${ligne.produitNom || "Produit inconnu"}</td>
                 <td>${ligne.quantite}</td>
                 <td>${ligne.prix_achat.toLocaleString()} GNF</td>
                 <td>${ligne.prix_vente.toLocaleString()} GNF</td>
-                <td>${(ligne.quantite * ligne.prix_vente).toLocaleString()} GNF</td>
-                <td>${((ligne.quantite * ligne.prix_vente) - (ligne.quantite * ligne.prix_achat)).toLocaleString()} GNF</td>
+                <td>${(
+                  ligne.quantite * ligne.prix_vente
+                ).toLocaleString()} GNF</td>
+                <td>${(
+                  ligne.quantite * ligne.prix_vente -
+                  ligne.quantite * ligne.prix_achat
+                ).toLocaleString()} GNF</td>
               </tr>
-            `).join("")}
+            `
+            ).join("")}
           </tbody>
         </table>
         <h3>Total : ${vente.total.toLocaleString()} GNF</h3>
@@ -569,16 +575,15 @@ export default function VentesPage() {
     </html>
   `;
 
-  const printWindow = window.open("", "_blank");
-  if (printWindow) {
-    printWindow.document.write(contenu);
-    printWindow.document.close();
-    printWindow.focus();
-    printWindow.print();
-    printWindow.close();
-  }
-};
-
+    const printWindow = window.open("", "_blank");
+    if (printWindow) {
+      printWindow.document.write(contenu);
+      printWindow.document.close();
+      printWindow.focus();
+      printWindow.print();
+      printWindow.close();
+    }
+  };
 
   return (
     <DashboardLayout>
@@ -929,9 +934,9 @@ export default function VentesPage() {
                                         <th className="px-3 py-2 border">
                                           Bénéfice
                                         </th>
-                                        <th className="px-3 py-2 border">
+                                        {/* <th className="px-3 py-2 border">
                                           Action
-                                        </th>
+                                        </th> */}
                                       </tr>
                                     </thead>
                                     <tbody>
@@ -970,7 +975,7 @@ export default function VentesPage() {
                                                   (ligne?.prix_achat ?? 0)
                                             )}
                                           </td>
-                                          <td className="px-3 py-2 text-center border">
+                                          {/* <td className="px-3 py-2 text-center border">
 
                                           <button
                                             onClick={() => imprimerRecu(vente)}
@@ -987,12 +992,28 @@ export default function VentesPage() {
                                           >
                                             Imprimer
                                           </button>
-                                          </td>
-
+                                          </td> */}
                                         </tr>
                                       ))}
                                     </tbody>
                                   </table>
+                                  <div>
+                                    <button
+                                      onClick={() => imprimerRecu(vente)}
+                                      style={{
+                                        fontSize: 13,
+                                        fontWeight: "bold",
+                                        backgroundColor: "#FFA500",
+                                        color: "white",
+                                        border: "none",
+                                        padding: "5px 10px",
+                                        borderRadius: 4,
+                                        cursor: "pointer",
+                                      }}
+                                    >
+                                      Imprimer
+                                    </button>
+                                  </div>
                                 </div>
                               </td>
                             </tr>

@@ -10,7 +10,7 @@ interface Utilisateur {
   email: string;
   nom: string;
   role: string;
-  boutique: string;
+  boutique: any;
   boutiqueId: number;
 }
 
@@ -74,19 +74,29 @@ export default function Header({
     if (current !== prevCaisse) setPrevCaisse(current);
   }, [caisses?.CAISSE, prevCaisse]);
 
-  // === Récupérer utilisateur ===
-  useEffect(() => {
-    const user = localStorage.getItem("utilisateur");
-    if (user) {
-      try {
-        const parsed = JSON.parse(user);
-        setUtilisateur(parsed);
-        if (parsed.id) setUtilisateurId(Number(parsed.id));
-      } catch (err) {
-        console.error("Erreur lecture utilisateur:", err);
+  const [boutiqueNom, setBoutiqueNom] = useState<string>("");
+
+// === Récupérer utilisateur et nom de boutique ===
+useEffect(() => {
+  const user = localStorage.getItem("utilisateur");
+  if (user) {
+    try {
+      const parsed = JSON.parse(user);
+      setUtilisateur(parsed);
+      if (parsed.id) setUtilisateurId(Number(parsed.id));
+
+      // Récupération du nom de la boutique
+      if (parsed.boutiques && parsed.boutiques.length > 0) {
+        const noms = parsed.boutiques.map((b: any) => b.nom).join(", ");
+        setBoutiqueNom(noms);
+      } else {
+        setBoutiqueNom("Pas de boutique");
       }
+    } catch (err) {
+      console.error("Erreur lecture utilisateur:", err);
     }
-  }, []);
+  }
+}, []);
 
   // === Notifications ===
   useEffect(() => {
@@ -267,8 +277,12 @@ export default function Header({
               {utilisateur?.role}
             </p>
             <p className="text-sm font-medium text-gray-800">
-              {utilisateur?.boutique}
+              {boutiqueNom}
             </p>
+
+            {/* <p className="text-sm font-medium text-gray-800">
+              {utilisateur?.boutique[0].nom}
+            </p> */}
             <p className="text-xs text-gray-500">{utilisateur?.email}</p>
             <p className="text-xs text-gray-500">{utilisateur?.nom}</p>
           </div>
