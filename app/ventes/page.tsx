@@ -146,6 +146,7 @@ export default function VentesPage() {
     "ACHAT" | "CREDIT" | ""
   >("");
   const [boutiqueFilter, setBoutiqueFilter] = useState<string>("");
+  const [vendeurFilter, setVendeurFilter] = useState<string>("");
 
   // Filtrage (avec inclusion de toute la journée `dateFin`)
   const filteredVentes = useMemo(() => {
@@ -161,9 +162,17 @@ export default function VentesPage() {
       if (vDate < debut || vDate > fin) return false;
       if (typeVenteFilter && v.type !== typeVenteFilter) return false;
       if (boutiqueFilter && v.boutiqueNom !== boutiqueFilter) return false;
+      if (vendeurFilter && v.vendeurNom !== vendeurFilter) return false;
       return true;
     });
-  }, [ventes, dateDebut, dateFin, typeVenteFilter, boutiqueFilter]);
+  }, [
+    ventes,
+    dateDebut,
+    dateFin,
+    typeVenteFilter,
+    boutiqueFilter,
+    vendeurFilter,
+  ]);
 
   // Total filtré
   const totalFiltre = useMemo(() => {
@@ -227,6 +236,11 @@ export default function VentesPage() {
   // Liste unique des boutiques pour filtre
   const boutiques = Array.from(
     new Set(ventes.map((v) => v.boutiqueNom).filter(Boolean))
+  );
+
+  // Liste unique des boutiques pour filtre
+  const vendeurs = Array.from(
+    new Set(ventes.map((v) => v.vendeurNom).filter(Boolean))
   );
 
   useEffect(() => {
@@ -519,7 +533,7 @@ export default function VentesPage() {
     const contenu = `
     <html>
       <head>
-        <title>Reçu Vente #${vente.id}</title>
+        <title>${vente.boutiqueNom}</title>
         <style>
           body { font-family: Arial, sans-serif; padding: 20px; }
           h2 { text-align: center; }
@@ -529,7 +543,7 @@ export default function VentesPage() {
         </style>
       </head>
       <body>
-        <h2>Reçu Vente #${vente.id}</h2>
+        <h2>${vente.boutiqueNom}</h2>
         <p><strong>Date :</strong> ${new Intl.DateTimeFormat("fr-FR", {
           year: "numeric",
           month: "2-digit",
@@ -544,26 +558,19 @@ export default function VentesPage() {
             <tr>
               <th>Produit</th>
               <th>Quantité</th>
-              <th>Prix Achat</th>
               <th>Prix Vente</th>
               <th>Total Vente</th>
-              <th>Bénéfice</th>
             </tr>
           </thead>
           <tbody>
             ${vente.LigneVentes.map(
               (ligne) => `
               <tr>
-                <td>${ligne.produitNom || "Produit inconnu"}</td>
+                <td>${ligne.Produit?.nom || "Produit inconnu"}</td>
                 <td>${ligne.quantite}</td>
-                <td>${ligne.prix_achat.toLocaleString()} GNF</td>
                 <td>${ligne.prix_vente.toLocaleString()} GNF</td>
                 <td>${(
                   ligne.quantite * ligne.prix_vente
-                ).toLocaleString()} GNF</td>
-                <td>${(
-                  ligne.quantite * ligne.prix_vente -
-                  ligne.quantite * ligne.prix_achat
                 ).toLocaleString()} GNF</td>
               </tr>
             `
@@ -766,29 +773,54 @@ export default function VentesPage() {
                       <option value="CREDIT">Crédit</option>
                     </select>
                   </div>
-                  <div>
-                    <label>Boutique :</label>
-                    <select
-                      value={boutiqueFilter}
-                      onChange={(e) => setBoutiqueFilter(e.target.value)}
-                      className="border p-1 rounded"
-                    >
-                      <option value="">Toutes</option>
-                      {boutiques.map((b) => (
-                        <option key={b} value={b}>
-                          {b}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+
+                  {utilisateur?.role && utilisateur?.role === "ADMIN" && (
+                    <>
+                      <div>
+                        <label>Boutique :</label>
+                        <select
+                          value={boutiqueFilter}
+                          onChange={(e) => setBoutiqueFilter(e.target.value)}
+                          className="border p-1 rounded"
+                        >
+                          <option value="">Toutes</option>
+                          {boutiques.map((b) => (
+                            <option key={b} value={b}>
+                              {b}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div>
+                        <label>Vendeur :</label>
+                        <select
+                          value={vendeurFilter}
+                          onChange={(e) => setVendeurFilter(e.target.value)}
+                          className="border p-1 rounded"
+                        >
+                          <option value="">Toutes</option>
+                          {vendeurs.map((b) => (
+                            <option key={b} value={b}>
+                              {b}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </>
+                  )}
                 </div>
                 <div className="flex flex-wrap gap-4 bg-white border rounded-lg mt-2 p-4 text-sm">
                   <h4 className="mt-2 font-semibold">
                     Total valider : {totalFiltre.toLocaleString()} GNF
                   </h4>
-                  <h4 className="mt-2 font-semibold">
-                    Total bénéfice : {beneficeTotal.toLocaleString()} GNF
-                  </h4>
+                  {utilisateur?.role && utilisateur?.role === "ADMIN" && (
+                    <>
+                      <h4 className="mt-2 font-semibold">
+                        Total bénéfice : {beneficeTotal.toLocaleString()} GNF
+                      </h4>
+                    </>
+                  )}
                   <h4 className="mt-2 font-semibold">
                     Total annuler: {totalAnnulerFiltre.toLocaleString()} GNF
                   </h4>
@@ -997,7 +1029,13 @@ export default function VentesPage() {
                                       ))}
                                     </tbody>
                                   </table>
-                                  <div>
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      justifyContent: "end",
+                                      paddingTop: "10px",
+                                    }}
+                                  >
                                     <button
                                       onClick={() => imprimerRecu(vente)}
                                       style={{
