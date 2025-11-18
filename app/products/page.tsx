@@ -137,44 +137,94 @@ export default function ProductsPage() {
     setTimeout(() => setNotification(null), 2000); // 2s pour que ce soit plus visible
   };
 
+  // const handleOpenModal = (produit: any = null) => {
+  //   setSelectedProduit(produit);
+
+  //   const user = localStorage.getItem("utilisateur");
+  //   let utilisateurId = "";
+  //   if (user) {
+  //     try {
+  //       const parsedUser = JSON.parse(user);
+  //       utilisateurId = parsedUser.id ? String(parsedUser.id) : "";
+  //     } catch {}
+  //   }
+
+  //   if (produit) {
+  //     setFormData({
+  //       nom: produit.nom || "",
+  //       prix_achat: produit.prix_achat || 0,
+  //       prix_vente: produit.prix_vente || 0,
+  //       stock_actuel: produit.stock_actuel || 0,
+  //       stock_minimum: produit.stock_minimum || 0,
+  //       categorieId: produit.categorieId || 0,
+  //       boutiqueId: produit.boutiqueId || 0,
+  //       utilisateurId: String(produit.utilisateurId || utilisateurId),
+  //     });
+  //   } else {
+  //     setFormData({
+  //       nom: "",
+  //       prix_achat: 0,
+  //       prix_vente: 0,
+  //       stock_actuel: 0,
+  //       stock_minimum: 0,
+  //       categorieId: 0,
+  //       boutiqueId: 0,
+  //       utilisateurId,
+  //     });
+  //   }
+
+  //   setIsModalOpen(true);
+  // };
+
+
   const handleOpenModal = (produit: any = null) => {
-    setSelectedProduit(produit);
+  setSelectedProduit(produit);
 
-    const user = localStorage.getItem("utilisateur");
-    let utilisateurId = "";
-    if (user) {
-      try {
-        const parsedUser = JSON.parse(user);
-        utilisateurId = parsedUser.id ? String(parsedUser.id) : "";
-      } catch {}
+  const user = localStorage.getItem("utilisateur");
+  let utilisateurId = "";
+  let boutiqueId = 0;
+
+  if (user) {
+    try {
+      const parsedUser = JSON.parse(user);
+      utilisateurId = parsedUser.id ? String(parsedUser.id) : "";
+
+      // Vérifier si l'utilisateur est VENDEUR et récupérer son id de boutique
+      if (parsedUser.role === "VENDEUR" && parsedUser.boutiques?.length > 0) {
+        boutiqueId = parsedUser.boutiques[0].id; // si plusieurs boutiques, prendre la première
+      }
+    } catch (error) {
+      console.error("Erreur lors de la lecture de l'utilisateur :", error);
     }
+  }
 
-    if (produit) {
-      setFormData({
-        nom: produit.nom || "",
-        prix_achat: produit.prix_achat || 0,
-        prix_vente: produit.prix_vente || 0,
-        stock_actuel: produit.stock_actuel || 0,
-        stock_minimum: produit.stock_minimum || 0,
-        categorieId: produit.categorieId || 0,
-        boutiqueId: produit.boutiqueId || 0,
-        utilisateurId: String(produit.utilisateurId || utilisateurId),
-      });
-    } else {
-      setFormData({
-        nom: "",
-        prix_achat: 0,
-        prix_vente: 0,
-        stock_actuel: 0,
-        stock_minimum: 0,
-        categorieId: 0,
-        boutiqueId: 0,
-        utilisateurId,
-      });
-    }
+  if (produit) {
+    setFormData({
+      nom: produit.nom || "",
+      prix_achat: produit.prix_achat || 0,
+      prix_vente: produit.prix_vente || 0,
+      stock_actuel: produit.stock_actuel || 0,
+      stock_minimum: produit.stock_minimum || 0,
+      categorieId: produit.categorieId || 0,
+      boutiqueId: produit.boutiqueId || boutiqueId, // priorité au produit sinon la boutique de l'utilisateur
+      utilisateurId: String(produit.utilisateurId || utilisateurId),
+    });
+  } else {
+    setFormData({
+      nom: "",
+      prix_achat: 0,
+      prix_vente: 0,
+      stock_actuel: 0,
+      stock_minimum: 0,
+      categorieId: 0,
+      boutiqueId, // ici la boutique de l'utilisateur si VENDEUR
+      utilisateurId,
+    });
+  }
 
-    setIsModalOpen(true);
-  };
+  setIsModalOpen(true);
+};
+
 
   return (
     <DashboardLayout title="Liste des produits">
