@@ -1083,16 +1083,21 @@ export default function VentesPage() {
       </div>
 
       {modalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black/50 flex justify-center items-start pt-10 z-50 overflow-y-auto">
           <div
-            className="bg-white p-6 rounded shadow-lg w-96"
-            style={{ width: "72%" }}
+            className="
+        bg-white p-6 rounded-2xl shadow-xl 
+        w-11/12 sm:w-2/3 md:w-1/2 lg:w-1/3
+        animate-[fadeIn_0.2s_ease-out]
+      "
           >
-            <h2 className="text-lg font-semibold mb-4">
+            <h2 className="text-xl font-semibold mb-4">
               {editingIndex !== null
                 ? "Modifier la ligne"
                 : "Ajouter une ligne"}
             </h2>
+
+            {/* Sélecteur de produits */}
             <select
               value={ligneTemp.produitId}
               onChange={(e) => {
@@ -1103,11 +1108,11 @@ export default function VentesPage() {
                   ...ligneTemp,
                   produitId: e.target.value,
                   produitNom: selected?.nom || "",
-                  prix_achat: selected?.prix_achat.toString() || "",
-                  prix_vente: selected?.prix_vente.toString() || "",
+                  prix_achat: selected?.prix_achat?.toString() || "",
+                  prix_vente: selected?.prix_vente?.toString() || "",
                 });
               }}
-              className="border w-full p-2 mb-2"
+              className="border w-full p-3 rounded mb-3"
             >
               <option value="">-- Sélectionner un produit --</option>
               {dataProduit.map((prod) => (
@@ -1117,34 +1122,40 @@ export default function VentesPage() {
                 </option>
               ))}
             </select>
+
+            {/* Quantité */}
             <input
               type="number"
               value={ligneTemp.quantite}
               onChange={(e) =>
                 setLigneTemp({ ...ligneTemp, quantite: e.target.value })
               }
-              className="border w-full p-2 mb-2"
+              className="border w-full p-3 rounded mb-3"
               placeholder="Quantité"
             />
+
+            {/* Prix de vente */}
             <input
               type="number"
               value={ligneTemp.prix_vente}
               onChange={(e) =>
                 setLigneTemp({ ...ligneTemp, prix_vente: e.target.value })
               }
-              className="border w-full p-2 mb-2"
+              className="border w-full p-3 rounded mb-3"
               placeholder="Prix de vente"
             />
-            <div className="flex justify-end gap-2 mt-4">
+
+            {/* Boutons */}
+            <div className="flex justify-end gap-3 mt-4">
               <button
                 onClick={fermerModal}
-                className="bg-gray-400 hover:bg-gray-500 text-white px-3 py-1 rounded"
+                className="bg-gray-400 hover:bg-gray-500 text-white px-4 py-2 rounded-lg"
               >
                 Annuler
               </button>
               <button
                 onClick={confirmerLigne}
-                className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded"
+                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg"
               >
                 Confirmer
               </button>
@@ -1154,27 +1165,34 @@ export default function VentesPage() {
       )}
 
       {confirmationModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black/50 flex justify-center items-start pt-10 z-50 overflow-y-auto">
           <div
-            className="bg-white p-6 rounded shadow-lg w-96"
-            style={{ width: "72%" }}
+            className="
+        bg-white p-6 rounded-2xl shadow-xl 
+        w-11/12 sm:w-2/3 md:w-1/2 lg:w-1/3
+        animate-[fadeIn_0.2s_ease-out]
+      "
           >
-            <h2 className="text-lg font-semibold mb-4">Confirmer la vente</h2>
+            <h2 className="text-xl font-semibold mb-4">Confirmer la vente</h2>
+
+            {/* Choix du type de vente */}
             <select
               value={venteType}
               onChange={(e) =>
                 setVenteType(e.target.value as "ACHAT" | "CREDIT")
               }
-              className="border w-full p-2 mb-2"
+              className="border w-full p-3 rounded mb-3"
             >
               <option value="ACHAT">Achat direct</option>
               <option value="CREDIT">Vente à crédit</option>
             </select>
+
+            {/* Choix du client si crédit */}
             {venteType === "CREDIT" && (
               <select
                 value={clientId ?? ""}
                 onChange={(e) => setClientId(Number(e.target.value))}
-                className="border w-full p-2 mb-2"
+                className="border w-full p-3 rounded mb-3"
               >
                 <option value="">-- Sélectionner un client --</option>
                 {clientsData.map((client) => (
@@ -1184,21 +1202,26 @@ export default function VentesPage() {
                 ))}
               </select>
             )}
-            <div className="flex justify-end gap-2 mt-4">
+
+            {/* Boutons */}
+            <div className="flex justify-end gap-3 mt-4">
               <button
                 onClick={fermerConfirmationModal}
-                className="bg-gray-400 hover:bg-gray-500 text-white px-3 py-1 rounded"
+                className="bg-gray-400 hover:bg-gray-500 text-white px-4 py-2 rounded-lg"
               >
                 Annuler
               </button>
 
               <button
                 onClick={() => creerVenteAvecType(venteType, clientId)}
-                className={`px-4 py-2 rounded-md text-white ${
-                  isLoading
-                    ? "bg-blue-400 cursor-not-allowed"
-                    : "bg-blue-600 hover:bg-blue-700"
-                }`}
+                className={`
+            px-4 py-2 rounded-lg text-white 
+            ${
+              isLoading
+                ? "bg-blue-400 cursor-not-allowed"
+                : "bg-blue-600 hover:bg-blue-700"
+            }
+          `}
                 disabled={isLoading}
               >
                 {isLoading ? "Création..." : "Créer la vente"}
@@ -1210,28 +1233,35 @@ export default function VentesPage() {
 
       {/* ✅ Modal de confirmation d’annulation */}
       {showModalAnnulation && venteAAnnuler && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+        <div className="fixed inset-0 bg-black/50 flex justify-center items-start pt-10 z-50 overflow-y-auto">
           <div
-            className="bg-white p-6 rounded-lg shadow-lg w-96 text-center"
-            style={{ width: "72%" }}
+            className="
+        bg-white p-6 rounded-2xl shadow-xl text-center
+        w-11/12 sm:w-2/3 md:w-1/2 lg:w-1/3
+        animate-[fadeIn_0.2s_ease-out]
+      "
           >
-            <h3 className="text-lg font-bold mb-4 text-gray-800">
+            <h3 className="text-xl font-semibold mb-4 text-gray-800">
               Annuler la vente #{venteAAnnuler.id} ?
             </h3>
+
             <p className="text-gray-600 mb-6">
-              Êtes-vous sûr de vouloir annuler cette vente ? Cette action est
-              irréversible.
+              Êtes-vous sûr de vouloir annuler cette vente ?<br />
+              Cette action est{" "}
+              <span className="font-semibold text-red-600">irréversible</span>.
             </p>
-            <div className="flex justify-end gap-3">
+
+            <div className="flex justify-end gap-3 mt-4">
               <button
                 onClick={() => setShowModalAnnulation(false)}
-                className="bg-gray-400 hover:bg-gray-500 text-white px-3 py-1 rounded"
+                className="bg-gray-400 hover:bg-gray-500 text-white px-4 py-2 rounded-lg"
               >
                 Non
               </button>
+
               <button
                 onClick={handleAnnulerVente}
-                className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded"
+                className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg"
               >
                 Oui, annuler
               </button>

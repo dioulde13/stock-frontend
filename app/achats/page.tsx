@@ -369,8 +369,6 @@ export default function AchatPage() {
     setTimeout(() => setNotification(null), 2000); // 2s pour que ce soit plus visible
   };
 
-  
-
   const creerAchatAvecType = async (
     type: "ACHAT" | "CREDIT",
     clientId: number | null
@@ -1061,102 +1059,73 @@ export default function AchatPage() {
           {modalOpen && (
             <div
               onClick={fermerModal}
-              style={{
-                position: "fixed",
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                background: "rgba(0,0,0,0.5)",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                zIndex: 9999,
-              }}
+              className="
+      fixed inset-0 bg-black/50 
+      flex justify-center items-start 
+      pt-10 z-50 overflow-y-auto
+    "
             >
               <div
                 onClick={(e) => e.stopPropagation()}
-                style={{
-                  background: "white",
-                  padding: 20,
-                  borderRadius: 8,
-                  width: "60%",
-                }}
+                className="
+        bg-white rounded-2xl shadow-xl 
+        w-11/12 sm:w-2/3 md:w-1/2 lg:w-2/5 xl:w-1/3 
+        p-6 
+        animate-[fadeIn_0.2s_ease-out]
+      "
               >
-                <h3
-                  style={{
-                    marginBottom: 15,
-                    fontWeight: "bold",
-                    fontSize: "1.2rem",
-                  }}
-                >
+                <h3 className="text-xl font-bold mb-6">
                   {editingIndex !== null
                     ? "Modifier la ligne"
                     : "Ajouter une ligne"}
                 </h3>
-                <label style={{ display: "block", marginBottom: 8 }}>
-                  Fournisseur :
-                </label>
+
+                {/* Fournisseur */}
+                <label className="block mb-1 font-medium">Fournisseur :</label>
                 <select
                   value={ligneTemp.fournisseurId}
                   onChange={(e) => {
-                    const selectedId = e.target.value;
-                    const selectedFournisseur = dataFournissseur.find(
-                      (p) => p.id.toString() === selectedId
+                    const id = e.target.value;
+                    const found = dataFournissseur.find(
+                      (f) => f.id.toString() === id
                     );
-                    if (selectedFournisseur) {
+                    if (found) {
                       setLigneTemp({
                         ...ligneTemp,
-                        fournisseurId: selectedId,
-                        fournisseurNom: selectedFournisseur.nom,
+                        fournisseurId: id,
+                        fournisseurNom: found.nom,
                       });
                     }
                   }}
-                  style={{
-                    width: "100%",
-                    padding: "10px",
-                    border: "1px solid #ccc",
-                    borderRadius: 6,
-                    marginBottom: 15,
-                    backgroundColor: "#f9f9f9",
-                    fontSize: "1rem",
-                  }}
+                  className="w-full p-3 border rounded-lg bg-gray-50 mb-4"
                 >
                   <option value="">-- Sélectionnez un fournisseur --</option>
-                  {dataFournissseur.map((prod) => (
-                    <option key={prod.id} value={prod.id}>
-                      {prod.nom}
+                  {dataFournissseur.map((f) => (
+                    <option key={f.id} value={f.id}>
+                      {f.nom}
                     </option>
                   ))}
                 </select>
-                <label style={{ display: "block", marginBottom: 8 }}>
-                  Produit :
-                </label>
+
+                {/* Produit */}
+                <label className="block mb-1 font-medium">Produit :</label>
                 <select
                   value={ligneTemp.produitId}
                   onChange={(e) => {
-                    const selectedId = e.target.value;
-                    const selectedProduit = dataProduit.find(
-                      (p) => p.id.toString() === selectedId
+                    const id = e.target.value;
+                    const found = dataProduit.find(
+                      (p) => p.id.toString() === id
                     );
-                    if (selectedProduit) {
+                    if (found) {
                       setLigneTemp({
                         ...ligneTemp,
-                        produitId: selectedId,
-                        produitNom: selectedProduit.nom,
-                        prix_achat: Number(selectedProduit.prix_achat.valueOf),
+                        produitId: id,
+                        produitNom: found.nom,
+                        prix_achat: Number(found.prix_achat),
                       });
                     }
                   }}
-                  style={{
-                    width: "100%",
-                    padding: "10px",
-                    border: "1px solid #ccc",
-                    borderRadius: 6,
-                    marginBottom: 15,
-                    backgroundColor: "#f9f9f9",
-                    fontSize: "1rem",
-                  }}
+                  className="w-full p-3 border rounded-lg bg-gray-50 mb-4"
                 >
                   <option value="">-- Sélectionnez un produit --</option>
                   {dataProduit.map((prod) => (
@@ -1166,30 +1135,22 @@ export default function AchatPage() {
                     </option>
                   ))}
                 </select>
-                <label style={{ display: "block", marginBottom: 8 }}>
-                  Quantité :
-                </label>
+
+                {/* Quantité */}
+                <label className="block mb-1 font-medium">Quantité :</label>
                 <input
                   type="number"
-                  placeholder="Quantité"
                   min={1}
+                  placeholder="Quantité"
                   value={ligneTemp.quantite}
                   onChange={(e) =>
                     setLigneTemp({ ...ligneTemp, quantite: e.target.value })
                   }
-                  style={{
-                    width: "100%",
-                    padding: 10,
-                    border: "1px solid #ccc",
-                    borderRadius: 6,
-                    marginBottom: 15,
-                    fontSize: "1rem",
-                  }}
+                  className="w-full p-3 border rounded-lg mb-4"
                 />
 
-                <label style={{ display: "block", marginBottom: 8 }}>
-                  Prix d'achat :
-                </label>
+                {/* Prix d'achat */}
+                <label className="block mb-1 font-medium">Prix d'achat :</label>
                 <input
                   type="text"
                   value={
@@ -1200,23 +1161,17 @@ export default function AchatPage() {
                       : ""
                   }
                   onChange={(e) => {
-                    const rawValue = e.target.value.replace(/\s/g, "");
+                    const raw = e.target.value.replace(/\s/g, "");
                     setLigneTemp({
                       ...ligneTemp,
-                      prix_achat: Number(rawValue) || 0,
+                      prix_achat: Number(raw) || 0,
                     });
                   }}
-                  style={{
-                    width: "100%",
-                    padding: 10,
-                    border: "1px solid #ccc",
-                    borderRadius: 6,
-                    marginBottom: 20,
-                    fontSize: "1rem",
-                  }}
+                  className="w-full p-3 border rounded-lg mb-4"
                 />
 
-                <label style={{ display: "block", marginBottom: 8 }}>
+                {/* Prix de vente */}
+                <label className="block mb-1 font-medium">
                   Prix de vente :
                 </label>
                 <input
@@ -1229,51 +1184,26 @@ export default function AchatPage() {
                       : ""
                   }
                   onChange={(e) => {
-                    const rawValue = e.target.value.replace(/\s/g, "");
+                    const raw = e.target.value.replace(/\s/g, "");
                     setLigneTemp({
                       ...ligneTemp,
-                      prix_vente: Number(rawValue) || 0,
+                      prix_vente: Number(raw) || 0,
                     });
                   }}
-                  style={{
-                    width: "100%",
-                    padding: 10,
-                    border: "1px solid #ccc",
-                    borderRadius: 6,
-                    marginBottom: 20,
-                    fontSize: "1rem",
-                  }}
+                  className="w-full p-3 border rounded-lg mb-6"
                 />
 
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "flex-end",
-                    gap: 10,
-                  }}
-                >
+                {/* Boutons */}
+                <div className="flex justify-end gap-3">
                   <button
                     onClick={confirmerLigne}
-                    style={{
-                      background: "#4caf50",
-                      color: "#fff",
-                      border: "none",
-                      padding: "10px 20px",
-                      borderRadius: 6,
-                      fontSize: "1rem",
-                    }}
+                    className="bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded-lg"
                   >
                     Valider
                   </button>
                   <button
                     onClick={fermerModal}
-                    style={{
-                      background: "#ccc",
-                      border: "none",
-                      padding: "10px 20px",
-                      borderRadius: 6,
-                      fontSize: "1rem",
-                    }}
+                    className="bg-gray-400 hover:bg-gray-500 text-white px-5 py-2 rounded-lg"
                   >
                     Annuler
                   </button>
@@ -1285,27 +1215,34 @@ export default function AchatPage() {
       </div>
 
       {confirmationModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black/50 flex justify-center items-start pt-10 z-50 overflow-y-auto">
           <div
-            className="bg-white p-6 rounded shadow-lg w-96"
-            style={{ width: "60%" }}
+            className="
+        bg-white p-6 rounded-2xl shadow-xl 
+        w-11/12 sm:w-2/3 md:w-1/2 lg:w-1/3 
+        animate-[fadeIn_0.2s_ease-out]
+      "
           >
-            <h2 className="text-lg font-semibold mb-4">Confirmer la vente</h2>
+            <h2 className="text-xl font-semibold mb-4">Confirmer la vente</h2>
+
+            {/* Type de vente */}
             <select
               value={venteType}
               onChange={(e) =>
                 setVenteType(e.target.value as "ACHAT" | "CREDIT")
               }
-              className="border w-full p-2 mb-2"
+              className="w-full p-3 border rounded-lg mb-3"
             >
               <option value="ACHAT">Achat direct</option>
               <option value="CREDIT">Vente à crédit</option>
             </select>
+
+            {/* Choix client si crédit */}
             {venteType === "CREDIT" && (
               <select
                 value={clientId ?? ""}
                 onChange={(e) => setClientId(Number(e.target.value))}
-                className="border w-full p-2 mb-2"
+                className="w-full p-3 border rounded-lg mb-3"
               >
                 <option value="">-- Sélectionner un client --</option>
                 {clientsData.map((client) => (
@@ -1315,24 +1252,29 @@ export default function AchatPage() {
                 ))}
               </select>
             )}
-            <div className="flex justify-end gap-2 mt-4">
+
+            {/* Boutons */}
+            <div className="flex justify-end gap-3 mt-4">
               <button
                 onClick={fermerConfirmationModal}
-                className="bg-gray-400 hover:bg-gray-500 text-white px-3 py-1 rounded"
+                className="bg-gray-400 hover:bg-gray-500 text-white px-4 py-2 rounded-lg"
               >
-                
                 Annuler
               </button>
+
               <button
                 onClick={() => creerAchatAvecType(venteType, clientId)}
-                 className={`px-4 py-2 rounded-md text-white ${
-                  creating
-                    ? "bg-blue-400 cursor-not-allowed"
-                    : "bg-blue-600 hover:bg-blue-700"
-                }`}
                 disabled={creating}
+                className={`
+            px-4 py-2 rounded-lg text-white 
+            ${
+              creating
+                ? "bg-blue-400 cursor-not-allowed"
+                : "bg-blue-600 hover:bg-blue-700"
+            }
+          `}
               >
-              {creating ? "Création en cours..." : "Ajouter"}
+                {creating ? "Création en cours..." : "Ajouter"}
               </button>
             </div>
           </div>
@@ -1341,28 +1283,28 @@ export default function AchatPage() {
 
       {/* ✅ Modal de confirmation d’annulation */}
       {showModalAnnulation && achatAnnuler && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div
-            className="bg-white p-6 rounded-lg shadow-lg w-96 text-center"
-            style={{ width: "72%" }}
-          >
-            <h3 className="text-lg font-bold mb-4 text-gray-800">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-2xl shadow-2xl w-[90%] max-w-md animate-[fadeIn_0.25s_ease-out]">
+            <h3 className="text-xl font-bold mb-4 text-gray-800">
               Annuler l'achat #{achatAnnuler.id} ?
             </h3>
+
             <p className="text-gray-600 mb-6">
               Êtes-vous sûr de vouloir annuler cet achat ? Cette action est
               irréversible.
             </p>
+
             <div className="flex justify-end gap-3">
               <button
                 onClick={() => setShowModalAnnulation(false)}
-                className="bg-gray-400 hover:bg-gray-500 text-white px-3 py-1 rounded"
+                className="px-4 py-2 rounded-lg bg-gray-400 hover:bg-gray-500 text-white transition"
               >
                 Non
               </button>
+
               <button
                 onClick={handleAnnulerAchat}
-                className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded"
+                className="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white transition"
               >
                 Oui, annuler
               </button>
