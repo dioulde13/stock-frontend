@@ -113,6 +113,9 @@ export default function CreditPaymentsTable({
                 Client
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium">
+                Utilisateur
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium">
                 Montant
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium">
@@ -131,6 +134,7 @@ export default function CreditPaymentsTable({
                   {new Date(p.createdAt).toLocaleDateString()}
                 </td>
                 <td className="px-6 py-4">{p.Credit?.reference}</td>
+                <td className="px-6 py-4">{p.Credit?.Client?.nom}</td>
                 <td className="px-6 py-4">{p.Utilisateur?.nom}</td>
                 <td className="px-6 py-4 font-medium">
                   {formatMontant(p.montant)} GNF

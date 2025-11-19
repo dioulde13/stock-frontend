@@ -430,10 +430,13 @@ export default function AchatPage() {
         return showNotification(data.message || "Erreur inconnue", "error");
       }
 
+      fermerConfirmationModal();
+
       showNotification(data.message || "Achat créé avec succès !", "success");
       setLignesAchat([]);
       fetchAchats();
     } catch (e: any) {
+      fermerConfirmationModal();
       showNotification(e.message || "Erreur de connexion au serveur", "error");
     } finally {
       setCreating(false);

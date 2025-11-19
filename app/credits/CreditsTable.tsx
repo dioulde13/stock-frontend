@@ -9,6 +9,11 @@ type Client = {
   telephone: string;
 };
 
+type Utilisateur = {
+  id: number;
+  nom: string;
+};
+
 interface Credit {
   id: number;
   reference: string;
@@ -21,6 +26,7 @@ interface Credit {
   createdAt: string;
   utilisateurId?: number;
   Client?: Client;
+  Utilisateur?: Utilisateur;
 }
 
 export default function CreditsTable({
@@ -87,7 +93,7 @@ export default function CreditsTable({
                   {formatMontant(credit.montantRestant)}
                 </td>
                 <td className="px-6 py-4 text-sm">{credit.description}</td>
-                <td className="px-6 py-4 text-sm">{credit.type}</td>
+                <td className="px-6 py-4 text-sm">{credit.type}({credit.Utilisateur?.nom})</td>
 
                 <td
                   className={`px-6 py-4 text-sm font-semibold ${

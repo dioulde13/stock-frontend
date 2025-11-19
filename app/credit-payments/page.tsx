@@ -60,6 +60,7 @@ export default function CreditPaymentsPage() {
     try {
       setLoading(true);
       const data = await getPayments();
+      console.log(data);
       setPayments(data);
     } catch (error) {
       console.error(error);

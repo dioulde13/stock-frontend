@@ -139,11 +139,23 @@ export default function CreditsPage() {
       resetForm();
       fetchCredits();
     } catch (err: any) {
+      setShowForm(false);
+
       console.error("Erreur lors de la création du crédit :", err);
-      showNotification(
-        err.message || "Erreur de connexion au serveur",
-        "error"
-      );
+
+      let message = "Erreur de connexion au serveur";
+
+      // Si le message est un JSON
+      try {
+        if (err.message) {
+          const parsed = JSON.parse(err.message);
+          if (parsed?.message) message = parsed.message;
+        }
+      } catch (_) {
+        message = err.message || message;
+      }
+
+      showNotification(message, "error");
     } finally {
       setIsLoading(false);
     }
@@ -179,7 +191,7 @@ export default function CreditsPage() {
     } catch (err: any) {
       console.error(err);
       showNotification(
-        err.message || "Erreur lors de la modification du crédit",
+        err.error.message || "Erreur lors de la modification du crédit",
         "error"
       );
     }
