@@ -617,7 +617,7 @@ export default function VentesPage() {
             <button
               onClick={() => ouvrirModal()}
               style={{
-                padding: "10px 20px",
+                padding: "10px 8px",
                 backgroundColor: "#4caf50",
                 color: "#fff",
                 border: "none",
@@ -628,93 +628,99 @@ export default function VentesPage() {
             >
               + Ajouter une ligne
             </button>
-            <table
-              style={{
-                width: "100%",
-                borderCollapse: "collapse",
-                marginBottom: 10,
-              }}
-            >
-              <thead>
-                <tr style={{ backgroundColor: " #04AA6D" }}>
-                  <th>Produit</th>
-                  <th>Quantité</th>
-                  <th>Prix (GNF)</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {lignesVente.map((ligne, i) => (
-                  <tr key={i}>
-                    <td
-                      style={{
-                        textAlign: "center",
-                        border: "1px solid #ddd",
-                        padding: "8px",
-                      }}
-                    >
-                      {ligne.produitNom}
-                    </td>
-                    <td
-                      style={{
-                        textAlign: "center",
-                        border: "1px solid #ddd",
-                        padding: "8px",
-                      }}
-                    >
-                      {ligne.quantite}
-                    </td>
-                    <td
-                      style={{
-                        textAlign: "center",
-                        border: "1px solid #ddd",
-                        padding: "8px",
-                      }}
-                    >
-                      {formatPrix(ligne.prix_vente)}
-                    </td>
-                    <td
-                      style={{
-                        textAlign: "center",
-                        border: "1px solid #ddd",
-                        padding: "8px",
-                      }}
-                    >
-                      <button
-                        onClick={() => ouvrirModal(i)}
-                        style={{
-                          marginRight: 8,
-                          backgroundColor: "#2196f3",
-                          color: "white",
-                          border: "none",
-                          padding: "5px 10px",
-                          borderRadius: 4,
-                        }}
-                      >
-                        Modifier
-                      </button>
-                      <button
-                        onClick={() => supprimerLigneTemp(i)}
-                        style={{
-                          backgroundColor: "#f44336",
-                          color: "white",
-                          border: "none",
-                          padding: "5px 10px",
-                          borderRadius: 4,
-                        }}
-                      >
-                        Supprimer
-                      </button>
-                    </td>
+
+            {/* 👉 Conteneur scroll horizontal */}
+            <div style={{ overflowX: "auto" }}>
+              <table
+                style={{
+                  width: "100%",
+                  borderCollapse: "collapse",
+                  marginBottom: 10,
+                  minWidth: 500, // 👈 important pour forcer le scroll sur mobile
+                }}
+              >
+                <thead>
+                  <tr style={{ backgroundColor: " #04AA6D" }}>
+                    <th>Produit</th>
+                    <th>Quantité</th>
+                    <th>Prix (GNF)</th>
+                    <th>Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {lignesVente.map((ligne, i) => (
+                    <tr key={i}>
+                      <td
+                        style={{
+                          textAlign: "center",
+                          border: "1px solid #ddd",
+                          padding: "8px",
+                        }}
+                      >
+                        {ligne.produitNom}
+                      </td>
+                      <td
+                        style={{
+                          textAlign: "center",
+                          border: "1px solid #ddd",
+                          padding: "8px",
+                        }}
+                      >
+                        {ligne.quantite}
+                      </td>
+                      <td
+                        style={{
+                          textAlign: "center",
+                          border: "1px solid #ddd",
+                          padding: "8px",
+                        }}
+                      >
+                        {formatPrix(ligne.prix_vente)}
+                      </td>
+                      <td
+                        style={{
+                          textAlign: "center",
+                          border: "1px solid #ddd",
+                          padding: "8px",
+                        }}
+                      >
+                        <button
+                          onClick={() => ouvrirModal(i)}
+                          style={{
+                            marginRight: 8,
+                            backgroundColor: "#2196f3",
+                            color: "white",
+                            border: "none",
+                            padding: "5px 10px",
+                            borderRadius: 4,
+                          }}
+                        >
+                          Modifier
+                        </button>
+                        <button
+                          onClick={() => supprimerLigneTemp(i)}
+                          style={{
+                            backgroundColor: "#f44336",
+                            color: "white",
+                            border: "none",
+                            padding: "5px 10px",
+                            borderRadius: 4,
+                          }}
+                        >
+                          Supprimer
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
             <button
               onClick={ouvrirConfirmationModal}
               disabled={creating}
               style={{
-                padding: "10px 20px",
+                padding: "10px 8px",
                 backgroundColor: "#4caf50",
                 color: "#fff",
                 border: "none",
