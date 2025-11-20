@@ -9,7 +9,6 @@ import {
   getCredits,
   createCredit,
   updateCredit,
-  deleteCredit,
   annulerCredit,
 } from "./services/creditService";
 import ReactPaginate from "react-paginate";
@@ -220,12 +219,20 @@ export default function CreditsPage() {
     if (!creditIdToCancel) return;
 
     try {
-      await annulerCredit(creditIdToCancel);
+      const response = await annulerCredit(creditIdToCancel);
       fetchCredits();
-      showNotification("Crédit annulé avec succès", "success");
+
+      showNotification(
+        response?.message || "Crédit annulé avec succès",
+        "success"
+      );
     } catch (err) {
       console.error(err);
-      showNotification("Erreur lors de l'annulation", "error");
+
+      const backendMessage =
+        err instanceof Error ? err.message : "Erreur lors de l'annulation";
+
+      showNotification(backendMessage, "error");
     }
 
     setCancelModalOpen(false);

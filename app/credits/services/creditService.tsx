@@ -83,21 +83,31 @@ export const updateCredit = async (id: number, data:
 // Supprimer un crédit
 export const annulerCredit = async (id: number) => {
   const token = localStorage.getItem("token");
- if (!token) {
-        // Redirection automatique si token manquant
-        window.location.href = "/login";
-        return; // On arrête l'exécution
-      }
+  if (!token) {
+    window.location.href = "/login";
+    return;
+  }
+
   const res = await fetch(`${APP_URL}/api/credit/annuler/${id}`, {
     method: "DELETE",
-     headers: {
+    headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`, // 🔑 ajout du token ici
+      Authorization: `Bearer ${token}`,
     },
   });
-  if (!res.ok) throw new Error("Erreur lors de l'annulation du crédit");
-  return res.json();
+
+  // Lire la réponse JSON (succès ou erreur)
+  const data = await res.json().catch(() => null);
+
+  if (!res.ok) {
+    // ⚠️ On renvoie l'erreur exacte du backend
+    const message = data?.message || "Erreur lors de l'annulation du crédit";
+    throw new Error(message);
+  }
+
+  return data;
 };
+
 
 // Supprimer un crédit
 export const deleteCredit = async (id: number) => {

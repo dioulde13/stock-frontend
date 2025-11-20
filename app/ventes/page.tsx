@@ -510,7 +510,7 @@ export default function VentesPage() {
       );
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Erreur d’annulation.");
-      showNotification("Vente enregistrée avec succès", "success");
+      showNotification("Vente annulée avec succès", "success");
       setShowModalAnnulation(false);
       setVenteAAnnuler(null);
       fetchVentes();

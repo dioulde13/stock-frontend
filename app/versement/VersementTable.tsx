@@ -2,6 +2,8 @@
 import { useState } from "react";
 import ModalConfirm from "../components/ModalConfirm";
 import { APP_URL } from "../environnement/environnements";
+import { formatMontant } from "../components/utils/formatters";
+
 
 interface VersementTableProps {
   versements: any[];
@@ -119,7 +121,7 @@ export default function VersementTable({
               <td className="px-4 py-2">{v.id}</td>
               <td className="px-4 py-2">{v.vendeur?.nom || "—"}</td>
               <td className="px-4 py-2 font-semibold text-gray-700">
-                {v.montant} GNF
+                {formatMontant(v.montant)}
               </td>
               <td className="px-4 py-2">
                 <span

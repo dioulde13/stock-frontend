@@ -30,7 +30,7 @@ const menuItems = [
   { href: "/credits", icon: "ri-bank-card-line", label: "Crédits" },
   { href: "/credit-payments", icon: "ri-cash-line", label: "Paiement crédits" },
   { href: "/expenses", icon: "ri-money-dollar-circle-line", label: "Dépenses" },
-  { href: "/rejeter-versement", icon: "ri-money-dollar-circle-line", label: "Vercement" },
+  { href: "/versement", icon: "ri-money-dollar-circle-line", label: "Vercement" },
   { href: "/utilisateurs", icon: "ri-user-settings-line", label: "Utilisateurs" },
 ];
 
