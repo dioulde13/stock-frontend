@@ -21,7 +21,11 @@ const menuItems = [
   { href: "/dashboard", icon: "ri-dashboard-line", label: "Tableau de bord" },
   { href: "/categories", icon: "ri-folder-2-line", label: "Catégories" },
   { href: "/products", icon: "ri-archive-2-line", label: "Produits" },
-  { href: "/mouvement-stock", icon: "ri-exchange-box-line", label: "Mouvement stock" },
+  {
+    href: "/mouvement-stock",
+    icon: "ri-exchange-box-line",
+    label: "Mouvement stock",
+  },
   { href: "/stock-minimum", icon: "ri-alert-line", label: "Stock minimum" },
   { href: "/ventes", icon: "ri-shopping-cart-line", label: "Ventes" },
   { href: "/achats", icon: "ri-shopping-bag-3-line", label: "Achats" },
@@ -30,8 +34,16 @@ const menuItems = [
   { href: "/credits", icon: "ri-bank-card-line", label: "Crédits" },
   { href: "/credit-payments", icon: "ri-cash-line", label: "Paiement crédits" },
   { href: "/expenses", icon: "ri-money-dollar-circle-line", label: "Dépenses" },
-  { href: "/versement", icon: "ri-money-dollar-circle-line", label: "Vercement" },
-  { href: "/utilisateurs", icon: "ri-user-settings-line", label: "Utilisateurs" },
+  {
+    href: "/versement",
+    icon: "ri-money-dollar-circle-line",
+    label: "Vercement",
+  },
+  {
+    href: "/utilisateurs",
+    icon: "ri-user-settings-line",
+    label: "Utilisateurs",
+  },
 ];
 
 export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
@@ -90,12 +102,17 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
       {/* Sidebar */}
       <div
         className={`
-          fixed top-0 left-0 h-full bg-white border-r border-gray-200 z-50
-          transform transition-transform duration-300 ease-in-out
-          ${isOpen ? "translate-x-0" : "-translate-x-full"}
-          lg:translate-x-0 lg:fixed lg:z-auto
-          w-64 flex flex-col
-        `}
+    fixed top-0 left-0 bg-white border-r border-gray-200 z-50
+    transform transition-transform duration-300 ease-in-out
+    ${isOpen ? "translate-x-0" : "-translate-x-full"}
+    lg:translate-x-0 lg:fixed lg:z-auto
+    w-64 flex flex-col
+
+    h-[100vh]      /* mobile */
+    sm:h-[100vh]   /* sm */
+    md:h-[80vh]    /* md : 80% */
+    lg:h-[100vh]   /* lg et + */
+  `}
       >
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-gray-200">

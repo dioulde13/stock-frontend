@@ -105,7 +105,7 @@ export default function VersementTable({
       )}
 
       {/* TABLE */}
-      <table className="min-w-full border border-gray-200 rounded-lg overflow-hidden">
+      <table className="border border-gray-200 rounded-lg overflow-hidden">
         <thead className="bg-gray-100">
           <tr>
             <th className="px-4 py-2 text-left">ID</th>

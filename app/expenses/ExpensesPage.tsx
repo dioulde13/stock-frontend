@@ -51,14 +51,14 @@ export default function ExpensesPage() {
     <DashboardLayout title="Dépenses">
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <div>
+          {/* <div>
             <h2 className="text-2xl font-bold text-gray-900">
               Gestion des dépenses
             </h2>
             <p className="text-gray-600">
               Suivez toutes les dépenses de votre entreprise
             </p>
-          </div>
+          </div> */}
           <button
             onClick={handleAdd}
             className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 flex items-center space-x-2 whitespace-nowrap"

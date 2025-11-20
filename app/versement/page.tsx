@@ -10,21 +10,19 @@ export default function VersementPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const fetchVersements = async () => {
-     try {
+    try {
       const token = localStorage.getItem("token");
       if (!token) {
         // Redirection automatique si token manquant
         window.location.href = "/login";
-        return; // On arrête l'exécution
+        return;
       }
 
-      const res = await fetch(`${APP_URL}/api/versement/liste`, 
-        {
+      const res = await fetch(`${APP_URL}/api/versement/liste`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      }
-    );
+      });
 
       const data = await res.json();
       setVersements(data);
@@ -48,9 +46,9 @@ export default function VersementPage() {
       <div className="p-8 bg-gray-50 min-h-screen">
         <div className="max-w-5xl mx-auto bg-white shadow-md rounded-xl p-6">
           <div className="flex justify-between items-center mb-6">
-            <h1 className="text-2xl font-bold text-gray-700">
+            {/* <h1 className="text-2xl font-bold text-gray-700">
               Gestion des Versements
-            </h1>
+            </h1> */}
             <button
               onClick={() => setIsModalOpen(true)}
               className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition"
@@ -59,7 +57,10 @@ export default function VersementPage() {
             </button>
           </div>
 
-          <VersementTable versements={versements} onAction={fetchVersements} />
+          {/* Scroll horizontal pour petit écran */}
+          <div className="overflow-x-auto">
+            <VersementTable versements={versements} onAction={fetchVersements} />
+          </div>
 
           {isModalOpen && (
             <VersementModal
