@@ -59,14 +59,14 @@ export default function VentesPage() {
     produitNom: string;
     quantite: string;
     prix_achat: string;
-    prix_vente: string;
+    prix_vente: number;
   }>({
     utilisateurId: formUtilisateurId,
     produitId: "",
     produitNom: "",
     quantite: "1",
     prix_achat: "",
-    prix_vente: "",
+    prix_vente: 0,
   });
 
   const [modalOpen, setModalOpen] = useState(false);
@@ -417,7 +417,7 @@ export default function VentesPage() {
         produitNom: ligne.produitNom.toString(),
         quantite: ligne.quantite.toString(),
         prix_achat: ligne.prix_achat.toString(),
-        prix_vente: ligne.prix_vente.toString(),
+        prix_vente: ligne.prix_vente,
       });
       setEditingIndex(index);
     } else {
@@ -427,7 +427,7 @@ export default function VentesPage() {
         produitNom: "",
         quantite: "1",
         prix_achat: "",
-        prix_vente: "",
+        prix_vente: 0,
       });
       setEditingIndex(null);
     }
@@ -442,7 +442,7 @@ export default function VentesPage() {
       produitNom: "",
       quantite: "1",
       prix_achat: "",
-      prix_vente: "",
+      prix_vente: 0,
     });
     setEditingIndex(null);
   };
@@ -1148,6 +1148,22 @@ export default function VentesPage() {
 
             {/* Prix de vente */}
             <input
+              type="text"
+              value={
+                ligneTemp.prix_vente
+                  ? new Intl.NumberFormat("fr-FR").format(ligneTemp.prix_vente)
+                  : ""
+              }
+              onChange={(e) => {
+                const raw = e.target.value.replace(/\s/g, "");
+                setLigneTemp({
+                  ...ligneTemp,
+                  prix_vente: Number(raw) || 0,
+                });
+              }}
+              className="w-full p-3 border rounded-lg mb-6"
+            />
+            {/* <input
               type="number"
               value={ligneTemp.prix_vente}
               onChange={(e) =>
@@ -1155,7 +1171,7 @@ export default function VentesPage() {
               }
               className="border w-full p-3 rounded mb-3"
               placeholder="Prix de vente"
-            />
+            /> */}
 
             {/* Boutons */}
             <div className="flex justify-end gap-3 mt-4">
