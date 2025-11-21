@@ -28,7 +28,7 @@ export default function ProduitModal({
   handleSubmit,
   dataCategorie,
   dataBoutique,
-  utilisateur
+  utilisateur,
 }: CategorieModalProps) {
   const [isLoading, setIsLoading] = useState(false); // 🚀 état loading
 
@@ -148,30 +148,29 @@ export default function ProduitModal({
             </div>
           </div>
 
-          {/* Catégorie / Boutique */}
-          <div className="form-row">
-            <div className="form-group">
-              <label>Catégorie</label>
-              <select
-                value={formData.categorieId}
-                required
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    categorieId: Number(e.target.value),
-                  })
-                }
-              >
-                <option value="">-- Catégorie --</option>
-                {dataCategorie.map((cat: any) => (
-                  <option key={cat.id} value={cat.id}>
-                    {cat.nom}
-                  </option>
-                ))}
-              </select>
-            </div>
+          {utilisateur?.role && utilisateur?.role === "ADMIN" ? (
+            <div className="form-row">
+              <div className="form-group">
+                <label>Catégorie</label>
+                <select
+                  value={formData.categorieId}
+                  required
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      categorieId: Number(e.target.value),
+                    })
+                  }
+                >
+                  <option value="">-- Catégorie --</option>
+                  {dataCategorie.map((cat: any) => (
+                    <option key={cat.id} value={cat.id}>
+                      {cat.nom}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
-            {utilisateur?.role && utilisateur?.role === "ADMIN" && (
               <div className="form-group">
                 <label>Boutique</label>
                 <select
@@ -192,9 +191,30 @@ export default function ProduitModal({
                   ))}
                 </select>
               </div>
-            )}
-          </div>
-
+            </div>
+          ) : (
+            <div className="form-group w-full">
+              <label>Catégorie</label>
+              <select
+                className="w-full"
+                value={formData.categorieId}
+                required
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    categorieId: Number(e.target.value),
+                  })
+                }
+              >
+                <option value="">-- Catégorie --</option>
+                {dataCategorie.map((cat: any) => (
+                  <option key={cat.id} value={cat.id}>
+                    {cat.nom}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
           {/* Boutons */}
           <div className="form-actions">
             <button

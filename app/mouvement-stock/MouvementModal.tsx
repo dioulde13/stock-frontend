@@ -1,6 +1,8 @@
 "use client";
 import { useState } from "react";
 import "./mouvement.css";
+import Select from "react-select";
+
 
 interface MouvemntModalProps {
   formData: {
@@ -107,22 +109,27 @@ export default function MouvemntModal({
           </div>
 
           <div>
-            <label>Produit</label>
-            <select
-              value={formData.produitId}
-              required
-              onChange={(e) =>
-                setFormData({ ...formData, produitId: Number(e.target.value) })
-              }
-            >
-              <option value="">-- Produit --</option>
-              {dataProduit.map((prod: any) => (
-                <option key={prod.id} value={prod.id}>
-                  {prod.nom} - {prod.prix_achat} - {prod.prix_vente} -{" "}
-                  {prod.stock_actuel}
-                </option>
-              ))}
-            </select>
+            <label>Sélectionner un produit</label>
+            <Select
+              options={dataProduit.map((prod: any) => ({
+                value: prod.id,
+                label: `${prod.nom} - ${prod.prix_achat} - ${prod.prix_vente} - ${prod.stock_actuel}`,
+              }))}
+              value={dataProduit
+                .map((prod: any) => ({
+                  value: prod.id,
+                  label: `${prod.nom} - ${prod.prix_achat} - ${prod.prix_vente} - ${prod.stock_actuel}`,
+                }))
+                .find((option: any) => option.value.toString() === formData.produitId)}
+              onChange={(selected: any) => {
+                setFormData({
+                  ...formData,
+                  produitId: selected ? selected.value : null,
+                });
+              }}
+              placeholder="-- Sélectionner un produit --"
+              isClearable
+            />
           </div>
 
           <div className="modalActions">

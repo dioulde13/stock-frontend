@@ -120,7 +120,7 @@ export default function CategoriePage() {
             className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2 whitespace-nowrap"
           >
             <i className="ri-add-line"></i>
-            <span>Ajouter une catégorie</span>
+            <span>Ajouter</span>
           </button>
         </div>
 

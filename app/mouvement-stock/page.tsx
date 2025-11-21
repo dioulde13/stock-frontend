@@ -242,12 +242,12 @@ export default function MouvementPage() {
     <DashboardLayout title="Liste des mouvements de stocks">
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <button
+          {/* <button
             onClick={() => openModal("addTypeMvt")}
             className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
           >
             Ajouter type
-          </button>
+          </button> */}
           <button
             onClick={() => handleOpenModal()}
             className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2 whitespace-nowrap"
@@ -373,7 +373,7 @@ export default function MouvementPage() {
                 const data = await response.json();
 
                 if (!response.ok) {
-                setIsModalOpen(false);
+                  setIsModalOpen(false);
                   return showNotification(
                     data.message || "Erreur inconnue",
                     "error"

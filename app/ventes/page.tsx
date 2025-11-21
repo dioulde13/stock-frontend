@@ -4,6 +4,7 @@ import { useEffect, useState, useMemo } from "react";
 import React from "react";
 import DashboardLayout from "../components/Layout/DashboardLayout";
 import { APP_URL } from "../environnement/environnements";
+import Select from "react-select";
 
 type Produit = {
   id: number;
@@ -1102,32 +1103,37 @@ export default function VentesPage() {
                 ? "Modifier la ligne"
                 : "Ajouter une ligne"}
             </h2>
-
-            {/* Sélecteur de produits */}
-            <select
-              value={ligneTemp.produitId}
-              onChange={(e) => {
-                const selected = dataProduit.find(
-                  (p) => p.id === Number(e.target.value)
-                );
+            {/* Sélecteur de produits avec recherche */}
+            <Select
+              options={dataProduit.map((prod) => ({
+                value: prod.id,
+                label: `${prod.nom} - ${prod.prix_achat} - ${prod.prix_vente} - ${prod.stock_actuel}`,
+                prix_achat: prod.prix_achat,
+                prix_vente: prod.prix_vente,
+                nom: prod.nom,
+              }))}
+              value={dataProduit
+                .map((prod) => ({
+                  value: prod.id,
+                  label: `${prod.nom} - ${prod.prix_achat} - ${prod.prix_vente} - ${prod.stock_actuel}`,
+                }))
+                .find(
+                  (option) => option.value.toString() === ligneTemp.produitId
+                )}
+              onChange={(selected: any) => {
+                if (!selected) return;
                 setLigneTemp({
                   ...ligneTemp,
-                  produitId: e.target.value,
-                  produitNom: selected?.nom || "",
-                  prix_achat: selected?.prix_achat?.toString() || "",
-                  prix_vente: selected?.prix_vente?.toString() || "",
+                  produitId: selected.value,
+                  produitNom: selected.nom,
+                  prix_achat: selected.prix_achat?.toString() || "",
+                  prix_vente: selected.prix_vente?.toString() || "",
                 });
               }}
-              className="border w-full p-3 rounded mb-3"
-            >
-              <option value="">-- Sélectionner un produit --</option>
-              {dataProduit.map((prod) => (
-                <option key={prod.id} value={prod.id}>
-                  {prod.nom} - {prod.prix_achat} - {prod.prix_vente} -{" "}
-                  {prod.stock_actuel}
-                </option>
-              ))}
-            </select>
+              isClearable
+              placeholder="-- Sélectionner un produit --"
+              className="mb-3"
+            />
 
             {/* Quantité */}
             <input

@@ -4,6 +4,8 @@ import { useEffect, useState, useMemo } from "react";
 import React from "react";
 import DashboardLayout from "../components/Layout/DashboardLayout";
 import { APP_URL } from "../environnement/environnements";
+import Select from "react-select";
+
 
 type Fournisseur = {
   id: number;
@@ -641,7 +643,7 @@ export default function AchatPage() {
             <button
               onClick={() => ouvrirModal()}
               style={{
-                padding: "10px 20px",
+                padding: "10px 8px",
                 backgroundColor: "#4caf50",
                 color: "#fff",
                 border: "none",
@@ -653,110 +655,112 @@ export default function AchatPage() {
               + Ajouter une ligne
             </button>
 
-            <table
-              style={{
-                width: "100%",
-                borderCollapse: "collapse",
-                marginBottom: 10,
-              }}
-            >
-              <thead>
-                <tr style={{ backgroundColor: " #04AA6D" }}>
-                  {/* <th>ID Utilisateur</th> */}
-                  <th>Nom fournissseur</th>
-                  <th>Nom produit</th>
-                  <th>Quantité</th>
-                  <th>Prix d'achat (GNF)</th>
-                  <th>Prix de vente (GNF)</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {lignesAchat.map((ligne, i) => (
-                  <tr key={i}>
-                    {/* <td style={{ textAlign: 'center', border: '1px solid #ddd', padding: '8px' }}>{ligne.utilisateurId}</td> */}
-                    <td
-                      style={{
-                        textAlign: "center",
-                        border: "1px solid #ddd",
-                        padding: "8px",
-                      }}
-                    >
-                      {ligne.fournisseurNom}
-                    </td>
-                    <td
-                      style={{
-                        textAlign: "center",
-                        border: "1px solid #ddd",
-                        padding: "8px",
-                      }}
-                    >
-                      {ligne.produitNom}
-                    </td>
-                    <td
-                      style={{
-                        textAlign: "center",
-                        border: "1px solid #ddd",
-                        padding: "8px",
-                      }}
-                    >
-                      {ligne.quantite}
-                    </td>
-                    <td
-                      style={{
-                        textAlign: "center",
-                        border: "1px solid #ddd",
-                        padding: "8px",
-                      }}
-                    >
-                      {formatPrix(ligne.prix_achat)}
-                    </td>
-                    <td
-                      style={{
-                        textAlign: "center",
-                        border: "1px solid #ddd",
-                        padding: "8px",
-                      }}
-                    >
-                      {formatPrix(ligne.prix_vente)}
-                    </td>
-                    <td
-                      style={{
-                        textAlign: "center",
-                        border: "1px solid #ddd",
-                        padding: "8px",
-                      }}
-                    >
-                      <button
-                        onClick={() => ouvrirModal(i)}
-                        style={{
-                          marginRight: 8,
-                          backgroundColor: "#2196f3",
-                          color: "white",
-                          border: "none",
-                          padding: "5px 10px",
-                          borderRadius: 4,
-                        }}
-                      >
-                        Modifier
-                      </button>
-                      <button
-                        onClick={() => supprimerLigneTemp(i)}
-                        style={{
-                          backgroundColor: "#f44336",
-                          color: "white",
-                          border: "none",
-                          padding: "5px 10px",
-                          borderRadius: 4,
-                        }}
-                      >
-                        Supprimer
-                      </button>
-                    </td>
+            {/* 👇 Conteneur scroll horizontal */}
+            <div style={{ overflowX: "auto" }}>
+              <table
+                style={{
+                  width: "100%",
+                  borderCollapse: "collapse",
+                  marginBottom: 10,
+                  minWidth: 700, // 👈 garantit le scroll sur petit écran
+                }}
+              >
+                <thead>
+                  <tr style={{ backgroundColor: " #04AA6D" }}>
+                    <th>Nom fournissseur</th>
+                    <th>Nom produit</th>
+                    <th>Quantité</th>
+                    <th>Prix d'achat (GNF)</th>
+                    <th>Prix de vente (GNF)</th>
+                    <th>Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {lignesAchat.map((ligne, i) => (
+                    <tr key={i}>
+                      <td
+                        style={{
+                          textAlign: "center",
+                          border: "1px solid #ddd",
+                          padding: "8px",
+                        }}
+                      >
+                        {ligne.fournisseurNom}
+                      </td>
+                      <td
+                        style={{
+                          textAlign: "center",
+                          border: "1px solid #ddd",
+                          padding: "8px",
+                        }}
+                      >
+                        {ligne.produitNom}
+                      </td>
+                      <td
+                        style={{
+                          textAlign: "center",
+                          border: "1px solid #ddd",
+                          padding: "8px",
+                        }}
+                      >
+                        {ligne.quantite}
+                      </td>
+                      <td
+                        style={{
+                          textAlign: "center",
+                          border: "1px solid #ddd",
+                          padding: "8px",
+                        }}
+                      >
+                        {formatPrix(ligne.prix_achat)}
+                      </td>
+                      <td
+                        style={{
+                          textAlign: "center",
+                          border: "1px solid #ddd",
+                          padding: "8px",
+                        }}
+                      >
+                        {formatPrix(ligne.prix_vente)}
+                      </td>
+                      <td
+                        style={{
+                          textAlign: "center",
+                          border: "1px solid #ddd",
+                          padding: "8px",
+                        }}
+                      >
+                        <button
+                          onClick={() => ouvrirModal(i)}
+                          style={{
+                            marginRight: 8,
+                            backgroundColor: "#2196f3",
+                            color: "white",
+                            border: "none",
+                            padding: "5px 10px",
+                            borderRadius: 4,
+                          }}
+                        >
+                          Modifier
+                        </button>
+                        <button
+                          onClick={() => supprimerLigneTemp(i)}
+                          style={{
+                            backgroundColor: "#f44336",
+                            color: "white",
+                            border: "none",
+                            padding: "5px 10px",
+                            borderRadius: 4,
+                          }}
+                        >
+                          Supprimer
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
 
             <button
               onClick={ouvrirConfirmationModal}
@@ -1106,35 +1110,40 @@ export default function AchatPage() {
                     </option>
                   ))}
                 </select>
+                <label className="block mb-1 font-medium">Sélectionner un produit :</label>
 
-                {/* Produit */}
-                <label className="block mb-1 font-medium">Produit :</label>
-                <select
-                  value={ligneTemp.produitId}
-                  onChange={(e) => {
-                    const id = e.target.value;
-                    const found = dataProduit.find(
-                      (p) => p.id.toString() === id
-                    );
-                    if (found) {
-                      setLigneTemp({
-                        ...ligneTemp,
-                        produitId: id,
-                        produitNom: found.nom,
-                        prix_achat: Number(found.prix_achat),
-                      });
-                    }
+                {/* Sélecteur de produits avec recherche */}
+                <Select
+                  options={dataProduit.map((prod) => ({
+                    value: prod.id,
+                    label: `${prod.nom} - ${prod.prix_achat} - ${prod.prix_vente} - ${prod.stock_actuel}`,
+                    prix_achat: prod.prix_achat,
+                    prix_vente: prod.prix_vente,
+                    nom: prod.nom,
+                  }))}
+                  value={dataProduit
+                    .map((prod) => ({
+                      value: prod.id,
+                      label: `${prod.nom} - ${prod.prix_achat} - ${prod.prix_vente} - ${prod.stock_actuel}`,
+                    }))
+                    .find(
+                      (option) =>
+                        option.value.toString() === ligneTemp.produitId
+                    )}
+                  onChange={(selected: any) => {
+                    if (!selected) return;
+                    setLigneTemp({
+                      ...ligneTemp,
+                      produitId: selected.value,
+                      produitNom: selected.nom,
+                      prix_achat: selected.prix_achat?.toString() || "",
+                      prix_vente: selected.prix_vente?.toString() || "",
+                    });
                   }}
-                  className="w-full p-3 border rounded-lg bg-gray-50 mb-4"
-                >
-                  <option value="">-- Sélectionnez un produit --</option>
-                  {dataProduit.map((prod) => (
-                    <option key={prod.id} value={prod.id}>
-                      {prod.nom} - {prod.prix_achat} - {prod.prix_vente} -{" "}
-                      {prod.stock_actuel}
-                    </option>
-                  ))}
-                </select>
+                  isClearable
+                  placeholder="-- Sélectionner un produit --"
+                  className="mb-3"
+                />
 
                 {/* Quantité */}
                 <label className="block mb-1 font-medium">Quantité :</label>

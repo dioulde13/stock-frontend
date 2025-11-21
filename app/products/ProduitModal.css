@@ -191,11 +191,24 @@
 
   .modal-container {
     max-width: 95%;
-    width: 60%;
+    width: 70%;
     margin: 1rem;
   }
 }
 
+
+@media (max-width: 320px) {
+  .modal-overlay {
+    justify-content: flex-start;
+    align-items: flex-start;
+  }
+
+  .modal-container {
+    max-width: 95%;
+    width: 80%;
+    margin: 1rem;
+  }
+}
 /* 📱 SM — téléphones moyens */
 @media (min-width: 481px) and (max-width: 640px) {
   .modal-container {

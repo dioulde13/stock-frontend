@@ -22,46 +22,14 @@ interface Produit {
   Boutique?: { nom: string };
 }
 
-// interface ProduitTableProps {
-//   produits: Produit[];
-//   utilisateur: any;
-//   fetchProduits: () => Promise<void>;
-//   showNotification: (message: string) => void;
-//   handleOpenModal: (produit?: Produit) => void;
-// }
-
 interface ProduitTableProps {
   produits: Produit[];
   utilisateur: any;
   fetchProduits: () => Promise<void>;
   showNotification: (message: string) => void;
   handleOpenModal: (produit?: Produit) => void;
-
-  // Ajouté pour corriger l'erreur TypeScript
-  formData: {
-    nom: string;
-    prix_achat: number;
-    prix_vente: number;
-    stock_actuel: number;
-    stock_minimum: number;
-    categorieId: number;
-    utilisateurId: string;
-    boutiqueId: number;
-  };
-  setFormData: React.Dispatch<
-    React.SetStateAction<{
-      nom: string;
-      prix_achat: number;
-      prix_vente: number;
-      stock_actuel: number;
-      stock_minimum: number;
-      categorieId: number;
-      utilisateurId: string;
-      boutiqueId: number;
-    }>
-  >;
-  selectedProduit: Produit | null;
-  setSelectedProduit: React.Dispatch<React.SetStateAction<Produit | null>>;
+  // selectedProduit: any; // <-- AJOUT
+  // setSelectedProduit: React.Dispatch<any>; // <-- AJOUT
 }
 
 function ModalSuppression({
@@ -152,24 +120,28 @@ export default function ProduitTable({
   fetchProduits,
   showNotification,
   handleOpenModal,
-}: ProduitTableProps) {
+}: // selectedProduit,
+// setSelectedProduit,
+ProduitTableProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(0);
   const [dateStart, setDateStart] = useState("");
   const [dateEnd, setDateEnd] = useState("");
+  const [boutiqueFilter, setBoutiqueFilter] = useState<number | "">("");
   const [produitASupprimer, setProduitASupprimer] = useState<Produit | null>(
     null
   );
   const [produitAChangerStatut, setProduitAChangerStatut] =
     useState<Produit | null>(null);
+
   const itemsPerPage = 5;
 
   const filteredProduit = Array.isArray(produits)
     ? produits.filter((produit) => {
-        console.log(produit);
         const matchesSearch = produit.nom
           .toLowerCase()
           .includes(searchTerm.toLowerCase());
+
         let matchesDate = true;
         if (dateStart) {
           matchesDate = new Date(produit.createdAt) >= new Date(dateStart);
@@ -177,9 +149,13 @@ export default function ProduitTable({
         if (matchesDate && dateEnd) {
           matchesDate = new Date(produit.createdAt) <= new Date(dateEnd);
         }
-        const notAnnule = produit.status !== "ANNULER"; // <— exclut les statuts «ANNULER»
 
-        return matchesSearch && matchesDate && notAnnule;
+        const matchesBoutique =
+          boutiqueFilter === "" || produit.boutiqueId === boutiqueFilter;
+
+        const notAnnule = produit.status !== "ANNULER";
+
+        return matchesSearch && matchesDate && matchesBoutique && notAnnule;
       })
     : [];
 
@@ -202,9 +178,8 @@ export default function ProduitTable({
     const user = localStorage.getItem("utilisateur");
     const token = localStorage.getItem("token");
     if (!user || !token) {
-      // Redirection automatique si token manquant
       window.location.href = "/login";
-      return; // On arrête l'exécutio
+      return;
     }
     const parsedUser = JSON.parse(user);
 
@@ -256,8 +231,6 @@ export default function ProduitTable({
       status: nouveauStatut,
     };
 
-    console.log("📦 Body envoyé :", body);
-
     try {
       const res = await fetch(`${APP_URL}/api/produit/annuler/${produit.id}`, {
         method: "PUT",
@@ -281,50 +254,68 @@ export default function ProduitTable({
       setProduitAChangerStatut(null);
     }
   };
-  
 
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200">
       <div className="p-6 border-b border-gray-200 flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between flex-wrap">
-        {/* Total valeur stock */}
-        <div className="bg-blue-50 text-blue-700 px-4 py-2 rounded-lg font-semibold border border-blue-200 w-50 sm:w-auto text-center sm:text-left">
+        <div className="bg-blue-50 text-blue-700 px-4 py-2 rounded-lg font-semibold border border-blue-200">
           Total valeur stock : {formatMontant(totalMontantAchat)}
         </div>
 
-        {/* Recherches et dates */}
-        <div className="flex flex-col sm:flex-row gap-2 flex-1 w-50">
-          {/* Recherche produit */}
-          <div className="flex-1 relative w-50 sm:w-auto">
+        <div className="flex flex-col sm:flex-row gap-2 flex-1">
+          <div className="flex-1 relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <i className="ri-search-line text-gray-400"></i>
             </div>
             <input
               type="text"
               placeholder="Rechercher un produit..."
-              className="block w-50 pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+              className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
 
-          {/* Date début */}
           <input
             type="date"
             value={dateStart}
             onChange={(e) => setDateStart(e.target.value)}
-            className="px-2 py-1 border border-gray-300 rounded-lg text-sm w-50 sm:w-auto"
+            className="px-2 py-1 border border-gray-300 rounded-lg text-sm"
           />
 
-          {/* Date fin */}
           <input
             type="date"
             value={dateEnd}
             onChange={(e) => setDateEnd(e.target.value)}
-            className="px-2 py-1 border border-gray-300 rounded-lg text-sm w-50 sm:w-auto"
+            className="px-2 py-1 border border-gray-300 rounded-lg text-sm"
           />
+
+          {/* Filtre BOUTIQUE */}
+          {utilisateur.role === "ADMIN" && (
+            <select
+              value={boutiqueFilter}
+              onChange={(e) =>
+                setBoutiqueFilter(
+                  e.target.value === "" ? "" : Number(e.target.value)
+                )
+              }
+              className="px-2 py-1 border border-gray-300 rounded-lg text-sm"
+            >
+              <option value="">Toutes les boutiques</option>
+
+              {[
+                ...new Map(produits.map((p) => [p.boutiqueId, p])).values(),
+              ].map((p) => (
+                <option key={p.boutiqueId} value={p.boutiqueId}>
+                  {p.Boutique?.nom || `Boutique #${p.boutiqueId}`}
+                </option>
+              ))}
+            </select>
+          )}
         </div>
       </div>
 
+      {/* TABLEAU */}
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200 table-auto">
           <thead className="bg-gray-50">
@@ -353,6 +344,7 @@ export default function ProduitTable({
               <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">
                 Catégorie
               </th>
+
               {utilisateur.role === "ADMIN" ? (
                 <>
                   <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">
@@ -361,13 +353,14 @@ export default function ProduitTable({
                   <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">
                     Status
                   </th>
-
                   <th className="px-3 py-2 text-xs font-medium text-gray-500 uppercase">
                     Actions
                   </th>
                 </>
               ) : (
-                ""
+                <th className="px-3 py-2 text-xs font-medium text-gray-500 uppercase">
+                  Actions
+                </th>
               )}
             </tr>
           </thead>
@@ -398,6 +391,7 @@ export default function ProduitTable({
                   <td className="px-3 py-2 text-sm">
                     {produit.Categorie?.nom || "—"}
                   </td>
+
                   {utilisateur.role === "ADMIN" ? (
                     <>
                       <td className="px-3 py-2 text-sm">
@@ -427,17 +421,18 @@ export default function ProduitTable({
                         >
                           Annuler
                         </button>
-                        {/* <button
-                          onClick={() => setProduitASupprimer(produit)}
-                          className="text-red-600 hover:text-red-800 p-1 rounded"
-                          title="Supprimer"
-                        >
-                          <i className="ri-delete-bin-line"></i>
-                        </button> */}
                       </td>
                     </>
                   ) : (
-                    ""
+                    <td className="px-3 py-2 text-sm flex gap-2">
+                      <button
+                        onClick={() => handleOpenModal(produit)}
+                        className="text-blue-600 hover:text-blue-900 p-1 rounded"
+                        title="Modifier"
+                      >
+                        <i className="ri-edit-line"></i>
+                      </button>
+                    </td>
                   )}
                 </tr>
               ))
@@ -458,7 +453,7 @@ export default function ProduitTable({
         </table>
       </div>
 
-      {/* Pagination */}
+      {/* PAGINATION */}
       {pageCount > 1 && (
         <div className="flex justify-end py-6">
           <ReactPaginate
@@ -479,6 +474,7 @@ export default function ProduitTable({
         </div>
       )}
 
+      {/* Modals */}
       {produitASupprimer && (
         <ModalSuppression
           produit={produitASupprimer}
