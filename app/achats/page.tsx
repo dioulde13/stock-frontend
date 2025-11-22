@@ -734,6 +734,8 @@ export default function AchatPage() {
                           onClick={() => ouvrirModal(i)}
                           style={{
                             marginRight: 8,
+                            marginBottom: 10,
+                            margin: 8,
                             backgroundColor: "#2196f3",
                             color: "white",
                             border: "none",

@@ -689,6 +689,7 @@ export default function VentesPage() {
                           onClick={() => ouvrirModal(i)}
                           style={{
                             marginRight: 8,
+                            marginBottom: 10,
                             backgroundColor: "#2196f3",
                             color: "white",
                             border: "none",

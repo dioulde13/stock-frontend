@@ -37,7 +37,7 @@ const menuItems = [
   {
     href: "/versement",
     icon: "ri-money-dollar-circle-line",
-    label: "Vercement",
+    label: "Versements",
   },
   {
     href: "/utilisateurs",

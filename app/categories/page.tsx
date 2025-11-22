@@ -216,6 +216,7 @@ export default function CategoriePage() {
                     }
                   }
                 } catch (error: any) {
+                  setIsModalOpen(false);
                   console.error(error);
                   showNotification(
                     error.message || "Une erreur est survenue.",

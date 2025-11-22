@@ -46,7 +46,7 @@ export default function ProductsPage() {
     }
   }, [router]);
 
-  console.log(utilisateur);
+  // console.log(utilisateur);
 
   const fetchBoutiques = async () => {
     try {

@@ -4,7 +4,6 @@ import ModalConfirm from "../components/ModalConfirm";
 import { APP_URL } from "../environnement/environnements";
 import { formatMontant } from "../components/utils/formatters";
 
-
 interface VersementTableProps {
   versements: any[];
   onAction: () => void;
@@ -108,7 +107,7 @@ export default function VersementTable({
       <table className="border border-gray-200 rounded-lg overflow-hidden">
         <thead className="bg-gray-100">
           <tr>
-            <th className="px-4 py-2 text-left">ID</th>
+            <th className="px-4 py-2 text-left">Date</th>
             <th className="px-4 py-2 text-left">Vendeur</th>
             <th className="px-4 py-2 text-left">Montant</th>
             <th className="px-4 py-2 text-left">Statut</th>
@@ -118,7 +117,9 @@ export default function VersementTable({
         <tbody>
           {versements.map((v) => (
             <tr key={v.id} className="border-t hover:bg-gray-50 transition">
-              <td className="px-4 py-2">{v.id}</td>
+              <td className="px-4 py-2">
+                {new Date(v.createdAt).toLocaleDateString()}
+              </td>
               <td className="px-4 py-2">{v.vendeur?.nom || "—"}</td>
               <td className="px-4 py-2 font-semibold text-gray-700">
                 {formatMontant(v.montant)}
@@ -143,6 +144,7 @@ export default function VersementTable({
                   className={`px-4 py-2 bg-green-600 text-white font-semibold rounded hover:bg-green-700 transition-colors duration-200 ${
                     isLoading ? "opacity-50 cursor-not-allowed" : ""
                   }`}
+                  style={{ marginBottom: 10, marginLeft: 10 }}
                 >
                   Valider
                 </button>
