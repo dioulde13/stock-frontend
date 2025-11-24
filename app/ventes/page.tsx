@@ -5,6 +5,8 @@ import React from "react";
 import DashboardLayout from "../components/Layout/DashboardLayout";
 import { APP_URL } from "../environnement/environnements";
 import Select from "react-select";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
 
 type Produit = {
   id: number;
@@ -189,7 +191,7 @@ export default function VentesPage() {
         );
       }, 0);
   }, [filteredVentes]);
-  console.log(filteredVentes);
+  // console.log(filteredVentes);
 
   // Total filtré
   const totalAnnulerFiltre = useMemo(() => {
@@ -205,7 +207,7 @@ export default function VentesPage() {
         );
       }, 0);
   }, [filteredVentes]);
-  console.log(filteredVentes);
+  // console.log(filteredVentes);
   // Total filtré
   const totalFiltreAchat = useMemo(() => {
     return filteredVentes
@@ -220,7 +222,7 @@ export default function VentesPage() {
         );
       }, 0);
   }, [filteredVentes]);
-  console.log(filteredVentes);
+  // console.log(filteredVentes);
 
   const beneficeTotal = totalFiltre - totalFiltreAchat;
 
@@ -331,7 +333,7 @@ export default function VentesPage() {
     type: "success" | "error" = "success"
   ) => {
     setNotification({ message, type });
-    setTimeout(() => setNotification(null), 2000); // 2s pour que ce soit plus visible
+    setTimeout(() => setNotification(null), 5000); // 2s pour que ce soit plus visible
   };
 
   const [isLoading, setIsLoading] = useState(false);
@@ -448,37 +450,51 @@ export default function VentesPage() {
   };
 
   const confirmerLigne = () => {
-    const utilisateurIdNum = Number(formUtilisateurId);
-    const produitIdNum = Number(ligneTemp.produitId);
-    const produitNomNum = ligneTemp.produitNom;
-    const quantiteNum = Number(ligneTemp.quantite);
-    const prixAchatNum = Number(ligneTemp.prix_achat);
-    const prixVenteNum = Number(ligneTemp.prix_vente);
+  const utilisateurIdNum = Number(formUtilisateurId);
+  const produitIdNum = Number(ligneTemp.produitId);
+  const produitNomNum = ligneTemp.produitNom;
+  const quantiteNum = Number(ligneTemp.quantite);
+  const prixAchatNum = Number(ligneTemp.prix_achat);
+  const prixVenteNum = Number(ligneTemp.prix_vente);
 
-    if (!produitIdNum || !quantiteNum || !prixVenteNum) {
-      alert("Veuillez remplir tous les champs avec des valeurs valides.");
-      return;
-    }
+  // Validation de base
+  if (!produitIdNum || !quantiteNum || !prixVenteNum) {
+    showNotification(
+      "Veuillez remplir tous les champs.",
+      "error"
+    );
+    return;
+  }
 
-    const nouvelleLigne = {
-      utilisateurId: utilisateurIdNum,
-      produitId: produitIdNum,
-      produitNom: produitNomNum,
-      quantite: quantiteNum,
-      prix_achat: prixAchatNum,
-      prix_vente: prixVenteNum,
-    };
+  // 🚫 Validation que prix de vente >= prix d'achat
+  if (prixVenteNum < prixAchatNum) {
+    showNotification(
+      "Le prix de vente ne peut pas être inférieur au prix d'achat.",
+      "error"
+    );
+    return;
+  }
 
-    if (editingIndex !== null) {
-      const updated = [...lignesVente];
-      updated[editingIndex] = nouvelleLigne;
-      setLignesVente(updated);
-    } else {
-      setLignesVente([...lignesVente, nouvelleLigne]);
-    }
-
-    fermerModal();
+  const nouvelleLigne = {
+    utilisateurId: utilisateurIdNum,
+    produitId: produitIdNum,
+    produitNom: produitNomNum,
+    quantite: quantiteNum,
+    prix_achat: prixAchatNum,
+    prix_vente: prixVenteNum,
   };
+
+  if (editingIndex !== null) {
+    const updated = [...lignesVente];
+    updated[editingIndex] = nouvelleLigne;
+    setLignesVente(updated);
+  } else {
+    setLignesVente([...lignesVente, nouvelleLigne]);
+  }
+
+  fermerModal();
+};
+
 
   const supprimerLigneTemp = (index: number) => {
     const updated = lignesVente.filter((_, i) => i !== index);
@@ -591,6 +607,55 @@ export default function VentesPage() {
       printWindow.print();
       printWindow.close();
     }
+  };
+
+  const exportVentesExcel = () => {
+    // Transformer les ventes en tableau plat pour Excel
+    const data: any[] = [];
+
+    ventesPaginees.forEach((vente) => {
+      vente.LigneVentes.forEach((ligne) => {
+        data.push({
+          // Vente_ID: vente.id,
+          Date: vente.createdAt
+            ? new Intl.DateTimeFormat("fr-FR", {
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+                hour: "2-digit",
+                minute: "2-digit",
+              }).format(new Date(vente.createdAt))
+            : "Date inconnue",
+          TotalVente: vente.total,
+          TypeVente: vente.type,
+          Status: vente.status,
+          Vendeur: vente.vendeurNom || "",
+          Boutique: vente.boutiqueNom || "",
+          NomPersonneAnnuler: vente.nomPersonneAnnuler || "",
+          Produit: ligne.Produit?.nom || ligne.produitNom,
+          Quantite: ligne.quantite,
+          PrixAchat: ligne.prix_achat,
+          PrixVente: ligne.prix_vente,
+          TotalAchat: ligne.quantite * ligne.prix_achat,
+          TotalVenteProduit: ligne.quantite * ligne.prix_vente,
+          Benefice:
+            ligne.quantite * ligne.prix_vente -
+            ligne.quantite * ligne.prix_achat,
+        });
+      });
+    });
+
+    // Créer le fichier Excel
+    const worksheet = XLSX.utils.json_to_sheet(data);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Ventes");
+
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: "xlsx",
+      type: "array",
+    });
+    const blob = new Blob([excelBuffer], { type: "application/octet-stream" });
+    saveAs(blob, "ventes.xlsx");
   };
 
   return (
@@ -818,20 +883,31 @@ export default function VentesPage() {
                     </>
                   )}
                 </div>
-                <div className="flex flex-wrap gap-4 bg-white border rounded-lg mt-2 p-4 text-sm">
-                  <h4 className="mt-2 font-semibold">
-                    Total valider : {totalFiltre.toLocaleString()} GNF
-                  </h4>
-                  {utilisateur?.role && utilisateur?.role === "ADMIN" && (
-                    <>
-                      <h4 className="mt-2 font-semibold">
+                <div className="bg-white border rounded-lg mt-2 p-4 text-sm flex flex-wrap items-center justify-between">
+                  {/* Totaux */}
+                  <div className="flex flex-wrap gap-4 items-center">
+                    <h4 className="font-semibold">
+                      Total valider : {totalFiltre.toLocaleString()} GNF
+                    </h4>
+                    {utilisateur?.role === "ADMIN" && (
+                      <h4 className="font-semibold">
                         Total bénéfice : {beneficeTotal.toLocaleString()} GNF
                       </h4>
-                    </>
-                  )}
-                  <h4 className="mt-2 font-semibold">
-                    Total annuler: {totalAnnulerFiltre.toLocaleString()} GNF
-                  </h4>
+                    )}
+                    <h4 className="font-semibold">
+                      Total annuler: {totalAnnulerFiltre.toLocaleString()} GNF
+                    </h4>
+                  </div>
+
+                  {/* Bouton Export */}
+                  <div>
+                    <button
+                      className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+                      onClick={exportVentesExcel}
+                    >
+                      Exporter en Excel
+                    </button>
+                  </div>
                 </div>
               </section>
 

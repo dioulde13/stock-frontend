@@ -1,7 +1,8 @@
 "use client";
 
 import { formatMontant } from "../components/utils/formatters";
-
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
 
 type Client = {
   id: number;
@@ -15,8 +16,9 @@ type Utilisateur = {
 };
 
 interface Credit {
-  id: number;
+  id: number; 
   reference: string;
+  nom: string;
   description: string;
   montant: number;
   montantRestant: number;
@@ -39,8 +41,45 @@ export default function CreditsTable({
   onDelete: (id: number) => void;
   handleAnnuler: (id: number) => void;
 }) {
+  // Fonction pour exporter en Excel
+  const exportToExcel = () => {
+    // Transformer les crédits en tableau plat
+    const data = credits.map((credit) => ({
+      Date: new Date(credit.createdAt).toLocaleDateString(),
+      Référence: credit.reference,
+      Nom: credit.Client?.nom,
+      Téléphone: credit.Client?.telephone,
+      Montant: credit.montant,
+      "Montant payé": credit.montantPaye,
+      "Montant restant": credit.montantRestant,
+      Description: credit.description,
+      Type: credit.type,
+      Utilisateur: credit.Utilisateur?.nom,
+      Status: credit.status,
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(data);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Crédits");
+
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: "xlsx",
+      type: "array",
+    });
+    const blob = new Blob([excelBuffer], { type: "application/octet-stream" });
+    saveAs(blob, "credits.xlsx");
+  };
+
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+      <div className="flex justify-end p-4">
+        <button
+          className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+          onClick={exportToExcel}
+        >
+          Exporter en Excel
+        </button>
+      </div>
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
@@ -48,14 +87,13 @@ export default function CreditsTable({
               {[
                 "Date",
                 "Référence",
-                "Nom",
+                "Nom client",
                 "Montant",
                 "Montant payé",
                 "Montant restant",
                 "Description",
                 "Type",
                 "Status",
-                // ...(utilisateur.role === "ADMIN" ? ["Status"] : []), // 👈 syntaxe correcte
                 "Actions",
               ].map((header) => (
                 <th
@@ -77,12 +115,22 @@ export default function CreditsTable({
                   {credit.reference}
                 </td>
                 <td className="px-6 py-4 text-sm">
-                  {credit.Client?.nom +
-                    " " +
-                    "(" +
-                    credit.Client?.telephone +
-                    ")"}
+                  {credit === null ? (
+                    <span>Aucun crédit</span>
+                  ) : credit.Client ? (
+                    <span>
+                      <span className="font-medium">{credit.Client?.nom}</span>{" "}
+                      <span className="text-gray-500">
+                        ({credit.Client?.telephone})
+                      </span>
+                    </span>
+                  ) : (
+                    <span className="font-medium">
+                      {credit?.nom}
+                    </span>
+                  )}
                 </td>
+
                 <td className="px-6 py-4 text-sm">
                   {formatMontant(credit.montant)}
                 </td>
@@ -93,8 +141,9 @@ export default function CreditsTable({
                   {formatMontant(credit.montantRestant)}
                 </td>
                 <td className="px-6 py-4 text-sm">{credit.description}</td>
-                <td className="px-6 py-4 text-sm">{credit.type}({credit.Utilisateur?.nom})</td>
-
+                <td className="px-6 py-4 text-sm">
+                  {credit.type} ({credit.Utilisateur?.nom})
+                </td>
                 <td
                   className={`px-6 py-4 text-sm font-semibold ${
                     credit.status === "VALIDER"
@@ -104,18 +153,14 @@ export default function CreditsTable({
                 >
                   {credit.status}
                 </td>
-                {/* {utilisateur.role === "ADMIN" ? ( */}
-                  <td className="px-6 py-4 text-sm flex gap-2">
-                    <button
-                      className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
-                      onClick={() => handleAnnuler(credit.id)}
-                    >
-                      Annuler
-                    </button>
-                  </td>
-                {/* ) : (
-                  ""
-                )} */}
+                <td className="px-6 py-4 text-sm flex gap-2">
+                  <button
+                    className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
+                    onClick={() => handleAnnuler(credit.id)}
+                  >
+                    Annuler
+                  </button>
+                </td>
               </tr>
             ))}
             {credits.length === 0 && (

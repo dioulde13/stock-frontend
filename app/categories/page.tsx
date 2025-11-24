@@ -69,7 +69,7 @@ export default function CategoriePage() {
     type: "success" | "error" = "success"
   ) => {
     setNotification({ message, type });
-    setTimeout(() => setNotification(null), 2000); // 2s pour que ce soit plus visible
+    setTimeout(() => setNotification(null), 4000); // 2s pour que ce soit plus visible
   };
 
   // 🟢 Ouvrir la modale d'ajout/modification
@@ -156,7 +156,11 @@ export default function CategoriePage() {
                   utilisateurId: Number(formData.utilisateurId),
                 };
                 if (!payload.utilisateurId)
-                  return alert("Utilisateur non trouvé !");
+                 
+                  return  showNotification(
+                        "Utilisateur non trouvé !",
+                        "error"
+                      );
 
                 try {
                   if (selectedCategorie) {
@@ -180,11 +184,15 @@ export default function CategoriePage() {
                         data.message || "Erreur lors de la modification.",
                         "error"
                       );
+                      setIsModalOpen(false);
+
                     } else {
                       showNotification(
                         data.message || "Catégorie modifiée avec succès.",
                         "success"
                       );
+                      setIsModalOpen(false);
+
                     }
                   } else {
                     // ➕ Créer
@@ -207,6 +215,7 @@ export default function CategoriePage() {
                         data.message || "Erreur lors de l'ajout.",
                         "error"
                       );
+                      setIsModalOpen(false);
                     } else {
                       setIsModalOpen(false);
                       showNotification(
@@ -228,6 +237,7 @@ export default function CategoriePage() {
                 setSelectedCategorie(null);
                 setFormData({ nom: "", utilisateurId: "" });
               } catch (error) {
+                  setIsModalOpen(false);
                 console.error(error);
                 showNotification(
                   "Impossible de modifier la catégorie.",

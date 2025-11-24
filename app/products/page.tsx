@@ -131,7 +131,7 @@ export default function ProductsPage() {
     type: "success" | "error" = "success"
   ) => {
     setNotification({ message, type });
-    setTimeout(() => setNotification(null), 2000); // 2s pour que ce soit plus visible
+    setTimeout(() => setNotification(null), 6000); // 2s pour que ce soit plus visible
   };
 
   // const handleOpenModal = (produit: any = null) => {
@@ -277,8 +277,16 @@ export default function ProductsPage() {
                   utilisateurId: Number(formData.utilisateurId),
                 };
 
-                if (!payload.utilisateurId)
-                  return alert("Utilisateur non trouvé !");
+                // if (!payload.utilisateurId)
+                //   return showNotification(
+                //   "Utilisateur non trouvé !",
+                //   "error"
+                // );
+
+                if (!payload.utilisateurId) {
+                  showNotification("Utilisateur non trouvé !", "error");
+                  setIsModalOpen(false);
+                }
 
                 const token = localStorage.getItem("token");
                 if (!token) {
@@ -307,6 +315,7 @@ export default function ProductsPage() {
                       data.message || "Erreur lors de la modification.",
                       "error"
                     );
+                    setIsModalOpen(false);
                   } else {
                     showNotification(
                       data.message || "Produit modifié avec succès.",
@@ -330,6 +339,7 @@ export default function ProductsPage() {
                       data.message || "Erreur lors de l'ajout.",
                       "error"
                     );
+                    setIsModalOpen(false);
                   } else {
                     showNotification(
                       data.message || "Produit ajouté avec succès.",
@@ -357,6 +367,7 @@ export default function ProductsPage() {
                   error.message || "Une erreur est survenue.",
                   "error"
                 );
+                setIsModalOpen(false);
               }
             }}
           />

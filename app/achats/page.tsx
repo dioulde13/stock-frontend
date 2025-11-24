@@ -6,7 +6,6 @@ import DashboardLayout from "../components/Layout/DashboardLayout";
 import { APP_URL } from "../environnement/environnements";
 import Select from "react-select";
 
-
 type Fournisseur = {
   id: number;
   nom: string;
@@ -48,6 +47,7 @@ type Achat = {
   vendeurNom?: string;
   boutiqueNom?: string;
   LigneAchats: LigneAchat[];
+  Fournisseur: Fournisseur;
 };
 
 export default function AchatPage() {
@@ -368,7 +368,7 @@ export default function AchatPage() {
     type: "success" | "error" = "success"
   ) => {
     setNotification({ message, type });
-    setTimeout(() => setNotification(null), 2000); // 2s pour que ce soit plus visible
+    setTimeout(() => setNotification(null), 4000); // 2s pour que ce soit plus visible
   };
 
   const creerAchatAvecType = async (
@@ -402,6 +402,7 @@ export default function AchatPage() {
     const payload = {
       utilisateurId,
       fournisseurId,
+      type,
       lignes: lignesFormattees,
     };
 
@@ -427,7 +428,9 @@ export default function AchatPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        return showNotification(data.message || "Erreur inconnue", "error");
+        showNotification(data.message || "Erreur inconnue", "error");
+        fermerConfirmationModal();
+        return;
       }
 
       fermerConfirmationModal();
@@ -518,19 +521,35 @@ export default function AchatPage() {
     const prixAchatNum = Number(ligneTemp.prix_achat);
     const prixVenteNum = Number(ligneTemp.prix_vente);
 
+    // Validation des champs obligatoires
     if (
       !fournisseurIdNum ||
       !produitIdNum ||
       !quantiteNum ||
-      !prixAchatNum ||
-      !prixVenteNum
+      prixAchatNum === 0 ||
+      prixVenteNum === 0
     ) {
-      alert("Veuillez remplir tous les champs avec des valeurs valides.");
+      showNotification(
+        "Veuillez remplir tous les champs avec des valeurs valides.",
+        "error"
+      );
       return;
     }
 
     if (!produitNomNum || !fournisseurNomNum) {
-      alert("Le produit et le fournisseur sont obligatoires.");
+      showNotification(
+        "Le produit et le fournisseur sont obligatoires.",
+        "error"
+      );
+      return;
+    }
+
+    // 🚫 Validation que prix de vente >= prix d'achat
+    if (prixVenteNum < prixAchatNum) {
+      showNotification(
+        "Le prix de vente ne peut pas être inférieur au prix d'achat.",
+        "error"
+      );
       return;
     }
 
@@ -869,6 +888,7 @@ export default function AchatPage() {
                         <th className="px-4 py-2 text-center">Date</th>
                         <th className="px-4 py-2 text-right">Total</th>
                         <th className="px-4 py-2 text-right">Type</th>
+                        <th className="px-4 py-2 text-right">Fournisseur</th>
                         <th className="px-4 py-2 text-right">Status</th>
                         {utilisateur?.role && utilisateur?.role === "ADMIN" && (
                           <>
@@ -937,6 +957,12 @@ export default function AchatPage() {
                               className="px-4 py-2 text-right"
                             >
                               {vente.type}
+                            </td>
+                            <td
+                              style={{ fontSize: 13, fontWeight: "bold" }}
+                              className="px-4 py-2 text-right"
+                            >
+                              {vente.Fournisseur.nom}
                             </td>
                             <td
                               style={{ fontSize: 13, fontWeight: "bold" }}
@@ -1112,7 +1138,9 @@ export default function AchatPage() {
                     </option>
                   ))}
                 </select>
-                <label className="block mb-1 font-medium">Sélectionner un produit :</label>
+                <label className="block mb-1 font-medium">
+                  Sélectionner un produit :
+                </label>
 
                 {/* Sélecteur de produits avec recherche */}
                 <Select
@@ -1247,22 +1275,6 @@ export default function AchatPage() {
               <option value="ACHAT">Achat direct</option>
               <option value="CREDIT">Vente à crédit</option>
             </select>
-
-            {/* Choix client si crédit */}
-            {venteType === "CREDIT" && (
-              <select
-                value={clientId ?? ""}
-                onChange={(e) => setClientId(Number(e.target.value))}
-                className="w-full p-3 border rounded-lg mb-3"
-              >
-                <option value="">-- Sélectionner un client --</option>
-                {clientsData.map((client) => (
-                  <option key={client.id} value={client.id}>
-                    {client.nom}
-                  </option>
-                ))}
-              </select>
-            )}
 
             {/* Boutons */}
             <div className="flex justify-end gap-3 mt-4">
