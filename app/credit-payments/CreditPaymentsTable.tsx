@@ -131,7 +131,16 @@ export default function CreditPaymentsTable({
             {payments.map((p) => (
               <tr key={p.id} className="hover:bg-gray-50">
                 <td className="px-6 py-4">
-                  {new Date(p.createdAt).toLocaleDateString()}
+                  {p.createdAt
+                                ? new Intl.DateTimeFormat("fr-FR", {
+                                    year: "numeric",
+                                    month: "2-digit",
+                                    day: "2-digit",
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                  }).format(new Date(p.createdAt))
+                                : "Date inconnue"}
+                  {/* {new Date(p.createdAt).toLocaleDateString()} */}
                 </td>
                 <td className="px-6 py-4">{p.Credit?.reference}</td>
                 <td className="px-6 py-4">{p.Credit?.Client?.nom}</td>

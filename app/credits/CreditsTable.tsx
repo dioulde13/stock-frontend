@@ -109,7 +109,16 @@ export default function CreditsTable({
             {credits.map((credit) => (
               <tr key={credit.id} className="hover:bg-gray-50">
                 <td className="px-6 py-4 text-sm">
-                  {new Date(credit.createdAt).toLocaleDateString()}
+                  {credit.createdAt
+                                ? new Intl.DateTimeFormat("fr-FR", {
+                                    year: "numeric",
+                                    month: "2-digit",
+                                    day: "2-digit",
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                  }).format(new Date(credit.createdAt))
+                                : "Date inconnue"}
+                  {/* {new Date(credit.createdAt).toLocaleDateString()} */}
                 </td>
                 <td className="px-6 py-4 text-sm font-medium">
                   {credit.reference}

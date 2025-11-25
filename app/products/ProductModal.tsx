@@ -1,6 +1,8 @@
 "use client";
 import React, { useState } from "react";
 import "./ProduitModal.css"; // ✅ Import du CSS
+import Select from "react-select";
+
 
 interface CategorieModalProps {
   dataCategorie: any;

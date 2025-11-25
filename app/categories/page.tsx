@@ -50,6 +50,7 @@ export default function CategoriePage() {
       });
 
       const data = await res.json();
+      console.log(data);
       setCategories(data);
     } catch (error) {
       console.error("Erreur lors du fetch des catégories:", error);
