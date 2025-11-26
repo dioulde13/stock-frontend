@@ -639,12 +639,12 @@ export default function AchatPage() {
 
   return (
     <DashboardLayout>
-      <div style={{ margin: "auto", padding: 20 }}>
+      <div style={{ margin: "auto", padding: 10 }}>
         <div
           style={{
             backgroundColor: "#ffffff",
             borderRadius: 12,
-            padding: 30,
+            padding: 10,
             width: "100%",
             maxWidth: 1200,
             boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
@@ -654,7 +654,7 @@ export default function AchatPage() {
           <section
             style={{
               background: "#f4f4f4",
-              padding: 20,
+              padding: 10,
               borderRadius: 8,
               marginBottom: 30,
             }}
@@ -804,7 +804,7 @@ export default function AchatPage() {
               style={{
                 backgroundColor: "#ffffff",
                 borderRadius: 12,
-                padding: 30,
+                padding: 10,
                 width: "100%",
                 maxWidth: 1200,
                 boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",

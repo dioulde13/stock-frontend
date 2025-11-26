@@ -660,12 +660,12 @@ export default function VentesPage() {
 
   return (
     <DashboardLayout>
-      <div style={{ display: "flex", justifyContent: "center", padding: 20 }}>
+      <div style={{ display: "flex", justifyContent: "center", padding: 10 }}>
         <div
           style={{
             backgroundColor: "#ffffff",
             borderRadius: 12,
-            padding: 30,
+            padding: 10,
             width: "100%",
             maxWidth: 1200,
             boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
@@ -675,7 +675,7 @@ export default function VentesPage() {
           <section
             style={{
               background: "#f4f4f4",
-              padding: 20,
+              padding: 10,
               borderRadius: 8,
               marginBottom: 30,
             }}
@@ -804,7 +804,7 @@ export default function VentesPage() {
               style={{
                 backgroundColor: "#ffffff",
                 borderRadius: 12,
-                padding: 30,
+                padding: 10,
                 width: "100%",
                 maxWidth: 1200,
                 boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
