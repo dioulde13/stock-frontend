@@ -8,12 +8,13 @@ import DashboardLayout from "../components/Layout/DashboardLayout";
 export default function VersementPage() {
   const [versements, setVersements] = useState<any[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [loading, setLoading] = useState(true); // loader activé au démarrage
 
   const fetchVersements = async () => {
+    setLoading(true); // on active le loader avant le fetch
     try {
       const token = localStorage.getItem("token");
       if (!token) {
-        // Redirection automatique si token manquant
         window.location.href = "/login";
         return;
       }
@@ -28,7 +29,9 @@ export default function VersementPage() {
       setVersements(data);
       console.log(data);
     } catch (error) {
-      console.error("Erreur lors du fetch des catégories:", error);
+      console.error("Erreur lors du fetch des versements:", error);
+    } finally {
+      setLoading(false); // on désactive le loader après le fetch
     }
   };
 
@@ -41,14 +44,21 @@ export default function VersementPage() {
     fetchVersements();
   };
 
+  if (loading) {
+    return (
+      <DashboardLayout title="Chargement...">
+        <div className="flex justify-center items-center h-64 text-gray-500 animate-pulse">
+          Chargement des données...
+        </div>
+      </DashboardLayout>
+    );
+  }
+
   return (
     <DashboardLayout title="Versement">
       <div className="p-8 bg-gray-50 min-h-screen">
         <div className="max-w-5xl mx-auto bg-white shadow-md rounded-xl p-6">
           <div className="flex justify-between items-center mb-6">
-            {/* <h1 className="text-2xl font-bold text-gray-700">
-              Gestion des Versements
-            </h1> */}
             <button
               onClick={() => setIsModalOpen(true)}
               className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition"
@@ -57,7 +67,6 @@ export default function VersementPage() {
             </button>
           </div>
 
-          {/* Scroll horizontal pour petit écran */}
           <div className="overflow-x-auto">
             <VersementTable versements={versements} onAction={fetchVersements} />
           </div>

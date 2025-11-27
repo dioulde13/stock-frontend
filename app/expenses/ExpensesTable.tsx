@@ -45,6 +45,9 @@ export default function ExpensesTable({
     type: "success" | "error";
   } | null>(null);
 
+  // ✅ Loading
+  const [loading, setLoading] = useState(false);
+
   const showNotification = (
     message: string,
     type: "success" | "error" = "success"
@@ -54,28 +57,32 @@ export default function ExpensesTable({
   };
 
   // 🔹 Récupération des dépenses
-const fetchDepenses = async () => {
-  try {
-    const data = await getDepenses();
+  const fetchDepenses = async () => {
+    setLoading(true);
+    try {
+      const data = await getDepenses();
 
-    const filteredData = data
-      .filter((depense: any) => depense.status !== "ANNULER")
-      .sort((a: any, b: any) => {
-        // Tri décroissant par createdAt si présent
-        if (a.createdAt && b.createdAt) {
-          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-        }
-        // Sinon tri décroissant par id
-        return b.id - a.id;
-      });
+      const filteredData = data
+        .filter((depense: any) => depense.status !== "ANNULER")
+        .sort((a: any, b: any) => {
+          // Tri décroissant par createdAt si présent
+          if (a.createdAt && b.createdAt) {
+            return (
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+            );
+          }
+          // Sinon tri décroissant par id
+          return b.id - a.id;
+        });
 
-    setExpenses(filteredData);
-  } catch (error) {
-    console.error(error);
-    showNotification("Erreur lors du chargement des dépenses", "error");
-  }
-};
-
+      setExpenses(filteredData);
+    } catch (error) {
+      console.error(error);
+      showNotification("Erreur lors du chargement des dépenses", "error");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     fetchDepenses();
@@ -87,7 +94,6 @@ const fetchDepenses = async () => {
       } catch {}
     }
   }, [refreshTrigger]);
-
 
   // 🔹 Clic sur "Annuler"
   const handleAnnulerClick = (expense: Depense) => {
@@ -145,139 +151,140 @@ const fetchDepenses = async () => {
 
   return (
     <div className="relative bg-white rounded-lg shadow-lg border border-gray-200">
-     {/* ✅ Notification */}
-        {notification && (
-          <div
-            className={`fixed top-5 right-5 px-4 py-2 rounded shadow-lg z-50 ${
-              notification.type === "success"
-                ? "bg-green-500 text-white"
-                : "bg-red-500 text-white"
-            }`}
-          >
-            {notification.message}
-          </div>
-        )}
+      {/* ✅ Notification */}
+      {notification && (
+        <div
+          className={`fixed top-5 right-5 px-4 py-2 rounded shadow-lg z-50 ${
+            notification.type === "success"
+              ? "bg-green-500 text-white"
+              : "bg-red-500 text-white"
+          }`}
+        >
+          {notification.message}
+        </div>
+      )}
 
       {/* 🔹 Filtres */}
-    <div className="p-6 border-b border-gray-200 flex flex-col sm:flex-row gap-4 items-start sm:items-end flex-wrap">
-  {/* Search */}
-  <div className="flex-1 relative w-full sm:w-auto">
-    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-      <i className="ri-search-line text-gray-400"></i>
-    </div>
-    <input
-      type="text"
-      placeholder="Rechercher une dépense..."
-      value={searchTerm}
-      onChange={(e) => setSearchTerm(e.target.value)}
-      className="block w-50 sm:w-[250px] pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 text-sm"
-    />
-  </div>
+      <div className="p-6 border-b border-gray-200 flex flex-col sm:flex-row gap-4 items-start sm:items-end flex-wrap">
+        {/* Search */}
+        <div className="flex-1 relative w-full sm:w-auto">
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <i className="ri-search-line text-gray-400"></i>
+          </div>
+          <input
+            type="text"
+            placeholder="Rechercher une dépense..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="block w-50 sm:w-[250px] pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 text-sm"
+          />
+        </div>
 
-  {/* Date début */}
-  <div className="flex flex-col w-50 sm:w-auto">
-    <label className="text-sm font-medium mb-1">Date début</label>
-    <input
-      type="date"
-      value={dateStart}
-      onChange={(e) => setDateStart(e.target.value)}
-      className="border px-2 py-1 rounded w-50 sm:w-auto"
-    />
-  </div>
+        {/* Date début */}
+        <div className="flex flex-col w-50 sm:w-auto">
+          <label className="text-sm font-medium mb-1">Date début</label>
+          <input
+            type="date"
+            value={dateStart}
+            onChange={(e) => setDateStart(e.target.value)}
+            className="border px-2 py-1 rounded w-50 sm:w-auto"
+          />
+        </div>
 
-  {/* Date fin */}
-  <div className="flex flex-col w-50 sm:w-auto">
-    <label className="text-sm font-medium mb-1">Date fin</label>
-    <input
-      type="date"
-      value={dateEnd}
-      onChange={(e) => setDateEnd(e.target.value)}
-      className="border px-2 py-1 rounded w-50 sm:w-auto"
-    />
-  </div>
+        {/* Date fin */}
+        <div className="flex flex-col w-50 sm:w-auto">
+          <label className="text-sm font-medium mb-1">Date fin</label>
+          <input
+            type="date"
+            value={dateEnd}
+            onChange={(e) => setDateEnd(e.target.value)}
+            className="border px-2 py-1 rounded w-50 sm:w-auto"
+          />
+        </div>
 
-  {/* Total Montant */}
-  <div className="bg-red-50 text-red-700 px-3 py-1 rounded text-sm font-medium w-50 sm:w-auto text-center sm:text-left">
-    Total Montant : {formatMontant(totalMontant)}
-  </div>
-</div>
+        {/* Total Montant */}
+        <div className="bg-red-50 text-red-700 px-3 py-1 rounded text-sm font-medium w-50 sm:w-auto text-center sm:text-left">
+          Total Montant : {formatMontant(totalMontant)}
+        </div>
+      </div>
 
-
-      {/* 🔹 Tableau */}
-      <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200 table-auto">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">
-                Date
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">
-                Dépense
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">
-                Montant
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">
-                Statut
-              </th>
-              {utilisateur.role ==='ADMIN' ? (
+      {loading ? (
+        <p className="p-6 text-center">Chargement...</p>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-200 table-auto">
+            <thead className="bg-gray-50">
+              <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">
-                  Actions
+                  Date
                 </th>
-              ) : (
-                ""
-              )}
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {paginatedExpenses.map((expense) => (
-              <tr key={expense.id} className="hover:bg-gray-50">
-                <td className="px-6 py-4 text-sm text-gray-900">
-                  {new Date(expense.createdAt).toLocaleDateString()}
-                </td>
-                <td className="px-6 py-4 text-sm text-gray-900">
-                  {expense.description}
-                </td>
-                <td className="px-6 py-4 text-sm text-gray-900">
-                  {formatMontant(expense.montant)}
-                </td>
-                <td
-                  className={`px-6 py-4 text-sm font-semibold ${
-                    expense.status === "VALIDER"
-                      ? "text-green-600"
-                      : "text-red-600"
-                  }`}
-                >
-                  {expense.status}
-                </td>
-                {utilisateur.role ==='ADMIN' ? (
-                  <td className="px-6 py-4 text-sm font-medium">
-                    <div className="flex items-center space-x-3">
-                      <button
-                        onClick={() => handleAnnulerClick(expense)}
-                       className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
-                      >
-                        Annuler
-                      </button>
-                    </div>
-                  </td>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">
+                  Dépense
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">
+                  Montant
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">
+                  Statut
+                </th>
+                {utilisateur.role === "ADMIN" ? (
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">
+                    Actions
+                  </th>
                 ) : (
                   ""
                 )}
               </tr>
-            ))}
-            {paginatedExpenses.length === 0 && (
-              <tr>
-                <td colSpan={5} className="px-6 py-4 text-center text-gray-500">
-                  Aucune dépense trouvée
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {paginatedExpenses.map((expense) => (
+                <tr key={expense.id} className="hover:bg-gray-50">
+                  <td className="px-6 py-4 text-sm text-gray-900">
+                    {new Date(expense.createdAt).toLocaleDateString()}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-900">
+                    {expense.description}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-900">
+                    {formatMontant(expense.montant)}
+                  </td>
+                  <td
+                    className={`px-6 py-4 text-sm font-semibold ${
+                      expense.status === "VALIDER"
+                        ? "text-green-600"
+                        : "text-red-600"
+                    }`}
+                  >
+                    {expense.status}
+                  </td>
+                  {utilisateur.role === "ADMIN" ? (
+                    <td className="px-6 py-4 text-sm font-medium">
+                      <div className="flex items-center space-x-3">
+                        <button
+                          onClick={() => handleAnnulerClick(expense)}
+                          className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
+                        >
+                          Annuler
+                        </button>
+                      </div>
+                    </td>
+                  ) : (
+                    ""
+                  )}
+                </tr>
+              ))}
+              {paginatedExpenses.length === 0 && (
+                <tr>
+                  <td colSpan={5} className="px-6 py-4 text-center text-gray-500">
+                    Aucune dépense trouvée
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      )}
 
-      {/* 🔹 Pagination */}
       {pageCount > 1 && (
         <div className="flex justify-center mt-4">
           <button

@@ -92,6 +92,8 @@ export default function ProductsPage() {
     }
   };
 
+  const [loading, setLoading] = useState(true);
+
   const fetchProduits = async () => {
     try {
       const token = localStorage.getItem("token"); // ou sessionStorage / cookie
@@ -117,6 +119,8 @@ export default function ProductsPage() {
       setProduits(filteredData);
     } catch (error) {
       console.error("Erreur lors du fetch des produits:", error);
+    }  finally {
+      setLoading(false);
     }
   };
 
@@ -220,6 +224,17 @@ export default function ProductsPage() {
 
     setIsModalOpen(true);
   };
+
+
+   if (loading) {
+      return (
+        <DashboardLayout title="Chargement...">
+          <div className="flex justify-center items-center h-64 text-gray-500">
+            Chargement des données...
+          </div>
+        </DashboardLayout>
+      );
+    }
 
   return (
     <DashboardLayout title="Liste des produits">

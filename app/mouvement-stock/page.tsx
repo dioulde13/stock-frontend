@@ -112,6 +112,9 @@ export default function MouvementPage() {
     }
   };
 
+  const [loadingMvt, setLoadingMvt] = useState(true);
+
+
   const fetchMouvement = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -134,6 +137,8 @@ export default function MouvementPage() {
       console.log(data);
     } catch (error) {
       console.error("Erreur lors du fetch des mouvements:", error);
+    } finally{
+      setLoadingMvt(false);
     }
   };
 
@@ -237,6 +242,16 @@ export default function MouvementPage() {
       setFormTypeMvt("");
     }
   };
+
+  if (loadingMvt) {
+        return (
+          <DashboardLayout title="Chargement...">
+            <div className="flex justify-center items-center h-64 text-gray-500">
+              Chargement des données...
+            </div>
+          </DashboardLayout>
+        );
+      }
 
   return (
     <DashboardLayout title="Liste des mouvements de stocks">
