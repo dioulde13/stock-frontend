@@ -131,7 +131,7 @@ export default function ProductsPage() {
     type: "success" | "error" = "success"
   ) => {
     setNotification({ message, type });
-    setTimeout(() => setNotification(null), 6000); // 2s pour que ce soit plus visible
+    setTimeout(() => setNotification(null), 5000); // 2s pour que ce soit plus visible
   };
 
   // const handleOpenModal = (produit: any = null) => {

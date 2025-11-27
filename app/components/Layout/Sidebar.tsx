@@ -26,7 +26,7 @@ const menuItems = [
     icon: "ri-exchange-box-line",
     label: "Mouvement stock",
   },
-  { href: "/stock-minimum", icon: "ri-alert-line", label: "Stock minimum" },
+  { href: "/stock-minimum", icon: "ri-alert-line", label: "Produits à réapprovisionner" },
   { href: "/ventes", icon: "ri-shopping-cart-line", label: "Ventes" },
   { href: "/achats", icon: "ri-shopping-bag-3-line", label: "Achats" },
   { href: "/clients", icon: "ri-user-smile-line", label: "Clients" },

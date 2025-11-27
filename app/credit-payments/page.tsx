@@ -38,7 +38,7 @@ export default function CreditPaymentsPage() {
     type: "success" | "error" = "success"
   ) => {
     setNotification({ message, type });
-    setTimeout(() => setNotification(null), 2000); // 2s pour que ce soit plus visible
+    setTimeout(() => setNotification(null), 4000); // 2s pour que ce soit plus visible
   };
 
   useEffect(() => {

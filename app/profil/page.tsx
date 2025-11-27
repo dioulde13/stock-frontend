@@ -45,7 +45,7 @@ export default function ProfilPage() {
     type: "success" | "error" = "success"
   ) => {
     setNotification({ message, type });
-    setTimeout(() => setNotification(null), 2000);
+    setTimeout(() => setNotification(null), 4000);
   };
 
   // --- Modifier les infos utilisateur ---
