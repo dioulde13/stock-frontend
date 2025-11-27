@@ -637,15 +637,15 @@ export default function AchatPage() {
     }).format(prix);
   };
 
-  if (loading) {
-    return (
-      <DashboardLayout title="Chargement...">
-        <div className="flex justify-center items-center h-64 text-gray-500">
-          Chargement des données...
-        </div>
-      </DashboardLayout>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <DashboardLayout title="Chargement...">
+  //       <div className="flex justify-center items-center h-64 text-gray-500">
+  //         Chargement des données...
+  //       </div>
+  //     </DashboardLayout>
+  //   );
+  // }
 
   return (
     <DashboardLayout>
