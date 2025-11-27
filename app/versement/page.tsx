@@ -56,8 +56,8 @@ export default function VersementPage() {
 
   return (
     <DashboardLayout title="Versement">
-      <div className="p-8 bg-gray-50 min-h-screen">
-        <div className="max-w-5xl mx-auto bg-white shadow-md rounded-xl p-6">
+      <div className="p-4 bg-gray-50 min-h-screen">
+        <div className="bg-white shadow-md rounded-xl p-6">
           <div className="flex justify-between items-center mb-6">
             <button
               onClick={() => setIsModalOpen(true)}

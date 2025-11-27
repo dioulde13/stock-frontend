@@ -11,6 +11,7 @@ export default function UtilisateurPage() {
   const router = useRouter();
 
   const [authChecked, setAuthChecked] = useState(false);
+  const [loading, setLoading] = useState(false); // ✅ Loading
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedUtilisateur, setSelectedUtilisateur] = useState<any>(null);
   const [utilisateurs, setUtilisateurs] = useState<any[]>([]);
@@ -23,23 +24,29 @@ export default function UtilisateurPage() {
   });
 
   useEffect(() => {
-    // On client only
     const isAuthenticated = localStorage.getItem("isAuthenticated");
     if (!isAuthenticated) {
       router.push("/login");
     } else {
       // Authenticated: fetch data
-      fetchUtilisateurs();
-      fetchBoutiques();
+      fetchAllData();
     }
     setAuthChecked(true);
   }, [router]);
+
+  const fetchAllData = async () => {
+    setLoading(true); // ✅ début du chargement
+    try {
+      await Promise.all([fetchUtilisateurs(), fetchBoutiques()]);
+    } finally {
+      setLoading(false); // ✅ fin du chargement
+    }
+  };
 
   const fetchBoutiques = async () => {
     try {
       const token = localStorage.getItem("token");
       if (!token) {
-        // Not authenticated: redirect
         window.location.href = "/login";
         return;
       }
@@ -53,9 +60,7 @@ export default function UtilisateurPage() {
           },
         }
       );
-      if (!res.ok) {
-        throw new Error("Erreur lors du chargement des boutiques");
-      }
+      if (!res.ok) throw new Error("Erreur lors du chargement des boutiques");
       const data = await res.json();
       setBoutiques(data);
     } catch (error) {
@@ -77,9 +82,7 @@ export default function UtilisateurPage() {
           Authorization: `Bearer ${token}`,
         },
       });
-      if (!res.ok) {
-        throw new Error("Erreur lors du chargement des utilisateurs");
-      }
+      if (!res.ok) throw new Error("Erreur lors du chargement des utilisateurs");
       const data = await res.json();
       setUtilisateurs(data);
     } catch (error) {
@@ -111,7 +114,6 @@ export default function UtilisateurPage() {
   };
 
   if (!authChecked) {
-    // While checking auth: render a placeholder (same on server & client)
     return (
       <DashboardLayout title="Liste des clients">
         <div>Loading…</div>
@@ -135,16 +137,20 @@ export default function UtilisateurPage() {
           </button>
         </div>
 
-        <UtilisateurTable
-          utilisateurs={utilisateurs}
-          fetchUtilisateurs={fetchUtilisateurs}
-          showNotification={showNotification}
-          handleOpenModal={handleOpenModal}
-          formData={formData}
-          setFormData={setFormData}
-          selectedUtilisateur={selectedUtilisateur}
-          setSelectedUtilisateur={setSelectedUtilisateur}
-        />
+        {loading ? (
+          <div className="p-6 text-center text-gray-700">Chargement…</div>
+        ) : (
+          <UtilisateurTable
+            utilisateurs={utilisateurs}
+            fetchUtilisateurs={fetchUtilisateurs}
+            showNotification={showNotification}
+            handleOpenModal={handleOpenModal}
+            formData={formData}
+            setFormData={setFormData}
+            selectedUtilisateur={selectedUtilisateur}
+            setSelectedUtilisateur={setSelectedUtilisateur}
+          />
+        )}
 
         {isModalOpen && (
           <UtilisateurModal
@@ -169,9 +175,7 @@ export default function UtilisateurPage() {
                     `${APP_URL}/api/utilisateur/${selectedUtilisateur.id}`,
                     {
                       method: "PUT",
-                      headers: {
-                        "Content-Type": "application/json",
-                      },
+                      headers: { "Content-Type": "application/json" },
                       body: JSON.stringify(payload),
                     }
                   );
@@ -179,9 +183,7 @@ export default function UtilisateurPage() {
                 } else {
                   await fetch(`${APP_URL}/api/utilisateur/create`, {
                     method: "POST",
-                    headers: {
-                      "Content-Type": "application/json",
-                    },
+                    headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(payload),
                   });
                   showNotification("Utilisateur ajouté avec succès.");
@@ -189,11 +191,7 @@ export default function UtilisateurPage() {
 
                 await fetchUtilisateurs();
                 setSelectedUtilisateur(null);
-                setFormData({
-                  nom: "",
-                  email: "",
-                  boutiqueId: 0,
-                });
+                setFormData({ nom: "", email: "", boutiqueId: 0 });
                 setIsModalOpen(false);
               } catch (error) {
                 console.error("Erreur API utilisateur :", error);
