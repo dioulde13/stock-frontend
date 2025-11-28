@@ -34,16 +34,17 @@ const menuItems = [
   { href: "/credits", icon: "ri-bank-card-line", label: "Crédits" },
   { href: "/credit-payments", icon: "ri-cash-line", label: "Paiement crédits" },
   { href: "/expenses", icon: "ri-money-dollar-circle-line", label: "Dépenses" },
-  {
-    href: "/versement",
-    icon: "ri-money-dollar-circle-line",
-    label: "Versements",
-  },
-   {
-    href: "/rechargements",
-    icon: "ri-money-dollar-circle-line",
-    label: "Recharment",
-  },
+ {
+  href: "/versement",
+  icon: "ri-exchange-dollar-line",
+  label: "Versements",
+},
+{
+  href: "/rechargements",
+  icon: "ri-battery-charge-line",
+  label: "Rechargements",
+},
+
   {
     href: "/utilisateurs",
     icon: "ri-user-settings-line",
