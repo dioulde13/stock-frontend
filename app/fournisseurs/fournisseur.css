@@ -17,8 +17,8 @@
   background: #fff;
   border-radius: 12px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-  width: 60%;
-  max-width: 80%;
+  width: 90%;
+  max-width: 90%;
   max-height: 90vh; /* limite la hauteur */
   overflow-y: auto; /* scroll interne si nécessaire */
   animation: fadeIn 0.3s ease;

@@ -39,6 +39,11 @@ const menuItems = [
     icon: "ri-money-dollar-circle-line",
     label: "Versements",
   },
+   {
+    href: "/rechargements",
+    icon: "ri-money-dollar-circle-line",
+    label: "Recharment",
+  },
   {
     href: "/utilisateurs",
     icon: "ri-user-settings-line",

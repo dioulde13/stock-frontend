@@ -4,15 +4,15 @@ import ModalConfirm from "../components/ModalConfirm";
 import { APP_URL } from "../environnement/environnements";
 import { formatMontant } from "../components/utils/formatters";
 
-interface VersementTableProps {
-  versements: any[];
+interface RechargementTableProps {
+  rechargement: any[];
   onAction: () => void;
 }
 
 export default function VersementTable({
-  versements,
+  rechargement,
   onAction,
-}: VersementTableProps) {
+}: RechargementTableProps) {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [selectedAction, setSelectedAction] = useState<
@@ -54,7 +54,7 @@ export default function VersementTable({
 
     try {
       const response = await fetch(
-        `${APP_URL}/api/versement/${selectedAction}/${selectedId}`,
+        `${APP_URL}/api/rechargement/${selectedAction}/${selectedId}`,
         {
           method: "PUT",
           headers: {
@@ -110,13 +110,13 @@ export default function VersementTable({
             <th className="px-4 py-2 text-left">Date</th>
             <th className="px-4 py-2 text-left">Vendeur</th>
             <th className="px-4 py-2 text-left">Montant</th>
-            <th className="px-4 py-2 text-left">Type</th>
+            {/* <th className="px-4 py-2 text-left">Type</th> */}
             <th className="px-4 py-2 text-left">Statut</th>
             <th className="px-4 py-2 text-left">Actions</th>
           </tr>
         </thead>
         <tbody>
-          {versements.map((v) => (
+          {rechargement.map((v) => (
             <tr key={v.id} className="border-t hover:bg-gray-50 transition">
               <td className="px-4 py-2">
                 {new Date(v.createdAt).toLocaleDateString()}
@@ -125,9 +125,9 @@ export default function VersementTable({
               <td className="px-4 py-2 font-semibold text-gray-700">
                 {formatMontant(v.montant)}
               </td>
-              <td className="px-4 py-2 font-semibold text-gray-700">
+              {/* <td className="px-4 py-2 font-semibold text-gray-700">
                 {v.type}
-              </td>
+              </td> */}
               <td className="px-4 py-2">
                 <span
                   className={`px-3 py-1 rounded-full text-sm ${

@@ -1,16 +1,43 @@
 "use client";
 import { useEffect, useState } from "react";
-import VersementTable from "./VersementTable";
-import VersementModal from "./VersementModal";
+import RechargementTable from "./RechargementTable";
+import RechargementModal from "./RechargementModal";
 import { APP_URL } from "../environnement/environnements";
 import DashboardLayout from "../components/Layout/DashboardLayout";
 
-export default function VersementPage() {
-  const [versements, setVersements] = useState<any[]>([]);
+export default function RechargementPage() {
+  const [rechargments, setRechargments] = useState<any[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(true); // loader activé au démarrage
+  const [boutiques, setBoutiques] = useState<any[]>([]);
 
-  const fetchVersements = async () => {
+
+  const fetchBoutiques = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        window.location.href = "/login";
+        return;
+      }
+      const res = await fetch(
+        `${APP_URL}/api/boutique/listeBoutiqueParAdmin`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (!res.ok) throw new Error("Erreur lors du chargement des boutiques");
+      const data = await res.json();
+      setBoutiques(data);
+    } catch (error) {
+      console.error("Erreur lors du fetch des boutiques:", error);
+    }
+  };
+
+  const fetchRechargments = async () => {
     // setLoading(true); // on active le loader avant le fetch
     try {
       const token = localStorage.getItem("token");
@@ -19,14 +46,14 @@ export default function VersementPage() {
         return;
       }
 
-      const res = await fetch(`${APP_URL}/api/versement/liste`, {
+      const res = await fetch(`${APP_URL}/api/rechargement/liste`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
       const data = await res.json();
-      setVersements(data);
+      setRechargments(data);
       console.log(data);
     } catch (error) {
       console.error("Erreur lors du fetch des versements:", error);
@@ -36,12 +63,13 @@ export default function VersementPage() {
   };
 
   useEffect(() => {
-    fetchVersements();
+    fetchRechargments();
+    fetchBoutiques();
   }, []);
 
-  const handleVersementAdded = () => {
+  const handleRechargementAdded = () => {
     setIsModalOpen(false);
-    fetchVersements();
+    fetchRechargments();
   };
 
   if (loading) {
@@ -68,13 +96,14 @@ export default function VersementPage() {
           </div>
 
           <div className="overflow-x-auto">
-            <VersementTable versements={versements} onAction={fetchVersements} />
+            <RechargementTable rechargement={rechargments}  onAction={fetchRechargments} />
           </div>
 
           {isModalOpen && (
-            <VersementModal
+            <RechargementModal
+            boutiques={boutiques}
               onClose={() => setIsModalOpen(false)}
-              onAdd={handleVersementAdded}
+              onAdd={handleRechargementAdded}
             />
           )}
         </div>
