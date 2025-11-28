@@ -108,7 +108,7 @@ export default function VersementTable({
         <thead className="bg-gray-100">
           <tr>
             <th className="px-4 py-2 text-left">Date</th>
-            <th className="px-4 py-2 text-left">Vendeur</th>
+            {/* <th className="px-4 py-2 text-left">Vendeur</th> */}
             <th className="px-4 py-2 text-left">Montant</th>
             {/* <th className="px-4 py-2 text-left">Type</th> */}
             <th className="px-4 py-2 text-left">Statut</th>
@@ -121,7 +121,7 @@ export default function VersementTable({
               <td className="px-4 py-2">
                 {new Date(v.createdAt).toLocaleDateString()}
               </td>
-              <td className="px-4 py-2">{v.vendeur?.nom || "—"}</td>
+              {/* <td className="px-4 py-2">{v.vendeur?.nom || "—"}</td> */}
               <td className="px-4 py-2 font-semibold text-gray-700">
                 {formatMontant(v.montant)}
               </td>
