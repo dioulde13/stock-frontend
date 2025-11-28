@@ -83,7 +83,7 @@ export default function RechargementPage() {
   }
 
   return (
-    <DashboardLayout title="Versement">
+    <DashboardLayout title="Rechargement">
       <div className="p-4 bg-gray-50 min-h-screen">
         <div className="bg-white shadow-md rounded-xl p-6">
           <div className="flex justify-between items-center mb-6">
