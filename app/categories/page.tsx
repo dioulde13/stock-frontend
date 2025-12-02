@@ -7,13 +7,17 @@ import CategorieModal from "./CategorieModal";
 import DashboardLayout from "../components/Layout/DashboardLayout";
 import { APP_URL } from "../environnement/environnements";
 
+interface Utilisateur {
+  role: string;
+}
+
 export default function CategoriePage() {
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCategorie, setSelectedCategorie] = useState<any>(null);
   const [categories, setCategories] = useState<any[]>([]);
   const [formData, setFormData] = useState({ nom: "", utilisateurId: "" });
-  const [utilisateur, setUtilisateur] = useState<any[]>([]);
+  const [utilisateur, setUtilisateur] = useState<Utilisateur | null>(null);
   const [loading, setLoading] = useState(true);
 
   // 🔒 Vérification connexion + chargement catégories
@@ -112,19 +116,21 @@ export default function CategoriePage() {
   return (
     <DashboardLayout title="Liste des catégories">
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          {/* <h2 className="text-2xl font-bold text-gray-900">
-            Gestion des catégories
-          </h2> */}
-          <button
-            onClick={() => handleOpenModal()}
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2 whitespace-nowrap"
-          >
-            <i className="ri-add-line"></i>
-            <span>Ajouter</span>
-          </button>
-        </div>
-
+        <>
+          {utilisateur?.role !== "ADMIN" ? (
+            <div className="flex items-center justify-between">
+              <button
+                onClick={() => handleOpenModal()}
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2 whitespace-nowrap"
+              >
+                <i className="ri-add-line"></i>
+                <span>Ajouter</span>
+              </button>
+            </div>
+          ) : (
+            ""
+          )}
+        </>
         <CategorieTable
           categories={categories}
           utilisateur={utilisateur}
@@ -157,11 +163,7 @@ export default function CategoriePage() {
                   utilisateurId: Number(formData.utilisateurId),
                 };
                 if (!payload.utilisateurId)
-                 
-                  return  showNotification(
-                        "Utilisateur non trouvé !",
-                        "error"
-                      );
+                  return showNotification("Utilisateur non trouvé !", "error");
 
                 try {
                   if (selectedCategorie) {
@@ -186,14 +188,12 @@ export default function CategoriePage() {
                         "error"
                       );
                       setIsModalOpen(false);
-
                     } else {
                       showNotification(
                         data.message || "Catégorie modifiée avec succès.",
                         "success"
                       );
                       setIsModalOpen(false);
-
                     }
                   } else {
                     // ➕ Créer
@@ -238,7 +238,7 @@ export default function CategoriePage() {
                 setSelectedCategorie(null);
                 setFormData({ nom: "", utilisateurId: "" });
               } catch (error) {
-                  setIsModalOpen(false);
+                setIsModalOpen(false);
                 console.error(error);
                 showNotification(
                   "Impossible de modifier la catégorie.",

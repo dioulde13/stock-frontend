@@ -13,6 +13,10 @@ type TypeMvt = {
   type: string;
 };
 
+interface Utilisateur {
+  role: string;
+}
+
 export default function MouvementPage() {
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -33,7 +37,7 @@ export default function MouvementPage() {
   const [formTypeMvt, setFormTypeMvt] = useState("");
   const [loadingSubmit, setLoadingSubmit] = useState(false);
 
-  const [utilisateur, setUtilisateur] = useState<any[]>([]);
+  const [utilisateur, setUtilisateur] = useState<Utilisateur | null>(null);
 
   const [formData, setFormData] = useState({
     motif: "",
@@ -114,7 +118,6 @@ export default function MouvementPage() {
 
   const [loadingMvt, setLoadingMvt] = useState(true);
 
-
   const fetchMouvement = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -132,12 +135,12 @@ export default function MouvementPage() {
       });
       let data = await res.json();
 
-      data = data.filter((mvt: any) => mvt.status !== "ANNULER");
+      // data = data.filter((mvt: any) => mvt.status !== "ANNULER");
       setMouvement(data);
       console.log(data);
     } catch (error) {
       console.error("Erreur lors du fetch des mouvements:", error);
-    } finally{
+    } finally {
       setLoadingMvt(false);
     }
   };
@@ -244,34 +247,33 @@ export default function MouvementPage() {
   };
 
   if (loadingMvt) {
-        return (
-          <DashboardLayout title="Chargement...">
-            <div className="flex justify-center items-center h-64 text-gray-500">
-              Chargement des données...
-            </div>
-          </DashboardLayout>
-        );
-      }
+    return (
+      <DashboardLayout title="Chargement...">
+        <div className="flex justify-center items-center h-64 text-gray-500">
+          Chargement des données...
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout title="Liste des mouvements de stocks">
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          {/* <button
-            onClick={() => openModal("addTypeMvt")}
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
-          >
-            Ajouter type
-          </button> */}
-          <button
-            onClick={() => handleOpenModal()}
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2 whitespace-nowrap"
-          >
-            <i className="ri-add-line"></i>
-            <span>Ajouter</span>
-          </button>
-        </div>
-
+        <>
+          {utilisateur?.role !== "ADMIN" ? (
+            <div className="flex items-center justify-between">
+              <button
+                onClick={() => handleOpenModal()}
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2 whitespace-nowrap"
+              >
+                <i className="ri-add-line"></i>
+                <span>Ajouter</span>
+              </button>
+            </div>
+          ) : (
+            ""
+          )}
+        </>
         <MouvementTable
           mouvement={mouvement}
           utilisateur={utilisateur}

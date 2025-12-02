@@ -179,7 +179,7 @@ export default function MouvementStockTable({
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Type
               </th>
-              {utilisateur.role === "ADMIN" ? (
+              {utilisateur.role !== "ADMIN" ? (
                 <>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Utilisateur
@@ -208,26 +208,20 @@ export default function MouvementStockTable({
                   {mvt.Produit?.nom}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  {mvt.TypeMvt?.type}
+                  {mvt.TypeMvt?.type}{" "}
+                 
                 </td>
-                {utilisateur.role === "ADMIN" ? (
+                {utilisateur.role !== "ADMIN" ? (
                   <>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                       {mvt.Utilisateur?.nom || "—"}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      {mvt.status}
+                      {mvt.status}  {mvt.nomPersonneAnnuler === null
+                    ? ""
+                    : `${"(" + mvt.nomPersonneAnnuler + ")"}`}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium flex space-x-2">
-                      {/* <button
-                        onClick={() => {
-                          setSelectedMouvement(mvt);
-                          setShowModalSupprimer(true);
-                        }}
-                        className="text-red-600 hover:text-red-900 p-1 rounded"
-                      >
-                        <i className="ri-delete-bin-line"></i>
-                      </button> */}
                       <button
                         onClick={() => {
                           setSelectedMouvement(mvt);

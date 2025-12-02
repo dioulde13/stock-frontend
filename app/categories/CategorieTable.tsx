@@ -79,13 +79,13 @@ export default function CategorieTable({
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Utilisateur
               </th>
-              {utilisateur.role === "ADMIN" ? (
+              {/* {utilisateur.role === "ADMIN" ? ( */}
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Actions
                 </th>
-              ) : (
+              {/* ) : (
                 ""
-              )}
+              )} */}
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
@@ -95,7 +95,7 @@ export default function CategorieTable({
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                   {categorie.Utilisateur?.nom || "—"}
                 </td>
-                {utilisateur.role === "ADMIN" ? (
+                {utilisateur.role !== "ADMIN" ? (
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <div className="flex items-center space-x-2">
                       <button
@@ -104,17 +104,15 @@ export default function CategorieTable({
                       >
                         <i className="ri-edit-line"></i>
                       </button>
-
-                      <button
-                        onClick={() => handleDelete(categorie.id)}
-                        className="text-red-600 hover:text-red-900 p-1 rounded"
-                      >
-                        <i className="ri-delete-bin-line"></i>
-                      </button>
                     </div>
                   </td>
                 ) : (
-                  ""
+                  <button
+                    onClick={() => handleDelete(categorie.id)}
+                    className="text-red-600 hover:text-red-900 p-1 rounded"
+                  >
+                    <i className="ri-delete-bin-line"></i>
+                  </button>
                 )}
               </tr>
             ))}

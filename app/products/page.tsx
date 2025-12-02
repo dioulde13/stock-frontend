@@ -7,6 +7,10 @@ import ProduitModal from "./ProductModal";
 import DashboardLayout from "../components/Layout/DashboardLayout";
 import { APP_URL } from "../environnement/environnements";
 
+interface Utilisateur {
+  role: string;
+}
+
 export default function ProductsPage() {
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -14,7 +18,7 @@ export default function ProductsPage() {
   const [dataCategorie, setDataCategorie] = useState<any>(null);
   const [dataBoutique, setDataBoutique] = useState<any>(null);
   const [produits, setProduits] = useState<any[]>([]);
-  const [utilisateur, setUtilisateur] = useState<any[]>([]);
+  const [utilisateur, setUtilisateur] = useState<Utilisateur | null>(null);
 
   const [formData, setFormData] = useState({
     nom: "",
@@ -119,7 +123,7 @@ export default function ProductsPage() {
       setProduits(filteredData);
     } catch (error) {
       console.error("Erreur lors du fetch des produits:", error);
-    }  finally {
+    } finally {
       setLoading(false);
     }
   };
@@ -225,29 +229,34 @@ export default function ProductsPage() {
     setIsModalOpen(true);
   };
 
-
-   if (loading) {
-      return (
-        <DashboardLayout title="Chargement...">
-          <div className="flex justify-center items-center h-64 text-gray-500">
-            Chargement des données...
-          </div>
-        </DashboardLayout>
-      );
-    }
+  if (loading) {
+    return (
+      <DashboardLayout title="Chargement...">
+        <div className="flex justify-center items-center h-64 text-gray-500">
+          Chargement des données...
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout title="Liste des produits">
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <button
-            onClick={() => handleOpenModal()}
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2 whitespace-nowrap"
-          >
-            <i className="ri-add-line"></i>
-            <span>Ajouter</span>
-          </button>
-        </div>
+        <>
+          {utilisateur?.role !== "ADMIN" ? (
+            <div className="flex items-center justify-between">
+              <button
+                onClick={() => handleOpenModal()}
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2 whitespace-nowrap"
+              >
+                <i className="ri-add-line"></i>
+                <span>Ajouter</span>
+              </button>
+            </div>
+          ) : (
+            ""
+          )}
+        </>
 
         <ProduitTable
           produits={produits}
