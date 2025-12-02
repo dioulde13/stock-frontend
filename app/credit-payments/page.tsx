@@ -20,7 +20,7 @@ export default function CreditPaymentsPage() {
 
   // Pagination
   const [currentPage, setCurrentPage] = useState(0);
-  const itemsPerPage = 5;
+  const itemsPerPage = 10;
 
   // Recherche + filtre dates
   const [searchTerm, setSearchTerm] = useState("");
@@ -58,7 +58,7 @@ export default function CreditPaymentsPage() {
 
   const fetchPayments = async () => {
     try {
-      setLoading(true);
+      // setLoading(true);
       const data = await getPayments();
       console.log(data);
       setPayments(data);
@@ -69,10 +69,6 @@ export default function CreditPaymentsPage() {
     }
   };
 
-  // const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   setFormData({ ...formData, [e.target.name]: e.target.value });
-  // };
-
   const handleSubmit = async () => {
     if (!formData.reference || !formData.utilisateurId || !formData.montant) {
       setIsModalOpen(false);
@@ -80,12 +76,12 @@ export default function CreditPaymentsPage() {
     }
 
     try {
-      setLoading(true);
       const response = await addPayment({
         reference: formData.reference,
         utilisateurId: Number(formData.utilisateurId),
         montant: Number(formData.montant),
       });
+
       setIsModalOpen(false);
 
       showNotification(
@@ -98,10 +94,13 @@ export default function CreditPaymentsPage() {
         utilisateurId: formData.utilisateurId,
         montant: 0,
       });
+
       await fetchPayments();
     } catch (error: any) {
+      setIsModalOpen(false);
+
       showNotification(
-        error.message || "Erreur lors de l'enregistrement du paiement",
+        error?.message || "Erreur lors de l'enregistrement du paiement",
         "error"
       );
     } finally {
@@ -144,14 +143,14 @@ export default function CreditPaymentsPage() {
   );
 
   if (loading) {
-        return (
-          <DashboardLayout title="Chargement...">
-            <div className="flex justify-center items-center h-64 text-gray-500">
-              Chargement des données...
-            </div>
-          </DashboardLayout>
-        );
-      }
+    return (
+      <DashboardLayout title="Chargement...">
+        <div className="flex justify-center items-center h-64 text-gray-500">
+          Chargement des données...
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout title="Paiement crédits">

@@ -141,7 +141,6 @@ export default function ExpenseModal({
               : (expense ? "Modifier" : "Ajouter")}
           </button>
         </div>
-
       </div>
     </div>
   );

@@ -805,7 +805,7 @@ export default function AchatPage() {
                 cursor: creating ? "not-allowed" : "pointer",
               }}
             >
-              {creating ? "Création..." : "Créer la vente"}
+              {creating ? "Création..." : "Confirmer l'achat"}
             </button>
           </section>
 
@@ -1272,7 +1272,7 @@ export default function AchatPage() {
         animate-[fadeIn_0.2s_ease-out]
       "
           >
-            <h2 className="text-xl font-semibold mb-4">Confirmer la vente</h2>
+            <h2 className="text-xl font-semibold mb-4">Confirmer l'achat</h2>
 
             {/* Type de vente */}
             <select
@@ -1283,7 +1283,7 @@ export default function AchatPage() {
               className="w-full p-3 border rounded-lg mb-3"
             >
               <option value="ACHAT">Achat direct</option>
-              <option value="CREDIT">Vente à crédit</option>
+              <option value="CREDIT">Achat à crédit</option>
             </select>
 
             {/* Boutons */}
