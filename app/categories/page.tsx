@@ -249,8 +249,20 @@ export default function CategoriePage() {
           />
         )}
 
-        {/* ✅ Notification */}
         {notification && (
+          <div
+            className={`fixed top-5 left-1/2 -translate-x-1/2 px-4 py-2 rounded shadow-lg z-50 ${
+              notification.type === "success"
+                ? "bg-green-500 text-white"
+                : "bg-red-500 text-white"
+            }`}
+          >
+            {notification.message}
+          </div>
+        )}
+
+        {/* ✅ Notification */}
+        {/* {notification && (
           <div
             className={`fixed top-5 right-5 px-4 py-2 rounded shadow-lg z-50 ${
               notification.type === "success"
@@ -260,7 +272,7 @@ export default function CategoriePage() {
           >
             {notification.message}
           </div>
-        )}
+        )} */}
       </div>
     </DashboardLayout>
   );

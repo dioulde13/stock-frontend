@@ -139,47 +139,8 @@ export default function ProductsPage() {
     type: "success" | "error" = "success"
   ) => {
     setNotification({ message, type });
-    setTimeout(() => setNotification(null), 5000); // 2s pour que ce soit plus visible
+    setTimeout(() => setNotification(null), 5000);
   };
-
-  // const handleOpenModal = (produit: any = null) => {
-  //   setSelectedProduit(produit);
-
-  //   const user = localStorage.getItem("utilisateur");
-  //   let utilisateurId = "";
-  //   if (user) {
-  //     try {
-  //       const parsedUser = JSON.parse(user);
-  //       utilisateurId = parsedUser.id ? String(parsedUser.id) : "";
-  //     } catch {}
-  //   }
-
-  //   if (produit) {
-  //     setFormData({
-  //       nom: produit.nom || "",
-  //       prix_achat: produit.prix_achat || 0,
-  //       prix_vente: produit.prix_vente || 0,
-  //       stock_actuel: produit.stock_actuel || 0,
-  //       stock_minimum: produit.stock_minimum || 0,
-  //       categorieId: produit.categorieId || 0,
-  //       boutiqueId: produit.boutiqueId || 0,
-  //       utilisateurId: String(produit.utilisateurId || utilisateurId),
-  //     });
-  //   } else {
-  //     setFormData({
-  //       nom: "",
-  //       prix_achat: 0,
-  //       prix_vente: 0,
-  //       stock_actuel: 0,
-  //       stock_minimum: 0,
-  //       categorieId: 0,
-  //       boutiqueId: 0,
-  //       utilisateurId,
-  //     });
-  //   }
-
-  //   setIsModalOpen(true);
-  // };
 
   const handleOpenModal = (produit: any = null) => {
     setSelectedProduit(produit);
@@ -288,6 +249,7 @@ export default function ProductsPage() {
             formData={formData}
             setFormData={setFormData}
             onClose={() => setIsModalOpen(false)}
+            isEditing={!!selectedProduit} // <-- ici
             handleSubmit={async () => {
               try {
                 const payload = {
@@ -397,8 +359,20 @@ export default function ProductsPage() {
           />
         )}
 
-        {/* ✅ Notification */}
         {notification && (
+          <div
+            className={`fixed top-5 left-1/2 -translate-x-1/2 px-4 py-2 rounded shadow-lg z-50 ${
+              notification.type === "success"
+                ? "bg-green-500 text-white"
+                : "bg-red-500 text-white"
+            }`}
+          >
+            {notification.message}
+          </div>
+        )}
+
+        {/* ✅ Notification */}
+        {/* {notification && (
           <div
             className={`fixed top-5 right-5 px-4 py-2 rounded shadow-lg z-50 ${
               notification.type === "success"
@@ -408,7 +382,7 @@ export default function ProductsPage() {
           >
             {notification.message}
           </div>
-        )}
+        )} */}
       </div>
     </DashboardLayout>
   );

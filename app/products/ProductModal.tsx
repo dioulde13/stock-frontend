@@ -1,8 +1,7 @@
 "use client";
-import React, { useState } from "react";
-import "./ProduitModal.css"; // ✅ Import du CSS
-import Select from "react-select";
 
+import React, { useState } from "react";
+import "./ProduitModal.css";
 
 interface CategorieModalProps {
   dataCategorie: any;
@@ -21,6 +20,7 @@ interface CategorieModalProps {
   setFormData: (data: any) => void;
   onClose: () => void;
   handleSubmit: () => void;
+  isEditing: boolean; // ✅ ajout de la prop
 }
 
 export default function ProduitModal({
@@ -31,16 +31,20 @@ export default function ProduitModal({
   dataCategorie,
   dataBoutique,
   utilisateur,
+  isEditing,
 }: CategorieModalProps) {
-  const [isLoading, setIsLoading] = useState(false); // 🚀 état loading
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [prixErreur, setPrixErreur] = useState("");
+  const [quantiteErreur, setQuantiteErreur] = useState("");
 
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true); // démarre le loading
+    setIsLoading(true);
     try {
-      await handleSubmit(); // attend que l'API se termine
+      await handleSubmit();
     } finally {
-      setIsLoading(false); // termine le loading
+      setIsLoading(false);
     }
   };
 
@@ -48,14 +52,13 @@ export default function ProduitModal({
     <div className="modal-overlay">
       <div className="modal-container">
         <div className="modal-header">
-          <h3>Ajouter / Modifier un produit</h3>
+          <h3>{isEditing ? "Modifier un produit" : "Ajouter un produit"}</h3>
           <button onClick={onClose} className="close-btn">
             <i className="ri-close-line"></i>
           </button>
         </div>
 
         <form onSubmit={handleFormSubmit} className="modal-form">
-          {/* Nom du produit */}
           <div className="form-group">
             <label>Nom du produit</label>
             <input
@@ -69,7 +72,6 @@ export default function ProduitModal({
             />
           </div>
 
-          {/* Prix Achat / Vente */}
           <div className="form-row">
             <div className="form-group">
               <label>Prix d'achat</label>
@@ -103,17 +105,31 @@ export default function ProduitModal({
                 }
                 onChange={(e) => {
                   const rawValue = e.target.value.replace(/\s/g, "");
+                  const prixVente = Number(rawValue) || 0;
+
                   setFormData({
                     ...formData,
-                    prix_vente: Number(rawValue) || 0,
+                    prix_vente: prixVente,
                   });
+
+                  if (prixVente <= formData.prix_achat) {
+                    setPrixErreur(
+                      "Le prix de vente doit être supérieur au prix d'achat."
+                    );
+                  } else {
+                    setPrixErreur("");
+                  }
                 }}
                 required
               />
+              {prixErreur && (
+                <p style={{ color: "red", marginTop: 5, fontSize: 14 }}>
+                  {prixErreur}
+                </p>
+              )}
             </div>
           </div>
 
-          {/* Stock */}
           <div className="form-row">
             <div className="form-group">
               <label>Stock actuel</label>
@@ -124,8 +140,7 @@ export default function ProduitModal({
                 onChange={(e) =>
                   setFormData({
                     ...formData,
-                    stock_actuel:
-                      Number(e.target.value.replace(/\s/g, "")) || 0,
+                    stock_actuel: Number(e.target.value.replace(/\s/g, "")) || 0,
                   })
                 }
                 required
@@ -138,19 +153,34 @@ export default function ProduitModal({
                 type="text"
                 placeholder="Stock minimum"
                 value={formData.stock_minimum || ""}
-                onChange={(e) =>
+                onChange={(e) => {
+                  const rawValue = e.target.value.replace(/\s/g, "");
+                  const stock_minimum = Number(rawValue) || 0;
+
                   setFormData({
                     ...formData,
-                    stock_minimum:
-                      Number(e.target.value.replace(/\s/g, "")) || 0,
-                  })
-                }
+                    stock_minimum,
+                  });
+
+                  if (stock_minimum >= formData.stock_actuel) {
+                    setQuantiteErreur(
+                      "Le stock minimum doit être inférieur au stock actuel."
+                    );
+                  } else {
+                    setQuantiteErreur("");
+                  }
+                }}
                 required
               />
+              {quantiteErreur && (
+                <p style={{ color: "red", marginTop: 5, fontSize: 14 }}>
+                  {quantiteErreur}
+                </p>
+              )}
             </div>
           </div>
 
-          {utilisateur?.role && utilisateur?.role === "ADMIN" ? (
+          {utilisateur?.role === "ADMIN" ? (
             <div className="form-row">
               <div className="form-group">
                 <label>Catégorie</label>
@@ -165,7 +195,7 @@ export default function ProduitModal({
                   }
                 >
                   <option value="">-- Catégorie --</option>
-                  {dataCategorie.map((cat: any) => (
+                  {dataCategorie?.map((cat: any) => (
                     <option key={cat.id} value={cat.id}>
                       {cat.nom}
                     </option>
@@ -186,7 +216,7 @@ export default function ProduitModal({
                   }
                 >
                   <option value="">-- Boutique --</option>
-                  {dataBoutique.map((bout: any) => (
+                  {dataBoutique?.map((bout: any) => (
                     <option key={bout.id} value={bout.id}>
                       {bout.nom}
                     </option>
@@ -209,7 +239,7 @@ export default function ProduitModal({
                 }
               >
                 <option value="">-- Catégorie --</option>
-                {dataCategorie.map((cat: any) => (
+                {dataCategorie?.map((cat: any) => (
                   <option key={cat.id} value={cat.id}>
                     {cat.nom}
                   </option>
@@ -217,7 +247,7 @@ export default function ProduitModal({
               </select>
             </div>
           )}
-          {/* Boutons */}
+
           <div className="form-actions">
             <button
               type="button"
@@ -230,13 +260,19 @@ export default function ProduitModal({
             <button
               type="submit"
               className={`px-4 py-2 rounded-md text-white ${
-                isLoading
+                isLoading || prixErreur || quantiteErreur
                   ? "bg-blue-400 cursor-not-allowed"
                   : "bg-blue-600 hover:bg-blue-700"
               }`}
-              disabled={isLoading}
+              disabled={isLoading || prixErreur !== "" || quantiteErreur !== ""}
             >
-              {isLoading ? "Ajout en cours..." : "Ajouter"}
+              {isEditing
+                ? isLoading
+                  ? "Modification..."
+                  : "Appliquer"
+                : isLoading
+                ? "Ajout en cours..."
+                : "Ajouter"}
             </button>
           </div>
         </form>

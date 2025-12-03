@@ -16,6 +16,11 @@ type Produit = {
   stock_actuel: number;
 };
 
+type Client = {
+  id: number;
+  nom: string;
+};
+
 type LigneVente = {
   id?: number;
   utilisateurId: number;
@@ -33,6 +38,7 @@ type Vente = {
   type: string;
   status: string;
   createdAt: string;
+  Client: Client[];
   LigneVentes: LigneVente[];
   vendeurNom?: string;
   boutiqueNom?: string;
@@ -370,7 +376,7 @@ export default function VentesPage() {
       utilisateurId,
       lignes: lignesFormattees,
       type,
-      clientId: type === "CREDIT" ? clientId : undefined,
+      clientId: clientId,
     };
     setIsLoading(true);
     try {
@@ -547,7 +553,7 @@ export default function VentesPage() {
   };
 
   const imprimerRecu = (vente: Vente) => {
-    const contenu = `
+  const contenu = `
     <html>
       <head>
         <title>${vente.boutiqueNom}</title>
@@ -557,6 +563,8 @@ export default function VentesPage() {
           table { width: 100%; border-collapse: collapse; margin-top: 20px; }
           th, td { border: 1px solid #000; padding: 8px; text-align: center; }
           th { background-color: #f0f0f0; }
+          .footer { display: flex; justify-content: space-between; margin-top: 40px; }
+          .footer div { width: 45%; }
         </style>
       </head>
       <body>
@@ -586,28 +594,39 @@ export default function VentesPage() {
                 <td>${ligne.Produit?.nom || "Produit inconnu"}</td>
                 <td>${ligne.quantite}</td>
                 <td>${ligne.prix_vente.toLocaleString()} GNF</td>
-                <td>${(
-                  ligne.quantite * ligne.prix_vente
-                ).toLocaleString()} GNF</td>
+                <td>${(ligne.quantite * ligne.prix_vente).toLocaleString()} GNF</td>
               </tr>
             `
             ).join("")}
           </tbody>
         </table>
         <h3>Total : ${vente.total.toLocaleString()} GNF</h3>
+
+        <!-- Section vendeur / client -->
+        <div class="footer">
+          <div style="text-align: left;">
+            <p><strong>Vendeur</strong></p>
+            <p>${vente.vendeurNom || "Non défini"}</p>
+          </div>
+          <div style="text-align: right;">
+            <p><strong>Client</strong></p>
+            <p>${"Non défini"}</p>
+          </div>
+        </div>
       </body>
     </html>
   `;
 
-    const printWindow = window.open("", "_blank");
-    if (printWindow) {
-      printWindow.document.write(contenu);
-      printWindow.document.close();
-      printWindow.focus();
-      printWindow.print();
-      printWindow.close();
-    }
-  };
+  const printWindow = window.open("", "_blank");
+  if (printWindow) {
+    printWindow.document.write(contenu);
+    printWindow.document.close();
+    printWindow.focus();
+    printWindow.print();
+    printWindow.close();
+  }
+};
+
 
   const exportVentesExcel = () => {
     // Transformer les ventes en tableau plat pour Excel
@@ -1060,9 +1079,7 @@ export default function VentesPage() {
                                         <th className="px-3 py-2 border">
                                           Bénéfice
                                         </th>
-                                        {/* <th className="px-3 py-2 border">
-                                          Action
-                                        </th> */}
+                                      
                                       </tr>
                                     </thead>
                                     <tbody>
@@ -1101,24 +1118,7 @@ export default function VentesPage() {
                                                   (ligne?.prix_achat ?? 0)
                                             )}
                                           </td>
-                                          {/* <td className="px-3 py-2 text-center border">
-
-                                          <button
-                                            onClick={() => imprimerRecu(vente)}
-                                            style={{
-                                              fontSize: 13,
-                                              fontWeight: "bold",
-                                              backgroundColor: "#FFA500",
-                                              color: "white",
-                                              border: "none",
-                                              padding: "5px 10px",
-                                              borderRadius: 4,
-                                              cursor: "pointer",
-                                            }}
-                                          >
-                                            Imprimer
-                                          </button>
-                                          </td> */}
+                                        
                                         </tr>
                                       ))}
                                     </tbody>
@@ -1303,7 +1303,7 @@ export default function VentesPage() {
             </select>
 
             {/* Choix du client si crédit */}
-            {venteType === "CREDIT" && (
+            {/* {venteType === "CREDIT" && ( */}
               <select
                 value={clientId ?? ""}
                 onChange={(e) => setClientId(Number(e.target.value))}
@@ -1316,7 +1316,7 @@ export default function VentesPage() {
                   </option>
                 ))}
               </select>
-            )}
+            {/* )} */}
 
             {/* Boutons */}
             <div className="flex justify-end gap-3 mt-4">
