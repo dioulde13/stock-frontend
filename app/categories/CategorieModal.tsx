@@ -8,6 +8,7 @@ interface CategorieModalProps {
   setFormData: (data: { nom: string; utilisateurId: string }) => void;
   onClose: () => void;
   handleSubmit: () => Promise<void>; // async
+  isEditing: boolean;
 }
 
 export default function CategorieModal({
@@ -15,6 +16,7 @@ export default function CategorieModal({
   setFormData,
   onClose,
   handleSubmit,
+  isEditing
 }: CategorieModalProps) {
   const [isLoading, setIsLoading] = useState(false);
 
@@ -32,7 +34,7 @@ export default function CategorieModal({
     <div className="modal-overlay">
       <div className="modal-container">
         <div className="modal-header">
-          <h3>Ajouter / Modifier une catégorie</h3>
+          <h3>{isEditing? "Modifier une catégorie" : "Ajouter une catégorie"}</h3>
           <button
             onClick={onClose}
             className="close-button"
@@ -75,7 +77,13 @@ export default function CategorieModal({
               }`}
               disabled={isLoading}
             >
-              {isLoading ? "Création en cours..." : "Ajouter"}
+              {isEditing
+                ? isLoading
+                  ? "Modification..."
+                  : "Appliquer"
+                : isLoading
+                ? "Ajout en cours..."
+                : "Ajouter"}
             </button>
           </div>
         </form>

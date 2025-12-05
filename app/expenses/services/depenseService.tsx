@@ -123,16 +123,26 @@ export async function deleteDepense(id: number) {
 
 export async function annulerDepense(id: number) {
   const token = localStorage.getItem("token");
- if (!token) {
-        // Redirection automatique si token manquant
-        window.location.href = "/login";
-        return; // On arrête l'exécution
-      }
+  if (!token) {
+    window.location.href = "/login";
+    return;
+  }
+
   const res = await fetch(`${APP_URL}/api/depense/annuler/${id}`, {
     method: "DELETE",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
   });
-  if (!res.ok) throw new Error("Erreur lors de la suppression de la dépense");
-  return res.json();
+
+  const data = await res.json(); // on lit toujours le corps JSON
+
+  if (!res.ok) {
+    // Utiliser le message du serveur si présent
+    throw new Error(data?.message || "Erreur lors de la suppression de la dépense");
+  }
+
+  return data; // succès
 }
+

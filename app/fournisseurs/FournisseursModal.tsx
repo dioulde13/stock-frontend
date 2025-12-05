@@ -1,5 +1,5 @@
 "use client";
-import './fournisseur.css';
+import "./fournisseur.css";
 import { useState } from "react";
 
 interface FournisseursModalProps {
@@ -15,6 +15,7 @@ interface FournisseursModalProps {
   }) => void;
   onClose: () => void;
   handleSubmit: () => Promise<void>; // 🔹 handleSubmit doit retourner une Promise
+  isEditing: boolean;
 }
 
 export default function FournisseurModal({
@@ -22,6 +23,7 @@ export default function FournisseurModal({
   setFormData,
   onClose,
   handleSubmit,
+  isEditing
 }: FournisseursModalProps) {
   const [isLoading, setIsLoading] = useState(false); // ⬅️ Loading state
 
@@ -51,8 +53,10 @@ export default function FournisseurModal({
     <div className="modalOverlay">
       <div className="modalContent">
         <div className="modalHeader">
-          <h3>Ajouter / Modifier un fournisseur</h3>
-          <button onClick={onClose}><i className="ri-close-line"></i></button>
+          <h3>{isEditing?"Ajouter un fournisseur":"Modifier un fournisseur"}</h3>
+          <button onClick={onClose}>
+            <i className="ri-close-line"></i>
+          </button>
         </div>
 
         <form onSubmit={onSubmit} className="modalForm">
@@ -62,7 +66,9 @@ export default function FournisseurModal({
               type="text"
               required
               value={formData.nom}
-              onChange={(e) => setFormData({ ...formData, nom: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, nom: e.target.value })
+              }
               placeholder="Nom du fournisseur"
               disabled={isLoading}
             />
@@ -83,7 +89,12 @@ export default function FournisseurModal({
           </div>
 
           <div className="modalActions">
-            <button type="button" className="cancelBtn" onClick={onClose} disabled={isLoading}>
+            <button
+              type="button"
+              className="cancelBtn"
+              onClick={onClose}
+              disabled={isLoading}
+            >
               Annuler
             </button>
             <button
@@ -95,7 +106,13 @@ export default function FournisseurModal({
               }`}
               disabled={isLoading}
             >
-              {isLoading ? "Création en cours..." : "Ajouter"}
+               {isEditing
+                ? isLoading
+                  ? "Modification..."
+                  : "Appliquer"
+                : isLoading
+                ? "Ajout en cours..."
+                : "Ajouter"}
             </button>
           </div>
         </form>

@@ -137,6 +137,7 @@ export default function FournisseurPage() {
 
         {isModalOpen && (
           <FournisseursModal
+          isEditing={!!selectedFournisseur}
             formData={formData}
             setFormData={setFormData}
             onClose={() => setIsModalOpen(false)}

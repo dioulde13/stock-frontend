@@ -16,10 +16,6 @@ type Produit = {
   stock_actuel: number;
 };
 
-type Client = {
-  id: number;
-  nom: string;
-};
 
 type LigneVente = {
   id?: number;
@@ -38,8 +34,8 @@ type Vente = {
   type: string;
   status: string;
   createdAt: string;
-  Client: Client[];
-  LigneVentes: LigneVente[];
+  LigneVentes: LigneVente[]; 
+  clientNom?: string;
   vendeurNom?: string;
   boutiqueNom?: string;
   nomPersonneAnnuler?: string;
@@ -124,6 +120,7 @@ export default function VentesPage() {
       const dataTransformee: Vente[] = data.map((v: any) => ({
         ...v,
         vendeurNom: v.Utilisateur?.nom ?? "",
+        clientNom: v.Client?.nom ?? "",
         boutiqueNom: v.Utilisateur?.Boutique?.nom ?? "",
       }));
       setVentes(dataTransformee);
@@ -610,7 +607,7 @@ export default function VentesPage() {
           </div>
           <div style="text-align: right;">
             <p><strong>Client</strong></p>
-            <p>${"Non défini"}</p>
+            <p>${vente.clientNom || "Non défini"}</p>
           </div>
         </div>
       </body>

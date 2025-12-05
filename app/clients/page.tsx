@@ -224,6 +224,7 @@ export default function ClientPage() {
         {/* 🪟 Modal */}
         {isModalOpen && (
           <ClientModal
+          isEditing={!!selectedClient}
             formData={formData}
             setFormData={setFormData}
             onClose={() => setIsModalOpen(false)}

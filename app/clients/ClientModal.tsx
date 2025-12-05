@@ -15,9 +15,10 @@ interface ClientModalProps {
   }) => void;
   onClose: () => void;
   handleSubmit: () => Promise<void>; // 🔹 handleSubmit doit retourner une Promise
+  isEditing: boolean;
 }
 
-export default function ClientModal({ formData, setFormData, onClose, handleSubmit }: ClientModalProps) {
+export default function ClientModal({ formData, setFormData, onClose, handleSubmit , isEditing}: ClientModalProps) {
   const [isLoading, setIsLoading] = useState(false); // ⬅️ Loading state
 
   const handleTelephoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -46,7 +47,7 @@ export default function ClientModal({ formData, setFormData, onClose, handleSubm
     <div className="modalOverlay">
       <div className="modalContent">
         <div className="modalHeader">
-          <h3>Ajouter / Modifier un client</h3>
+          <h3>{isEditing?"Ajouter un client":"Modifier un client"}</h3>
           <button onClick={onClose}><i className="ri-close-line"></i></button>
         </div>
 
@@ -90,7 +91,13 @@ export default function ClientModal({ formData, setFormData, onClose, handleSubm
               }`}
               disabled={isLoading}
             >
-              {isLoading ? "Création en cours..." : "Ajouter"}
+              {isEditing
+                ? isLoading
+                  ? "Modification..."
+                  : "Appliquer"
+                : isLoading
+                ? "Ajout en cours..."
+                : "Ajouter"}
             </button>
           </div>
         </form>

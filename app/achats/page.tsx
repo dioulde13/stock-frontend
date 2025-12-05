@@ -69,8 +69,8 @@ export default function AchatPage() {
     produitNom: string;
     fournisseurNom: string;
     quantite: string;
-    prix_achat: number;
-    prix_vente: number;
+    prix_achat: string;
+    prix_vente: string;
   }>({
     utilisateurId: formUtilisateurId,
     produitId: "",
@@ -78,8 +78,8 @@ export default function AchatPage() {
     produitNom: "",
     fournisseurNom: "",
     quantite: "1",
-    prix_achat: 0,
-    prix_vente: 0,
+    prix_achat: "",
+    prix_vente: "",
   });
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -328,7 +328,7 @@ export default function AchatPage() {
         );
       }, 0);
   }, [filteredVentes]);
-  console.log(filteredVentes);
+  // console.log(filteredVentes);
 
   // Total filtré
   const totalAnnulerFiltre = useMemo(() => {
@@ -446,26 +446,6 @@ export default function AchatPage() {
     }
   };
 
-  // const supprimerVente = async (id: number) => {
-  //   if (!confirm("Voulez-vous vraiment supprimer cette vente ?")) return;
-  //   setDeletingId(id);
-  //   try {
-  //     const res = await fetch(
-  //       `http://localhost:3000/api/achat/supprimer/${id}`,
-  //       {
-  //         method: "DELETE",
-  //       }
-  //     );
-  //     if (!res.ok) throw new Error("Erreur lors de la suppression");
-  //     alert("Vente supprimée");
-  //     fetchAchats();
-  //   } catch (e) {
-  //     alert((e as Error).message);
-  //   } finally {
-  //     setDeletingId(null);
-  //   }
-  // };
-
   const ouvrirModal = (index?: number) => {
     if (typeof index === "number") {
       const ligne = lignesAchat[index];
@@ -476,8 +456,8 @@ export default function AchatPage() {
         fournisseurNom: ligne.fournisseurNom.toString(),
         produitId: ligne.produitId.toString(),
         quantite: ligne.quantite.toString(),
-        prix_achat: Number(ligne.prix_achat.valueOf),
-        prix_vente: Number(ligne.prix_vente.valueOf),
+        prix_achat: ligne.prix_achat.toString(),
+        prix_vente: ligne.prix_vente.toString(),
       });
       setEditingIndex(index);
     } else {
@@ -488,8 +468,8 @@ export default function AchatPage() {
         produitNom: "",
         fournisseurNom: "",
         quantite: "1",
-        prix_achat: 0,
-        prix_vente: 0,
+        prix_achat: "",
+        prix_vente: "",
       });
       setEditingIndex(null);
     }
@@ -505,8 +485,8 @@ export default function AchatPage() {
       produitNom: "",
       fournisseurNom: "",
       quantite: "1",
-      prix_achat: 0,
-      prix_vente: 0,
+      prix_achat: "",
+      prix_vente: "",
     });
     setEditingIndex(null);
   };
@@ -584,12 +564,6 @@ export default function AchatPage() {
   const [showModalAnnulation, setShowModalAnnulation] = useState(false);
   const [achatAnnuler, setAchatAnnuler] = useState<Achat | null>(null);
 
-  // const [notification, setNotification] = useState<string | null>(null);
-  // const showNotification = (msg: string) => {
-  //   setNotification(msg);
-  //   setTimeout(() => setNotification(null), 1500);
-  // };
-
   // 🔹 Annulation d'un achat
   const handleAnnulerAchat = async () => {
     if (!achatAnnuler) return;
@@ -636,16 +610,6 @@ export default function AchatPage() {
       minimumFractionDigits: 0,
     }).format(prix);
   };
-
-  // if (loading) {
-  //   return (
-  //     <DashboardLayout title="Chargement...">
-  //       <div className="flex justify-center items-center h-64 text-gray-500">
-  //         Chargement des données...
-  //       </div>
-  //     </DashboardLayout>
-  //   );
-  // }
 
   return (
     <DashboardLayout>
@@ -1152,7 +1116,6 @@ export default function AchatPage() {
                   Sélectionner un produit :
                 </label>
 
-                {/* Sélecteur de produits avec recherche */}
                 <Select
                   options={dataProduit.map((prod) => ({
                     value: prod.id,
@@ -1205,15 +1168,22 @@ export default function AchatPage() {
                   value={
                     ligneTemp.prix_achat
                       ? new Intl.NumberFormat("fr-FR").format(
-                          ligneTemp.prix_achat
+                          Number(ligneTemp.prix_achat)
                         )
                       : ""
                   }
+                  // value={
+                  //   ligneTemp.prix_achat
+                  //     ? new Intl.NumberFormat("fr-FR").format(
+                  //         ligneTemp.prix_achat
+                  //       )
+                  //     : ""
+                  // }
                   onChange={(e) => {
                     const raw = e.target.value.replace(/\s/g, "");
                     setLigneTemp({
                       ...ligneTemp,
-                      prix_achat: Number(raw) || 0,
+                     prix_achat: String(Number(raw) || 0)
                     });
                   }}
                   className="w-full p-3 border rounded-lg mb-4"
@@ -1228,7 +1198,7 @@ export default function AchatPage() {
                   value={
                     ligneTemp.prix_vente
                       ? new Intl.NumberFormat("fr-FR").format(
-                          ligneTemp.prix_vente
+                          Number(ligneTemp.prix_vente)
                         )
                       : ""
                   }
@@ -1236,7 +1206,7 @@ export default function AchatPage() {
                     const raw = e.target.value.replace(/\s/g, "");
                     setLigneTemp({
                       ...ligneTemp,
-                      prix_vente: Number(raw) || 0,
+                      prix_vente: String((raw) || 0),
                     });
                   }}
                   className="w-full p-3 border rounded-lg mb-6"
