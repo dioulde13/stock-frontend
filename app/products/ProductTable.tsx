@@ -108,16 +108,16 @@ function ModalHistorique({
                       {m.nouveauStockActuel}
                     </td>
                     <td className="px-3 py-2 border text-sm">
-                      {m.ancienPrixAchat}
+                      {formatMontant(m.ancienPrixAchat)}
                     </td>
                     <td className="px-3 py-2 border text-sm">
-                      {m.nouveauPrixAchat}
+                      {formatMontant(m.nouveauPrixAchat)}
                     </td>
                     <td className="px-3 py-2 border text-sm">
-                      {m.ancienPrixVente}
+                      {formatMontant(m.ancienPrixVente)}
                     </td>
                     <td className="px-3 py-2 border text-sm">
-                      {m.nouveauPrixVente}
+                      {formatMontant(m.nouveauPrixVente)}
                     </td>
                   </tr>
                 ))}
