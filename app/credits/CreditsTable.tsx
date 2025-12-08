@@ -69,6 +69,7 @@ export default function CreditsTable({
     const blob = new Blob([excelBuffer], { type: "application/octet-stream" });
     saveAs(blob, "credits.xlsx");
   };
+  
 
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200">
@@ -155,12 +156,12 @@ export default function CreditsTable({
                 </td>
                 <td
                   className={`px-6 py-4 text-sm font-semibold ${
-                    credit.status === "VALIDER"
+                    credit.status === "PAYER"
                       ? "text-green-600"
                       : "text-red-600"
                   }`}
                 >
-                  {credit.status}
+                  {credit.status === 'NON PAYER'?'NON PAYÉ':credit.status ==='PAYER'?'PAYÉ':''} {" "}
                 </td>
                 <td className="px-6 py-4 text-sm flex gap-2">
                   <button

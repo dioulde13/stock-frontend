@@ -1030,7 +1030,7 @@ export default function VentesPage() {
                                   : "text-red-600"
                               }`}
                             >
-                              {vente.status}{" "}
+                              {vente.status === 'VALIDER'?'VALIDÉ':''} {" "}
                               {vente.nomPersonneAnnuler === null
                                 ? ""
                                 : `${"(" + vente.nomPersonneAnnuler + ")"}`}

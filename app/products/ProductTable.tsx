@@ -8,6 +8,18 @@ import {
 } from "../components/utils/formatters";
 import { APP_URL } from "../environnement/environnements";
 
+interface ModificationProduit {
+  id: number;
+  dateModification: string;
+  nomUtilisateur: string;
+  ancienStockActuel: number;
+  nouveauStockActuel: number;
+  ancienPrixAchat: number;
+  nouveauPrixAchat: number;
+  ancienPrixVente: number;
+  nouveauPrixVente: number;
+}
+
 interface Produit {
   id: number;
   nom: string;
@@ -20,6 +32,7 @@ interface Produit {
   boutiqueId: number;
   Categorie?: { nom: string };
   Boutique?: { nom: string };
+  ModificationProduits?: ModificationProduit[];
 }
 
 interface ProduitTableProps {
@@ -30,6 +43,104 @@ interface ProduitTableProps {
   handleOpenModal: (produit?: Produit) => void;
   // selectedProduit: any; // <-- AJOUT
   // setSelectedProduit: React.Dispatch<any>; // <-- AJOUT
+}
+
+function ModalHistorique({
+  produit,
+  onClose,
+}: {
+  produit: Produit | null;
+  onClose: () => void;
+}) {
+  if (!produit) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+      <div className="bg-white rounded-lg shadow-lg p-6 w-[700px] max-h-[80vh] overflow-y-auto">
+        <h2 className="text-xl font-bold mb-4">
+          Historique des modifications – {produit.nom}
+        </h2>
+
+        {produit.ModificationProduits?.length ? (
+          <div className="overflow-x-auto">
+            <table className="min-w-full border border-gray-200">
+              <thead className="bg-gray-100 sticky top-0">
+                <tr>
+                  <th className="px-3 py-2 border text-left text-sm font-medium text-gray-600">
+                    Utilisateur
+                  </th>
+                  <th className="px-3 py-2 border text-left text-sm font-medium text-gray-600">
+                    Date
+                  </th>
+                  <th className="px-3 py-2 border text-left text-sm font-medium text-gray-600">
+                    Ancien Stock
+                  </th>
+                  <th className="px-3 py-2 border text-left text-sm font-medium text-gray-600">
+                    Nouveau Stock
+                  </th>
+                  <th className="px-3 py-2 border text-left text-sm font-medium text-gray-600">
+                    Ancien Prix Achat
+                  </th>
+                  <th className="px-3 py-2 border text-left text-sm font-medium text-gray-600">
+                    Nouveau Prix Achat
+                  </th>
+                  <th className="px-3 py-2 border text-left text-sm font-medium text-gray-600">
+                    Ancien Prix Vente
+                  </th>
+                  <th className="px-3 py-2 border text-left text-sm font-medium text-gray-600">
+                    Nouveau Prix Vente
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {produit.ModificationProduits.map((m) => (
+                  <tr key={m.id} className="hover:bg-gray-50">
+                    <td className="px-3 py-2 border text-sm">
+                      {m.nomUtilisateur}
+                    </td>
+                    <td className="px-3 py-2 border text-sm">
+                      {new Date(m.dateModification).toLocaleString()}
+                    </td>
+                    <td className="px-3 py-2 border text-sm">
+                      {m.ancienStockActuel}
+                    </td>
+                    <td className="px-3 py-2 border text-sm">
+                      {m.nouveauStockActuel}
+                    </td>
+                    <td className="px-3 py-2 border text-sm">
+                      {m.ancienPrixAchat}
+                    </td>
+                    <td className="px-3 py-2 border text-sm">
+                      {m.nouveauPrixAchat}
+                    </td>
+                    <td className="px-3 py-2 border text-sm">
+                      {m.ancienPrixVente}
+                    </td>
+                    <td className="px-3 py-2 border text-sm">
+                      {m.nouveauPrixVente}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <p className="text-gray-500 text-center mt-4">
+            Aucune modification trouvée.
+          </p>
+        )}
+
+        <div className="text-right mt-6">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          >
+            Fermer
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 function ModalSuppression({
@@ -133,6 +244,10 @@ ProduitTableProps) {
   );
   const [produitAChangerStatut, setProduitAChangerStatut] =
     useState<Produit | null>(null);
+
+  const [produitHistorique, setProduitHistorique] = useState<Produit | null>(
+    null
+  );
 
   const itemsPerPage = 5;
 
@@ -415,6 +530,14 @@ ProduitTableProps) {
                           <i className="ri-edit-line"></i>
                         </button>
                         <button
+                          onClick={() => setProduitHistorique(produit)}
+                          className="text-green-600 hover:text-green-900 p-1 rounded"
+                          title="Voir historique"
+                        >
+                          <i className="ri-eye-line"></i>
+                        </button>
+
+                        <button
                           onClick={() => setProduitAChangerStatut(produit)}
                           className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
                           title="Changer statut"
@@ -480,6 +603,13 @@ ProduitTableProps) {
           produit={produitASupprimer}
           onClose={() => setProduitASupprimer(null)}
           onConfirmDelete={() => supprimerProduit(produitASupprimer)}
+        />
+      )}
+
+      {produitHistorique && (
+        <ModalHistorique
+          produit={produitHistorique}
+          onClose={() => setProduitHistorique(null)}
         />
       )}
 

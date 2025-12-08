@@ -143,13 +143,26 @@ export default function CreditPaymentsTable({
                   {/* {new Date(p.createdAt).toLocaleDateString()} */}
                 </td>
                 <td className="px-6 py-4">{p.Credit?.reference}</td>
-                <td className="px-6 py-4">{p.Credit?.Client?.nom}</td>
+                <td className="px-6 py-4">
+                  {/* {p.Credit?.Client?.nom} */}
+                  {p.Credit.Client === null
+                    ? p.Credit.nom
+                    : p.Credit?.Client?.nom}
+                </td>
                 <td className="px-6 py-4">{p.Utilisateur?.nom}</td>
                 <td className="px-6 py-4 font-medium">
                   {formatMontant(p.montant)} GNF
                 </td>
-                <td className="px-6 py-4 font-medium">
-                  {p.status}
+                <td
+                  className={`px-6 py-4 text-sm font-semibold ${
+                    p.status === "VALIDER" ? "text-green-600" : "text-red-600"
+                  }`}
+                >
+                  {p.status === "VALIDER"
+                    ? "VALIDÉ"
+                    : p.status === "ANNULER"
+                    ? "ANNULÉ"
+                    : ""}{" "}
                   {p.nomPersonneAnnuler === null
                     ? ""
                     : `${"(" + p.nomPersonneAnnuler + ")"}`}

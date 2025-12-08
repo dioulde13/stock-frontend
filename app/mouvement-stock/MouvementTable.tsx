@@ -208,7 +208,7 @@ export default function MouvementStockTable({
                   {mvt.Produit?.nom}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  {mvt.TypeMvt?.type}{" "}
+                  {mvt.TypeMvt?.type === 'ENTRE'?'ENTRÉ':''} {" "}
                  
                 </td>
                 {utilisateur.role !== "ADMIN" ? (
@@ -217,7 +217,7 @@ export default function MouvementStockTable({
                       {mvt.Utilisateur?.nom || "—"}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      {mvt.status}  {mvt.nomPersonneAnnuler === null
+                      {mvt.status === 'VALIDER'?'VALIDÉ':''}  {mvt.nomPersonneAnnuler === null
                     ? ""
                     : `${"(" + mvt.nomPersonneAnnuler + ")"}`}
                     </td>
