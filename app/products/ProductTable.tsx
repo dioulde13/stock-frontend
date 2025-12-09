@@ -519,7 +519,7 @@ ProduitTableProps) {
                             : "text-red-600"
                         }`}
                       >
-                        {produit.status}
+                        {produit.status === 'VALIDER'?'VALIDÉ':''}
                       </td>
                       <td className="px-3 py-2 text-sm flex gap-2">
                         <button

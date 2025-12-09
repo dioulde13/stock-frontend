@@ -50,16 +50,13 @@ export default function UtilisateurPage() {
         window.location.href = "/login";
         return;
       }
-      const res = await fetch(
-        `${APP_URL}/api/boutique/listeBoutiqueParAdmin`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const res = await fetch(`${APP_URL}/api/boutique/listeBoutiqueParAdmin`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
       if (!res.ok) throw new Error("Erreur lors du chargement des boutiques");
       const data = await res.json();
       setBoutiques(data);
@@ -82,8 +79,10 @@ export default function UtilisateurPage() {
           Authorization: `Bearer ${token}`,
         },
       });
-      if (!res.ok) throw new Error("Erreur lors du chargement des utilisateurs");
+      if (!res.ok)
+        throw new Error("Erreur lors du chargement des utilisateurs");
       const data = await res.json();
+      console.log(data);
       setUtilisateurs(data);
     } catch (error) {
       console.error("Erreur lors du fetch des utilisateurs:", error);
@@ -160,6 +159,11 @@ export default function UtilisateurPage() {
             onClose={() => setIsModalOpen(false)}
             handleSubmit={async () => {
               try {
+                const token = localStorage.getItem("token");
+                if (!token) {
+                  window.location.href = "/login";
+                  return;
+                }
                 const payload = {
                   nom: formData.nom,
                   email: formData.email,
@@ -172,10 +176,13 @@ export default function UtilisateurPage() {
 
                 if (selectedUtilisateur) {
                   await fetch(
-                    `${APP_URL}/api/utilisateur/${selectedUtilisateur.id}`,
+                    `${APP_URL}/api/utilisateur/modifier/${selectedUtilisateur.id}`,
                     {
                       method: "PUT",
-                      headers: { "Content-Type": "application/json" },
+                      headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                      },
                       body: JSON.stringify(payload),
                     }
                   );
@@ -183,7 +190,10 @@ export default function UtilisateurPage() {
                 } else {
                   await fetch(`${APP_URL}/api/utilisateur/create`, {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
+                    headers: {
+                      "Content-Type": "application/json",
+                      Authorization: `Bearer ${token}`,
+                    },
                     body: JSON.stringify(payload),
                   });
                   showNotification("Utilisateur ajouté avec succès.");

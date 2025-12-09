@@ -141,14 +141,14 @@ export default function Home() {
     icon: "ri-alert-line",
   },
   {
-    title: "Alertes stock min",
+    title: "Alerte concernant le stock minimum atteint.",
     value: stats.alertesStock,
     color: "bg-yellow-500",
     bgCardColor: "bg-yellow-50",
     icon: "ri-error-warning-line",
   },
   {
-    title: "Crédit espèce entré",
+    title: "Entrée de crédit en espèces",
     value: caisses.CREDIT_ESPECE_ENTRE ?? 0,
     suffix: "GNF",
     color: "bg-teal-500",
@@ -156,7 +156,7 @@ export default function Home() {
     icon: "ri-money-dollar-box-line",
   },
   {
-    title: "Argent des achat à crédit",
+    title: "Montant des achats à crédit",
     value: caisses.CREDIT_ACHAT ?? 0,
     suffix: "GNF",
     color: "bg-purple-500",
@@ -172,7 +172,7 @@ export default function Home() {
     icon: "ri-money-dollar-box-line",
   },
   {
-    title: "Argent des ventes à crédit",
+    title: "Montant des ventes à crédit",
     value: caisses.CREDIT_VENTE ?? 0,
     suffix: "GNF",
     color: "bg-purple-500",

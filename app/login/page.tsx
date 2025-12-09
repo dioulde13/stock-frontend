@@ -1,14 +1,15 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import LoginForm from './LoginForm';
-import LoginHeader from './LoginHeader';
-import { APP_URL } from '../environnement/environnements';
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import LoginForm from "./LoginForm";
+import LoginHeader from "./LoginHeader";
+import { APP_URL } from "../environnement/environnements";
 
 type ApiResponse = {
   message?: string;
   token?: string;
+  step?: string;
   utilisateur?: {
     id: number;
     email: string;
@@ -16,12 +17,10 @@ type ApiResponse = {
   };
 };
 
-
 export default function LoginPage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [redirectReady, setRedirectReady] = useState(false);
 
   const handleLogin = async (email: string, password: string) => {
     setIsLoading(true);
@@ -29,33 +28,38 @@ export default function LoginPage() {
 
     try {
       const res = await fetch(`${APP_URL}/api/utilisateur/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, mot_de_passe: password }),
       });
 
       const data: ApiResponse = await res.json();
 
-      if (!res.ok) throw new Error(data.message || 'Échec de la connexion');
-      if (!data.token || !data.utilisateur) throw new Error('Réponse invalide du serveur');
+      if (!res.ok) throw new Error(data.message || "Échec de la connexion");
 
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('isAuthenticated', 'true');
-      localStorage.setItem('utilisateur', JSON.stringify(data.utilisateur));
+      // Enregistrer l'email dans localStorage
+      localStorage.setItem("email", email);
 
-      setRedirectReady(true);
+      // Vérifier si l'étape OTP est requise
+      if (data.step === "otp_required") {
+        router.push("/otp-valider"); // rediriger vers la page OTP
+        return;
+      }
+
+      // Si pas d'OTP, connexion normale
+      if (data.token && data.utilisateur) {
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("isAuthenticated", "true");
+        localStorage.setItem("utilisateur", JSON.stringify(data.utilisateur));
+
+        router.push("/dashboard");
+      }
     } catch (err: any) {
-      setError(err.message || 'Erreur de connexion');
+      setError(err.message || "Erreur de connexion");
     } finally {
       setIsLoading(false);
     }
   };
-
-  useEffect(() => {
-    if (!isLoading && redirectReady) {
-      router.push('/dashboard');
-    }
-  }, [isLoading, redirectReady, router]);
 
   return (
     <div

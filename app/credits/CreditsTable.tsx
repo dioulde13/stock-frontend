@@ -16,7 +16,7 @@ type Utilisateur = {
 };
 
 interface Credit {
-  id: number; 
+  id: number;
   reference: string;
   nom: string;
   description: string;
@@ -69,7 +69,6 @@ export default function CreditsTable({
     const blob = new Blob([excelBuffer], { type: "application/octet-stream" });
     saveAs(blob, "credits.xlsx");
   };
-  
 
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200">
@@ -111,14 +110,14 @@ export default function CreditsTable({
               <tr key={credit.id} className="hover:bg-gray-50">
                 <td className="px-6 py-4 text-sm">
                   {credit.createdAt
-                                ? new Intl.DateTimeFormat("fr-FR", {
-                                    year: "numeric",
-                                    month: "2-digit",
-                                    day: "2-digit",
-                                    hour: "2-digit",
-                                    minute: "2-digit",
-                                  }).format(new Date(credit.createdAt))
-                                : "Date inconnue"}
+                    ? new Intl.DateTimeFormat("fr-FR", {
+                        year: "numeric",
+                        month: "2-digit",
+                        day: "2-digit",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      }).format(new Date(credit.createdAt))
+                    : "Date inconnue"}
                   {/* {new Date(credit.createdAt).toLocaleDateString()} */}
                 </td>
                 <td className="px-6 py-4 text-sm font-medium">
@@ -135,9 +134,7 @@ export default function CreditsTable({
                       </span>
                     </span>
                   ) : (
-                    <span className="font-medium">
-                      {credit?.nom}
-                    </span>
+                    <span className="font-medium">{credit?.nom}</span>
                   )}
                 </td>
 
@@ -161,7 +158,14 @@ export default function CreditsTable({
                       : "text-red-600"
                   }`}
                 >
-                  {credit.status === 'NON PAYER'?'NON PAYÉ':credit.status ==='PAYER'?'PAYÉ':''} {" "}
+                  {" "}
+                  {credit.status === "NON PAYER"
+                    ? "NON PAYÉ"
+                    : credit.status === "PAYER"
+                    ? "PAYÉ"
+                    : credit.status === "EN COURS"
+                    ? "EN COURS"
+                    : ""}{" "}
                 </td>
                 <td className="px-6 py-4 text-sm flex gap-2">
                   <button
