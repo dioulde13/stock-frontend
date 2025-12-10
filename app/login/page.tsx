@@ -40,11 +40,11 @@ export default function LoginPage() {
       // Enregistrer l'email dans localStorage
       localStorage.setItem("email", email);
 
-      // Vérifier si l'étape OTP est requise
-      if (data.step === "otp_required") {
-        router.push("/otp-valider"); // rediriger vers la page OTP
-        return;
-      }
+      // // Vérifier si l'étape OTP est requise
+      // if (data.step === "otp_required") {
+      //   router.push("/otp-valider"); // rediriger vers la page OTP
+      //   return;
+      // }
 
       // Si pas d'OTP, connexion normale
       if (data.token && data.utilisateur) {

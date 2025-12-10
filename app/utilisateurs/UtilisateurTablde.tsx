@@ -154,9 +154,9 @@ export default function UtilisateursTable({
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Boutique
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              {/* <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Status
-              </th>
+              </th> */}
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Actions
               </th>
@@ -170,23 +170,23 @@ export default function UtilisateursTable({
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                   {u.Boutique?.nom || "—"}
                 </td>
-                <td
+                {/* <td
                   className={`px-6 py-4 text-sm font-semibold ${
                     u.bloque ? "text-red-600" : "text-green-600"
                   }`}
                 >
                   {u.bloque ? "Bloquer" : "Actif"}
-                </td>
+                </td> */}
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                   <div className="flex items-center space-x-2">
-                    {u.bloque && (
+                    {/* {u.bloque && (
                       <button
                         onClick={() => handleDebloquerClick(u)}
                         className="text-green-600 hover:text-green-900 p-1 rounded cursor-pointer transition"
                       >
                         <i className="ri-lock-unlock-line text-lg"></i>
                       </button>
-                    )}
+                    )} */}
                     <button
                       onClick={() => handleOpenModal(u)}
                       className="text-blue-600 hover:text-blue-900 p-1 rounded cursor-pointer transition"
