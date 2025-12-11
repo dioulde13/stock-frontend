@@ -85,15 +85,30 @@ export default function UtilisateursTable({
 
   const debloquerUtilisateur = async () => {
     if (!utilisateurToDebloquer) return;
+
     try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        // Redirection automatique si token manquant
+        window.location.href = "/login";
+        return;
+      }
+
       const response = await fetch(
         `${APP_URL}/api/utilisateur/debloquer/${utilisateurToDebloquer.id}`,
         {
           method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
-      if (!response.ok)
+
+      if (!response.ok) {
         throw new Error("Impossible de débloquer cet utilisateur.");
+      }
+
       showNotification("Utilisateur débloqué avec succès.");
       await fetchUtilisateurs();
     } catch (error: any) {
@@ -154,9 +169,9 @@ export default function UtilisateursTable({
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Boutique
               </th>
-              {/* <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Status
-              </th> */}
+              </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Actions
               </th>
@@ -170,23 +185,23 @@ export default function UtilisateursTable({
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                   {u.Boutique?.nom || "—"}
                 </td>
-                {/* <td
+                <td
                   className={`px-6 py-4 text-sm font-semibold ${
                     u.bloque ? "text-red-600" : "text-green-600"
                   }`}
                 >
                   {u.bloque ? "Bloquer" : "Actif"}
-                </td> */}
+                </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                   <div className="flex items-center space-x-2">
-                    {/* {u.bloque && (
+                    {u.bloque && (
                       <button
                         onClick={() => handleDebloquerClick(u)}
                         className="text-green-600 hover:text-green-900 p-1 rounded cursor-pointer transition"
                       >
                         <i className="ri-lock-unlock-line text-lg"></i>
                       </button>
-                    )} */}
+                    )}
                     <button
                       onClick={() => handleOpenModal(u)}
                       className="text-blue-600 hover:text-blue-900 p-1 rounded cursor-pointer transition"
