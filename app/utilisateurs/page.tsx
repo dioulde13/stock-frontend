@@ -11,12 +11,15 @@ export default function UtilisateurPage() {
   const router = useRouter();
 
   const [authChecked, setAuthChecked] = useState(false);
-  const [loading, setLoading] = useState(false); // ✅ Loading
+  const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedUtilisateur, setSelectedUtilisateur] = useState<any>(null);
   const [utilisateurs, setUtilisateurs] = useState<any[]>([]);
   const [boutiques, setBoutiques] = useState<any[]>([]);
-  const [notification, setNotification] = useState<string | null>(null);
+  const [notification, setNotification] = useState<{
+    message: string;
+    type: "success" | "error";
+  } | null>(null);
   const [formData, setFormData] = useState({
     nom: "",
     email: "",
@@ -28,18 +31,17 @@ export default function UtilisateurPage() {
     if (!isAuthenticated) {
       router.push("/login");
     } else {
-      // Authenticated: fetch data
       fetchAllData();
     }
     setAuthChecked(true);
   }, [router]);
 
   const fetchAllData = async () => {
-    setLoading(true); // ✅ début du chargement
+    setLoading(true);
     try {
       await Promise.all([fetchUtilisateurs(), fetchBoutiques()]);
     } finally {
-      setLoading(false); // ✅ fin du chargement
+      setLoading(false);
     }
   };
 
@@ -62,6 +64,7 @@ export default function UtilisateurPage() {
       setBoutiques(data);
     } catch (error) {
       console.error("Erreur lors du fetch des boutiques:", error);
+      showNotification("Erreur lors du chargement des boutiques", "error");
     }
   };
 
@@ -82,16 +85,19 @@ export default function UtilisateurPage() {
       if (!res.ok)
         throw new Error("Erreur lors du chargement des utilisateurs");
       const data = await res.json();
-      // console.log(data);
       setUtilisateurs(data);
     } catch (error) {
       console.error("Erreur lors du fetch des utilisateurs:", error);
+      showNotification("Erreur lors du chargement des utilisateurs", "error");
     }
   };
 
-  const showNotification = (message: string) => {
-    setNotification(message);
-    setTimeout(() => setNotification(null), 2000);
+  const showNotification = (
+    message: string,
+    type: "success" | "error" = "success"
+  ) => {
+    setNotification({ message, type });
+    setTimeout(() => setNotification(null), 4000);
   };
 
   const handleOpenModal = (utilisateur: any = null) => {
@@ -164,55 +170,70 @@ export default function UtilisateurPage() {
                   window.location.href = "/login";
                   return;
                 }
+
                 const payload = {
                   nom: formData.nom,
                   email: formData.email,
                   boutiqueId: Number(formData.boutiqueId),
                 };
+
                 if (!payload.boutiqueId) {
-                  alert("Boutique non trouvée !");
+                  showNotification("Boutique non trouvée !", "error");
                   return;
                 }
 
+                let url = `${APP_URL}/api/utilisateur/create`;
+                let method = "POST";
+
                 if (selectedUtilisateur) {
-                  await fetch(
-                    `${APP_URL}/api/utilisateur/modifier/${selectedUtilisateur.id}`,
-                    {
-                      method: "PUT",
-                      headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${token}`,
-                      },
-                      body: JSON.stringify(payload),
-                    }
-                  );
-                  showNotification("Vendeur modifié avec succès.");
-                } else {
-                  await fetch(`${APP_URL}/api/utilisateur/create`, {
-                    method: "POST",
-                    headers: {
-                      "Content-Type": "application/json",
-                      Authorization: `Bearer ${token}`,
-                    },
-                    body: JSON.stringify(payload),
-                  });
-                  showNotification("Vendeur ajouté avec succès.");
+                  url = `${APP_URL}/api/utilisateur/modifier/${selectedUtilisateur.id}`;
+                  method = "PUT";
                 }
 
+                const res = await fetch(url, {
+                  method,
+                  headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                  },
+                  body: JSON.stringify(payload),
+                });
+
+                const data = await res.json();
+
+                if (!res.ok) {
+                  showNotification(data.message || "Erreur inconnue", "error");
+                  return;
+                }
+
+                showNotification(
+                  data.message || "Opération effectuée.",
+                  "success"
+                );
+
                 await fetchUtilisateurs();
+
                 setSelectedUtilisateur(null);
                 setFormData({ nom: "", email: "", boutiqueId: 0 });
                 setIsModalOpen(false);
               } catch (error) {
                 console.error("Erreur API utilisateur :", error);
+                showNotification(
+                  "Erreur lors de la communication avec l'API",
+                  "error"
+                );
               }
             }}
           />
         )}
 
         {notification && (
-          <div className="fixed top-5 right-5 bg-green-500 text-white px-4 py-2 rounded shadow-lg z-50">
-            {notification}
+          <div
+            className={`fixed top-4 left-1/2 -translate-x-1/2 px-6 py-3 rounded-lg text-white font-semibold shadow-lg ${
+              notification.type === "success" ? "bg-green-600" : "bg-red-600"
+            }`}
+          >
+            {notification.message}
           </div>
         )}
       </div>
