@@ -82,7 +82,7 @@ export default function UtilisateurPage() {
       if (!res.ok)
         throw new Error("Erreur lors du chargement des utilisateurs");
       const data = await res.json();
-      console.log(data);
+      // console.log(data);
       setUtilisateurs(data);
     } catch (error) {
       console.error("Erreur lors du fetch des utilisateurs:", error);
@@ -114,25 +114,25 @@ export default function UtilisateurPage() {
 
   if (!authChecked) {
     return (
-      <DashboardLayout title="Liste des clients">
+      <DashboardLayout title="Liste des vendeurs">
         <div>Loading…</div>
       </DashboardLayout>
     );
   }
 
   return (
-    <DashboardLayout title="Liste des clients">
+    <DashboardLayout title="Liste des vendeurs">
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <h2 className="text-2xl font-bold text-gray-900">
-            Gestion des utilisateurs
+            Gestion des vendeurs
           </h2>
           <button
             onClick={() => handleOpenModal()}
             className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2 whitespace-nowrap"
           >
             <i className="ri-add-line"></i>
-            <span>Ajouter un client</span>
+            <span>Ajouter un vendeur</span>
           </button>
         </div>
 
@@ -186,7 +186,7 @@ export default function UtilisateurPage() {
                       body: JSON.stringify(payload),
                     }
                   );
-                  showNotification("Utilisateur modifié avec succès.");
+                  showNotification("Vendeur modifié avec succès.");
                 } else {
                   await fetch(`${APP_URL}/api/utilisateur/create`, {
                     method: "POST",
@@ -196,7 +196,7 @@ export default function UtilisateurPage() {
                     },
                     body: JSON.stringify(payload),
                   });
-                  showNotification("Utilisateur ajouté avec succès.");
+                  showNotification("Vendeur ajouté avec succès.");
                 }
 
                 await fetchUtilisateurs();

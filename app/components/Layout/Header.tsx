@@ -42,6 +42,7 @@ export default function Header({
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [play] = useSound("/notification1.wav", { volume: 0.5 });
   const [utilisateur, setUtilisateur] = useState<Utilisateur | null>(null);
+  const [boutiqueNom, setBoutiqueNom] = useState<string>("");
 
   // === Fetch initial caisse ===
   const fetchCaisses = async () => {
@@ -74,29 +75,27 @@ export default function Header({
     if (current !== prevCaisse) setPrevCaisse(current);
   }, [caisses?.CAISSE, prevCaisse]);
 
-  const [boutiqueNom, setBoutiqueNom] = useState<string>("");
+  // === Récupérer utilisateur ===
+  useEffect(() => {
+    const user = localStorage.getItem("utilisateur");
+    if (user) {
+      try {
+        const parsed = JSON.parse(user);
+        setUtilisateur(parsed);
+        if (parsed.id) setUtilisateurId(Number(parsed.id));
 
-// === Récupérer utilisateur et nom de boutique ===
-useEffect(() => {
-  const user = localStorage.getItem("utilisateur");
-  if (user) {
-    try {
-      const parsed = JSON.parse(user);
-      setUtilisateur(parsed);
-      if (parsed.id) setUtilisateurId(Number(parsed.id));
-
-      // Récupération du nom de la boutique
-      if (parsed.boutiques && parsed.boutiques.length > 0) {
-        const noms = parsed.boutiques.map((b: any) => b.nom).join(", ");
-        setBoutiqueNom(noms);
-      } else {
-        setBoutiqueNom("Pas de boutique");
+        // Récupération du nom de la boutique
+        if (parsed.boutiques && parsed.boutiques.length > 0) {
+          const noms = parsed.boutiques.map((b: any) => b.nom).join(", ");
+          setBoutiqueNom(noms);
+        } else {
+          setBoutiqueNom("Pas de boutique");
+        }
+      } catch (err) {
+        console.error("Erreur lecture utilisateur:", err);
       }
-    } catch (err) {
-      console.error("Erreur lecture utilisateur:", err);
     }
-  }
-}, []);
+  }, []);
 
   // === Notifications ===
   useEffect(() => {
@@ -177,25 +176,24 @@ useEffect(() => {
     };
 
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    return () =>
+      document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   const unreadCount = notifications.filter((n) => !n.read).length;
   const toggleNotif = () => setIsNotifOpen((prev) => !prev);
   const toggleUserMenu = () => setIsUserMenuOpen((prev) => !prev);
 
-  // === Déconnexion ===
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("utilisateur");
-    window.location.href = "/login"; // Redirection vers la page de login
+    window.location.href = "/login";
   };
 
   return (
     <header className="bg-white border-b border-gray-200 px-6 py-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center">
-          {/* Bouton menu (seulement sur mobile) */}
           <button
             onClick={onMenuClick}
             className="lg:hidden p-2 rounded-lg hover:bg-gray-100 mr-4"
@@ -203,45 +201,19 @@ useEffect(() => {
             <i className="ri-menu-line text-xl text-gray-600"></i>
           </button>
 
-          {/* Bloc titre + caisse verticalement */}
           <div className="flex flex-col">
             <h1 className="text-xl font-semibold text-gray-800">{title}</h1>
-            <span className="text-gray-700 font-bold text-lg">
-              Caisse: {(caisses?.CAISSE ?? 0).toLocaleString()} GNF
-            </span>
+
+            {/* --- CACHER POUR ADMIN --- */}
+            {utilisateur?.role !== "ADMIN" && (
+              <span className="text-gray-700 font-bold text-lg">
+                Caisse: {(caisses?.CAISSE ?? 0).toLocaleString()} GNF
+              </span>
+            )}
           </div>
         </div>
 
         <div className="flex items-center space-x-4 relative">
-          {isNotifOpen && (
-            <div
-              id="notif-dropdown"
-              className="absolute right-16 top-full mt-2 w-80 max-h-64 overflow-y-auto bg-white border border-gray-200 rounded shadow-lg z-50"
-            >
-              {notifications.length === 0 ? (
-                <div className="p-4 text-gray-500">Aucune notification</div>
-              ) : (
-                notifications.map((notif, idx) => (
-                  <div
-                    key={idx}
-                    className="flex items-start p-2 border-b last:border-b-0 hover:bg-gray-100 cursor-pointer"
-                  >
-                    {!notif.read && (
-                      <span className="w-2 h-2 mt-2 mr-2 bg-blue-500 rounded-full"></span>
-                    )}
-                    <div className="flex-1">
-                      <div>{notif.message}</div>
-                      <div className="text-xs text-gray-400">
-                        {new Date(notif.timestamp).toLocaleString()}
-                      </div>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-          )}
-
-          {/* --- User Avatar --- */}
           <div className="relative">
             <button
               id="user-button"
@@ -276,13 +248,7 @@ useEffect(() => {
             <p className="text-sm font-medium text-gray-800">
               {utilisateur?.role}
             </p>
-            <p className="text-sm font-medium text-gray-800">
-              {boutiqueNom}
-            </p>
-
-            {/* <p className="text-sm font-medium text-gray-800">
-              {utilisateur?.boutique[0].nom}
-            </p> */}
+            <p className="text-sm font-medium text-gray-800">{boutiqueNom}</p>
             <p className="text-xs text-gray-500">{utilisateur?.email}</p>
             <p className="text-xs text-gray-500">{utilisateur?.nom}</p>
           </div>

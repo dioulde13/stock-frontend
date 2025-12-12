@@ -7,11 +7,16 @@ import ExpensesTable from "./ExpensesTable";
 import ExpenseModal from "./ExpenseModal";
 import DashboardLayout from "../components/Layout/DashboardLayout";
 
+interface Utilisateur {
+  role: string;
+}
+
 export default function ExpensesPage() {
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingExpense, setEditingExpense] = useState<any>(null); // null = création
   const [refreshTable, setRefreshTable] = useState(false); // pour rafraîchir le tableau
+  const [utilisateur, setUtilisateur] = useState<Utilisateur | null>(null);
 
   // 🔹 Notifications globales
   const [notification, setNotification] = useState<string | null>(null);
@@ -23,6 +28,12 @@ export default function ExpensesPage() {
     const isAuthenticated = localStorage.getItem("isAuthenticated");
     if (!isAuthenticated) {
       router.push("/login");
+    }
+    const stored = localStorage.getItem("utilisateur");
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      //  console.log(parsed);
+      setUtilisateur(parsed);
     }
   }, [router]);
 
@@ -50,17 +61,21 @@ export default function ExpensesPage() {
   return (
     <DashboardLayout title="Dépenses">
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
-        
-          <button
-            onClick={handleAdd}
-            className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 flex items-center space-x-2 whitespace-nowrap"
-          >
-            <i className="ri-money-dollar-box-line"></i>
-            <span>Nouvelle dépense</span>
-          </button>
-        </div>
-
+        <>
+          {utilisateur?.role !== "ADMIN" ? (
+            <div className="flex items-center justify-between">
+              <button
+                onClick={handleAdd}
+                className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 flex items-center space-x-2 whitespace-nowrap"
+              >
+                <i className="ri-money-dollar-box-line"></i>
+                <span>Nouvelle dépense</span>
+              </button>
+            </div>
+          ) : (
+            ""
+          )}
+        </>
         {/* Tableau des dépenses */}
         <ExpensesTable onEdit={handleEdit} refreshTrigger={refreshTable} />
 

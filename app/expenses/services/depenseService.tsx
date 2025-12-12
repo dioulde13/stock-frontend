@@ -51,11 +51,10 @@ export const fetchCaisses = async () => {
 
 export async function createDepense(depense: any) {
   const token = localStorage.getItem("token");
-   if (!token) {
-        // Redirection automatique si token manquant
-        window.location.href = "/login";
-        return; // On arrête l'exécution
-      }
+  if (!token) {
+    window.location.href = "/login";
+    return;
+  }
 
   const res = await fetch(`${APP_URL}/api/depense/create`, {
     method: "POST",
@@ -66,28 +65,19 @@ export async function createDepense(depense: any) {
     body: JSON.stringify(depense),
   });
 
-  if (!res.ok) throw new Error("Erreur lors de la création de la dépense");
+  const data = await res.json();
 
-  const depenseCree = await res.json();
+  if (!res.ok) {
+    throw new Error(data.message || "Erreur lors de la création de la dépense");
+  }
 
-  // 🔄 Actualiser les caisses après création
   const caissesActualisees = await fetchCaisses();
 
-  return { depense: depenseCree, caisses: caissesActualisees };
+  return { depense: data, caisses: caissesActualisees };
 }
 
 
-// export async function createDepense(depense: any) {
-//   const token = localStorage.getItem("token");
-//   const res = await fetch("http://localhost:3000/api/depense/create", {
-//     method: "POST",
-//     headers: { "Content-Type": "application/json" , Authorization: `Bearer ${token}`,},
-//     body: JSON.stringify(depense),
-//   });
-//   fetchCaisses();
-//   if (!res.ok) throw new Error("Erreur lors de la création de la dépense");
-//   return res.json();
-// }
+
 
 export async function updateDepense(id: number, depense: any) {
   const token = localStorage.getItem("token");

@@ -5,10 +5,16 @@ import VersementModal from "./VersementModal";
 import { APP_URL } from "../environnement/environnements";
 import DashboardLayout from "../components/Layout/DashboardLayout";
 
+interface Utilisateur {
+  role: string;
+}
+
 export default function VersementPage() {
   const [versements, setVersements] = useState<any[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(true); // loader activé au démarrage
+
+  const [utilisateur, setUtilisateur] = useState<Utilisateur | null>(null);
 
   const fetchVersements = async () => {
     // setLoading(true); // on active le loader avant le fetch
@@ -36,6 +42,12 @@ export default function VersementPage() {
   };
 
   useEffect(() => {
+    const stored = localStorage.getItem("utilisateur");
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      //  console.log(parsed);
+      setUtilisateur(parsed);
+    }
     fetchVersements();
   }, []);
 
@@ -58,17 +70,26 @@ export default function VersementPage() {
     <DashboardLayout title="Versement">
       <div className="p-4 bg-gray-50 min-h-screen">
         <div className="bg-white shadow-md rounded-xl p-6">
-          <div className="flex justify-between items-center mb-6">
-            <button
-              onClick={() => setIsModalOpen(true)}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition"
-            >
-              + Nouveau
-            </button>
-          </div>
+          <>
+            {utilisateur?.role !== "ADMIN" ? (
+              <div className="flex justify-between items-center mb-6">
+                <button
+                  onClick={() => setIsModalOpen(true)}
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition"
+                >
+                  + Nouveau
+                </button>
+              </div>
+            ) : (
+              ""
+            )}
+          </>
 
           <div className="overflow-x-auto">
-            <VersementTable versements={versements} onAction={fetchVersements} />
+            <VersementTable
+              versements={versements}
+              onAction={fetchVersements}
+            />
           </div>
 
           {isModalOpen && (

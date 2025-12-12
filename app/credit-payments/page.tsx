@@ -7,6 +7,10 @@ import { addPayment, getPayments } from "./services/payementCreditService";
 import DashboardLayout from "../components/Layout/DashboardLayout";
 import "./paiement.css";
 
+interface Utilisateur {
+  role: string;
+}
+
 export default function CreditPaymentsPage() {
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -26,6 +30,8 @@ export default function CreditPaymentsPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [dateStart, setDateStart] = useState("");
   const [dateEnd, setDateEnd] = useState("");
+
+  const [utilisateur, setUtilisateur] = useState<Utilisateur | null>(null);
 
   // 🟢 Affichage des notifications
   const [notification, setNotification] = useState<{
@@ -47,6 +53,8 @@ export default function CreditPaymentsPage() {
     if (user) {
       try {
         const parsedUser = JSON.parse(user);
+        // console.log(parsedUser);
+        setUtilisateur(parsedUser);
         utilisateurId = parsedUser.id ? String(parsedUser.id) : "";
         setFormData((prev) => ({ ...prev, utilisateurId }));
       } catch {}
@@ -176,13 +184,19 @@ export default function CreditPaymentsPage() {
               Suivez les paiements des crédits clients
             </p>
           </div>
-          <button
-            onClick={() => setIsModalOpen(true)}
-            className="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 flex items-center space-x-2 whitespace-nowrap"
-          >
-            <i className="ri-money-dollar-circle-line"></i>
-            <span>Enregistrer un paiement</span>
-          </button>
+          <>
+            {utilisateur?.role !== "ADMIN" ? (
+              <button
+                onClick={() => setIsModalOpen(true)}
+                className="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 flex items-center space-x-2 whitespace-nowrap"
+              >
+                <i className="ri-money-dollar-circle-line"></i>
+                <span>Enregistrer un paiement</span>
+              </button>
+            ) : (
+              ""
+            )}
+          </>
         </div>
 
         {/* Total montant */}

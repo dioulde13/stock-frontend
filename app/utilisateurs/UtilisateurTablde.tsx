@@ -8,12 +8,18 @@ interface Boutique {
   nom: string;
 }
 
+interface Caisse {
+  id: number;
+  solde_actuel: number | string;
+}
+
 interface Utilisateur {
   id: number;
   nom: string;
   email: string;
   bloque?: boolean;
   Boutique?: Boutique;
+  Caisses?: Caisse[]; // 👈 tableau obligatoire !
 }
 
 interface UtilisateursTableProps {
@@ -49,6 +55,12 @@ export default function UtilisateursTable({
   const [modalVisible, setModalVisible] = useState(false);
   const [utilisateurToDebloquer, setUtilisateurToDebloquer] =
     useState<Utilisateur | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Formatage montant (1.430.000)
+  const formatMoney = (n: number | string) => {
+    return Number(n).toLocaleString("fr-FR");
+  };
 
   useEffect(() => {
     setMounted(true);
@@ -61,23 +73,6 @@ export default function UtilisateursTable({
     return () => clearTimeout(handler);
   }, [searchTerm]);
 
-  // const handleDelete = async (id: number) => {
-  //   if (!confirm("Voulez-vous vraiment supprimer cet utilisateur ?")) return;
-  //   try {
-  //     const response = await fetch(
-  //       `${APP_URL}/api/utilisateur/supprimer/${id}`,
-  //       { method: "DELETE" }
-  //     );
-  //     if (!response.ok)
-  //       throw new Error("Impossible de supprimer cet utilisateur.");
-  //     await fetchUtilisateurs();
-  //     showNotification("Utilisateur supprimé avec succès.");
-  //   } catch (error: any) {
-  //     showNotification(error.message || "Erreur lors de la suppression.");
-  //     console.error(error);
-  //   }
-  // };
-
   const handleDebloquerClick = (utilisateur: Utilisateur) => {
     setUtilisateurToDebloquer(utilisateur);
     setModalVisible(true);
@@ -87,12 +82,10 @@ export default function UtilisateursTable({
     if (!utilisateurToDebloquer) return;
 
     try {
+      setIsLoading(true);
+
       const token = localStorage.getItem("token");
-      if (!token) {
-        // Redirection automatique si token manquant
-        window.location.href = "/login";
-        return;
-      }
+      if (!token) return (window.location.href = "/login");
 
       const response = await fetch(
         `${APP_URL}/api/utilisateur/debloquer/${utilisateurToDebloquer.id}`,
@@ -105,16 +98,14 @@ export default function UtilisateursTable({
         }
       );
 
-      if (!response.ok) {
-        throw new Error("Impossible de débloquer cet utilisateur.");
-      }
+      if (!response.ok) throw new Error("Impossible de débloquer le vendeur.");
 
-      showNotification("Utilisateur débloqué avec succès.");
+      showNotification("Vendeur débloqué avec succès.");
       await fetchUtilisateurs();
     } catch (error: any) {
-      showNotification(error.message || "Erreur lors du déblocage.");
-      console.error(error);
+      showNotification(error.message);
     } finally {
+      setIsLoading(false);
       setModalVisible(false);
       setUtilisateurToDebloquer(null);
     }
@@ -146,7 +137,7 @@ export default function UtilisateursTable({
             </div>
             <input
               type="text"
-              placeholder="Rechercher un utilisateur..."
+              placeholder="Rechercher un vendeur..."
               className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -160,23 +151,27 @@ export default function UtilisateursTable({
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                 Nom
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                 Email
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                 Boutique
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                Solde
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                 Status
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                 Actions
               </th>
             </tr>
           </thead>
+
           <tbody className="bg-white divide-y divide-gray-200">
             {filteredUtilisateurs.map((u) => (
               <tr key={u.id} className="hover:bg-gray-50 transition">
@@ -185,35 +180,41 @@ export default function UtilisateursTable({
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                   {u.Boutique?.nom || "—"}
                 </td>
+
+                {/* SOLDE */}
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                  {u.Caisses?.[0]?.solde_actuel !== undefined
+                    ? formatMoney(u.Caisses[0].solde_actuel)
+                    : "—"}
+                </td>
+
+                {/* STATUS */}
                 <td
                   className={`px-6 py-4 text-sm font-semibold ${
                     u.bloque ? "text-red-600" : "text-green-600"
                   }`}
                 >
-                  {u.bloque ? "Bloquer" : "Actif"}
+                  {u.bloque ? "Bloqué" : "Actif"}
                 </td>
+
+                {/* ACTIONS */}
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                   <div className="flex items-center space-x-2">
                     {u.bloque && (
                       <button
                         onClick={() => handleDebloquerClick(u)}
-                        className="text-green-600 hover:text-green-900 p-1 rounded cursor-pointer transition"
+                        className="text-green-600 hover:text-green-900 p-1 rounded cursor-pointer"
                       >
                         <i className="ri-lock-unlock-line text-lg"></i>
                       </button>
                     )}
+
                     <button
                       onClick={() => handleOpenModal(u)}
-                      className="text-blue-600 hover:text-blue-900 p-1 rounded cursor-pointer transition"
+                      className="text-blue-600 hover:text-blue-900 p-1 rounded cursor-pointer"
                     >
                       <i className="ri-edit-line text-lg"></i>
                     </button>
-                    {/* <button
-                      onClick={() => handleDelete(u.id)}
-                      className="text-red-600 hover:text-red-900 p-1 rounded cursor-pointer transition"
-                    >
-                      <i className="ri-delete-bin-line text-lg"></i>
-                    </button> */}
                   </div>
                 </td>
               </tr>
@@ -225,7 +226,7 @@ export default function UtilisateursTable({
           <div className="text-center py-12">
             <i className="ri-box-3-line text-4xl text-gray-400 mb-4"></i>
             <h3 className="text-lg font-medium text-gray-900 mb-2">
-              Aucun utilisateur trouvé
+              Aucun vendeur trouvé
             </h3>
             <p className="text-gray-500">
               Essayez de modifier vos critères de recherche
@@ -234,13 +235,11 @@ export default function UtilisateursTable({
         )}
       </div>
 
-      {/* Modal de confirmation pour débloquer */}
+      {/* MODAL */}
       {modalVisible && utilisateurToDebloquer && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow-lg p-6 w-96">
-            <h3 className="text-lg font-medium mb-4">
-              Débloquer l'utilisateur
-            </h3>
+            <h3 className="text-lg font-medium mb-4">Débloquer un vendeur</h3>
             <p className="mb-4">
               Êtes-vous sûr de vouloir débloquer{" "}
               <strong>{utilisateurToDebloquer.nom}</strong> ?
@@ -256,7 +255,7 @@ export default function UtilisateursTable({
                 onClick={debloquerUtilisateur}
                 className="px-4 py-2 rounded bg-green-600 text-white hover:bg-green-700"
               >
-                Débloquer
+                {isLoading ? "En cours..." : "Débloquer"}
               </button>
             </div>
           </div>

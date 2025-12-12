@@ -17,6 +17,10 @@ import { formatMontant } from "../components/utils/formatters";
 import { APP_URL } from "../environnement/environnements";
 import ModalConfirm from "../components/ModalConfirm";
 
+interface Utilisateur {
+  role: string;
+}
+
 export default function CreditsPage() {
   const router = useRouter();
   const [credits, setCredits] = useState<any[]>([]);
@@ -53,14 +57,17 @@ export default function CreditsPage() {
   const [currentPage, setCurrentPage] = useState(0);
   const itemsPerPage = 5;
 
-  const [utilisateur, setUtilisateur] = useState<any[]>([]);
+  const [utilisateur, setUtilisateur] = useState<Utilisateur | null>(null);
 
   useEffect(() => {
     const isAuthenticated = localStorage.getItem("isAuthenticated");
     const user = localStorage.getItem("utilisateur");
+    console.log(user);
+
     if (user) {
       try {
         const parsedUser = JSON.parse(user);
+        console.log(parsedUser);
         setUtilisateur(parsedUser);
         const utilisateurId = parsedUser.id ? String(parsedUser.id) : "";
         setFormData((prev) => ({ ...prev, utilisateurId }));
@@ -348,16 +355,15 @@ export default function CreditsPage() {
     setTimeout(() => setNotification(null), 4000); // 2s pour que ce soit plus visible
   };
 
-
-   if (loading) {
-      return (
-        <DashboardLayout title="Chargement...">
-          <div className="flex justify-center items-center h-64 text-gray-500">
-            Chargement des données...
-          </div>
-        </DashboardLayout>
-      );
-    }
+  if (loading) {
+    return (
+      <DashboardLayout title="Chargement...">
+        <div className="flex justify-center items-center h-64 text-gray-500">
+          Chargement des données...
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout title="Crédits">
@@ -383,28 +389,26 @@ export default function CreditsPage() {
       )}
 
       <div className="space-y-6">
-        <div className="flex items-center justify-between flex-wrap gap-4">
-          <div>
-            {/* <h2 className="text-2xl font-bold text-gray-900">
-              Gestion des crédits
-            </h2>
-            <p className="text-gray-600">
-              Suivez les crédits accordés aux clients
-            </p> */}
-          </div>
-          <button
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
-            onClick={() => {
-              resetForm();
-              setEditingId(null);
-              setMontantPaye(0);
-              setShowForm(true);
-            }}
-          >
-            <i className="ri-bank-card-line"></i>
-            <span>Nouveau crédit</span>
-          </button>
-        </div>
+        <>
+          {utilisateur?.role !== "ADMIN" ? (
+            <div className="flex items-center justify-between flex-wrap gap-4">
+              <button
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+                onClick={() => {
+                  resetForm();
+                  setEditingId(null);
+                  setMontantPaye(0);
+                  setShowForm(true);
+                }}
+              >
+                <i className="ri-bank-card-line"></i>
+                <span>Nouveau crédit</span>
+              </button>
+            </div>
+          ) : (
+            ""
+          )}
+        </>
 
         {/* 🧭 Filtres */}
         <div

@@ -7,12 +7,17 @@ import FournisseursModal from "./FournisseursModal";
 import DashboardLayout from "../components/Layout/DashboardLayout";
 import { APP_URL } from "../environnement/environnements";
 
+interface Utilisateur {
+  role: string;
+}
+
 export default function FournisseurPage() {
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedFournisseur, setSelectedFournisseur] = useState<any>(null);
   const [fournisseur, setFournisseurs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [utilisateur, setUtilisateur] = useState<Utilisateur | null>(null);
 
   const [formData, setFormData] = useState({
     nom: "",
@@ -35,6 +40,14 @@ export default function FournisseurPage() {
   };
 
   useEffect(() => {
+    const user = localStorage.getItem("utilisateur");
+    if (user) {
+      try {
+        const parsedUser = JSON.parse(user);
+        console.log(parsedUser);
+        setUtilisateur(parsedUser);
+      } catch {}
+    }
     const isAuthenticated = localStorage.getItem("isAuthenticated");
     if (!isAuthenticated) {
       router.push("/login");
@@ -64,8 +77,7 @@ export default function FournisseurPage() {
       setFournisseurs(data);
     } catch (error) {
       console.error("Erreur lors du fetch des fournisseurs:", error);
-    }
-    finally {
+    } finally {
       setLoading(false);
     }
   };
@@ -99,30 +111,35 @@ export default function FournisseurPage() {
     setIsModalOpen(true);
   };
 
-
-   if (loading) {
-      return (
-        <DashboardLayout title="Chargement...">
-          <div className="flex justify-center items-center h-64 text-gray-500">
-            Chargement des données...
-          </div>
-        </DashboardLayout>
-      );
-    }
+  if (loading) {
+    return (
+      <DashboardLayout title="Chargement...">
+        <div className="flex justify-center items-center h-64 text-gray-500">
+          Chargement des données...
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout title="Liste des fournisseurs">
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          {/* <h2 className="text-2xl font-bold text-gray-900">Gestion des fournisseurs</h2> */}
-          <button
-            onClick={() => handleOpenModal()}
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
-          >
-            <i className="ri-add-line"></i>
-            <span>Ajouter</span>
-          </button>
-        </div>
+        <>
+          {utilisateur?.role !== "ADMIN" ? (
+            <div className="flex items-center justify-between">
+              {/* <h2 className="text-2xl font-bold text-gray-900">Gestion des fournisseurs</h2> */}
+              <button
+                onClick={() => handleOpenModal()}
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+              >
+                <i className="ri-add-line"></i>
+                <span>Ajouter</span>
+              </button>
+            </div>
+          ) : (
+            ""
+          )}
+        </>
 
         <FournisseursTable
           fournisseur={fournisseur}
@@ -137,7 +154,7 @@ export default function FournisseurPage() {
 
         {isModalOpen && (
           <FournisseursModal
-          isEditing={!!selectedFournisseur}
+            isEditing={!!selectedFournisseur}
             formData={formData}
             setFormData={setFormData}
             onClose={() => setIsModalOpen(false)}
@@ -150,7 +167,7 @@ export default function FournisseurPage() {
                 };
 
                 if (!payload.utilisateurId) {
-                setIsModalOpen(false);
+                  setIsModalOpen(false);
                   return showNotification("Utilisateur non trouvé !", "error");
                 }
 
@@ -174,7 +191,7 @@ export default function FournisseurPage() {
                       body: JSON.stringify(payload),
                     }
                   );
-                setIsModalOpen(false);
+                  setIsModalOpen(false);
                   data = await res.json();
                   if (!res.ok)
                     return showNotification(
@@ -196,7 +213,7 @@ export default function FournisseurPage() {
                     body: JSON.stringify(payload),
                   });
                   data = await res.json();
-                setIsModalOpen(false);
+                  setIsModalOpen(false);
                   if (!res.ok)
                     return showNotification(
                       data.message || "Erreur lors de l'ajout",

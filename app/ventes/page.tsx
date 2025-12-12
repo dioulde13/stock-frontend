@@ -16,7 +16,6 @@ type Produit = {
   stock_actuel: number;
 };
 
-
 type LigneVente = {
   id?: number;
   utilisateurId: number;
@@ -34,7 +33,7 @@ type Vente = {
   type: string;
   status: string;
   createdAt: string;
-  LigneVentes: LigneVente[]; 
+  LigneVentes: LigneVente[];
   clientNom?: string;
   vendeurNom?: string;
   boutiqueNom?: string;
@@ -250,18 +249,29 @@ export default function VentesPage() {
   );
 
   useEffect(() => {
-    const user = localStorage.getItem("utilisateur");
-    if (user) {
-      try {
-        const parsedUser = JSON.parse(user);
-        setFormUtilisateurId(Number(parsedUser.id));
-      } catch {}
-    }
-    setMounted(true);
-    fetchVentes();
-    fetchProduits();
-    fetchClients();
-  }, []);
+  const user = localStorage.getItem("utilisateur");
+  if (user) {
+    try {
+      const parsedUser = JSON.parse(user);
+      setFormUtilisateurId(Number(parsedUser.id));
+    } catch {}
+  }
+
+  setMounted(true);
+
+  const token = localStorage.getItem("token");
+  if (!token) {
+    // Redirection si pas de token
+    window.location.href = "/login";
+    return;
+  }
+
+  // On lance les fetch uniquement si token présent
+  fetchVentes();
+  fetchProduits();
+  fetchClients();
+}, []);
+
 
   const ouvrirConfirmationModal = () => {
     if (clientsData.length === 0) fetchClients();
@@ -274,56 +284,80 @@ export default function VentesPage() {
     setVenteType("ACHAT");
   };
 
-  const fetchClients = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        // Redirection automatique si token manquant
-        window.location.href = "/login";
-        return; // On arrête l'exécution
-      }
-      const res = await fetch(`${APP_URL}/api/client/liste`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (!res.ok) throw new Error("Erreur lors du chargement des clients");
-      const data = await res.json();
-      setClientsData(data);
-    } catch (e) {
-      alert((e as Error).message);
-    }
-  };
+ const fetchClients = async () => {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    // Redirection sans alerte
+    window.location.href = "/login";
+    return;
+  }
 
-  const fetchProduits = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        // Redirection automatique si token manquant
+  try {
+    const res = await fetch(`${APP_URL}/api/client/liste`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!res.ok) {
+      // Ici on peut ignorer l'erreur si c'est un 401
+      if (res.status === 401) {
         window.location.href = "/login";
-        return; // On arrête l'exécution
+        return;
       }
-      const res = await fetch(`${APP_URL}/api/produit/liste`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (!res.ok) throw new Error("Erreur lors du chargement du produit");
-      const data = await res.json();
-      const filteredData = data.filter(
-        (produit: any) => produit.status !== "ANNULER"
-      );
-      setDataProduit(filteredData);
-    } catch (e) {
-      setError((e as Error).message);
-    } finally {
-      setLoading(false);
+      throw new Error("Erreur lors du chargement des clients");
     }
-  };
+
+    const data = await res.json();
+    setClientsData(data);
+  } catch (e) {
+    console.error("Erreur fetchClients:", e);
+    // on n'affiche plus d'alerte
+  }
+};
+
+
+ const fetchProduits = async () => {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    // Redirection automatique si token manquant
+    window.location.href = "/login";
+    return; // On arrête l'exécution avant fetch
+  }
+
+  try {
+    const res = await fetch(`${APP_URL}/api/produit/liste`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!res.ok) {
+      // Si le token est invalide, rediriger vers login silencieusement
+      if (res.status === 401) {
+        window.location.href = "/login";
+        return;
+      }
+      // Autres erreurs éventuelles
+      throw new Error("Erreur lors du chargement du produit");
+    }
+
+    const data = await res.json();
+    const filteredData = data.filter(
+      (produit: any) => produit.status !== "ANNULER"
+    );
+    setDataProduit(filteredData);
+  } catch (e) {
+    console.error("Erreur fetchProduits:", e); // juste log, pas d'alerte
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   // 🟢 Affichage des notifications
   const [notification, setNotification] = useState<{
@@ -453,51 +487,47 @@ export default function VentesPage() {
   };
 
   const confirmerLigne = () => {
-  const utilisateurIdNum = Number(formUtilisateurId);
-  const produitIdNum = Number(ligneTemp.produitId);
-  const produitNomNum = ligneTemp.produitNom;
-  const quantiteNum = Number(ligneTemp.quantite);
-  const prixAchatNum = Number(ligneTemp.prix_achat);
-  const prixVenteNum = Number(ligneTemp.prix_vente);
+    const utilisateurIdNum = Number(formUtilisateurId);
+    const produitIdNum = Number(ligneTemp.produitId);
+    const produitNomNum = ligneTemp.produitNom;
+    const quantiteNum = Number(ligneTemp.quantite);
+    const prixAchatNum = Number(ligneTemp.prix_achat);
+    const prixVenteNum = Number(ligneTemp.prix_vente);
 
-  // Validation de base
-  if (!produitIdNum || !quantiteNum || !prixVenteNum) {
-    showNotification(
-      "Veuillez remplir tous les champs.",
-      "error"
-    );
-    return;
-  }
+    // Validation de base
+    if (!produitIdNum || !quantiteNum || !prixVenteNum) {
+      showNotification("Veuillez remplir tous les champs.", "error");
+      return;
+    }
 
-  // 🚫 Validation que prix de vente >= prix d'achat
-  if (prixVenteNum < prixAchatNum) {
-    showNotification(
-      "Le prix de vente ne peut pas être inférieur au prix d'achat.",
-      "error"
-    );
-    return;
-  }
+    // 🚫 Validation que prix de vente >= prix d'achat
+    if (prixVenteNum < prixAchatNum) {
+      showNotification(
+        "Le prix de vente ne peut pas être inférieur au prix d'achat.",
+        "error"
+      );
+      return;
+    }
 
-  const nouvelleLigne = {
-    utilisateurId: utilisateurIdNum,
-    produitId: produitIdNum,
-    produitNom: produitNomNum,
-    quantite: quantiteNum,
-    prix_achat: prixAchatNum,
-    prix_vente: prixVenteNum,
+    const nouvelleLigne = {
+      utilisateurId: utilisateurIdNum,
+      produitId: produitIdNum,
+      produitNom: produitNomNum,
+      quantite: quantiteNum,
+      prix_achat: prixAchatNum,
+      prix_vente: prixVenteNum,
+    };
+
+    if (editingIndex !== null) {
+      const updated = [...lignesVente];
+      updated[editingIndex] = nouvelleLigne;
+      setLignesVente(updated);
+    } else {
+      setLignesVente([...lignesVente, nouvelleLigne]);
+    }
+
+    fermerModal();
   };
-
-  if (editingIndex !== null) {
-    const updated = [...lignesVente];
-    updated[editingIndex] = nouvelleLigne;
-    setLignesVente(updated);
-  } else {
-    setLignesVente([...lignesVente, nouvelleLigne]);
-  }
-
-  fermerModal();
-};
-
 
   const supprimerLigneTemp = (index: number) => {
     const updated = lignesVente.filter((_, i) => i !== index);
@@ -550,7 +580,7 @@ export default function VentesPage() {
   };
 
   const imprimerRecu = (vente: Vente) => {
-  const contenu = `
+    const contenu = `
     <html>
       <head>
         <title>${vente.boutiqueNom}</title>
@@ -591,7 +621,9 @@ export default function VentesPage() {
                 <td>${ligne.Produit?.nom || "Produit inconnu"}</td>
                 <td>${ligne.quantite}</td>
                 <td>${ligne.prix_vente.toLocaleString()} GNF</td>
-                <td>${(ligne.quantite * ligne.prix_vente).toLocaleString()} GNF</td>
+                <td>${(
+                  ligne.quantite * ligne.prix_vente
+                ).toLocaleString()} GNF</td>
               </tr>
             `
             ).join("")}
@@ -614,16 +646,15 @@ export default function VentesPage() {
     </html>
   `;
 
-  const printWindow = window.open("", "_blank");
-  if (printWindow) {
-    printWindow.document.write(contenu);
-    printWindow.document.close();
-    printWindow.focus();
-    printWindow.print();
-    printWindow.close();
-  }
-};
-
+    const printWindow = window.open("", "_blank");
+    if (printWindow) {
+      printWindow.document.write(contenu);
+      printWindow.document.close();
+      printWindow.focus();
+      printWindow.print();
+      printWindow.close();
+    }
+  };
 
   const exportVentesExcel = () => {
     // Transformer les ventes en tableau plat pour Excel
@@ -674,16 +705,6 @@ export default function VentesPage() {
     saveAs(blob, "ventes.xlsx");
   };
 
-  //  if (loading) {
-  //         return (
-  //           <DashboardLayout title="Chargement...">
-  //             <div className="flex justify-center items-center h-64 text-gray-500">
-  //               Chargement des données...
-  //             </div>
-  //           </DashboardLayout>
-  //         );
-  //       }
-
   return (
     <DashboardLayout>
       <div style={{ display: "flex", justifyContent: "center", padding: 10 }}>
@@ -697,133 +718,134 @@ export default function VentesPage() {
             boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
           }}
         >
-          {/* Ajout Ligne */}
-          <section
-            style={{
-              background: "#f4f4f4",
-              padding: 10,
-              borderRadius: 8,
-              marginBottom: 30,
-            }}
-          >
-            <button
-              onClick={() => ouvrirModal()}
+          {utilisateur?.role !== "ADMIN" && (
+            <section
               style={{
-                padding: "10px 8px",
-                backgroundColor: "#4caf50",
-                color: "#fff",
-                border: "none",
-                borderRadius: 4,
-                marginBottom: 10,
-                cursor: creating ? "not-allowed" : "pointer",
+                background: "#f4f4f4",
+                padding: 10,
+                borderRadius: 8,
+                marginBottom: 30,
               }}
             >
-              + Ajouter une ligne
-            </button>
-
-            {/* 👉 Conteneur scroll horizontal */}
-            <div style={{ overflowX: "auto" }}>
-              <table
+              <button
+                onClick={() => ouvrirModal()}
                 style={{
-                  width: "100%",
-                  borderCollapse: "collapse",
+                  padding: "10px 8px",
+                  backgroundColor: "#4caf50",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: 4,
                   marginBottom: 10,
-                  minWidth: 500, // 👈 important pour forcer le scroll sur mobile
+                  cursor: creating ? "not-allowed" : "pointer",
                 }}
               >
-                <thead>
-                  <tr style={{ backgroundColor: " #04AA6D" }}>
-                    <th>Produit</th>
-                    <th>Quantité</th>
-                    <th>Prix (GNF)</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {lignesVente.map((ligne, i) => (
-                    <tr key={i}>
-                      <td
-                        style={{
-                          textAlign: "center",
-                          border: "1px solid #ddd",
-                          padding: "8px",
-                        }}
-                      >
-                        {ligne.produitNom}
-                      </td>
-                      <td
-                        style={{
-                          textAlign: "center",
-                          border: "1px solid #ddd",
-                          padding: "8px",
-                        }}
-                      >
-                        {ligne.quantite}
-                      </td>
-                      <td
-                        style={{
-                          textAlign: "center",
-                          border: "1px solid #ddd",
-                          padding: "8px",
-                        }}
-                      >
-                        {formatPrix(ligne.prix_vente)}
-                      </td>
-                      <td
-                        style={{
-                          textAlign: "center",
-                          border: "1px solid #ddd",
-                          padding: "8px",
-                        }}
-                      >
-                        <button
-                          onClick={() => ouvrirModal(i)}
-                          style={{
-                            marginRight: 8,
-                            marginBottom: 10,
-                            backgroundColor: "#2196f3",
-                            color: "white",
-                            border: "none",
-                            padding: "5px 10px",
-                            borderRadius: 4,
-                          }}
-                        >
-                          Modifier
-                        </button>
-                        <button
-                          onClick={() => supprimerLigneTemp(i)}
-                          style={{
-                            backgroundColor: "#f44336",
-                            color: "white",
-                            border: "none",
-                            padding: "5px 10px",
-                            borderRadius: 4,
-                          }}
-                        >
-                          Supprimer
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                + Ajouter une ligne
+              </button>
 
-            <button
-              onClick={ouvrirConfirmationModal}
-              disabled={creating}
-              style={{
-                padding: "10px 8px",
-                backgroundColor: "#4caf50",
-                color: "#fff",
-                border: "none",
-                borderRadius: 4,
-                cursor: creating ? "not-allowed" : "pointer",
-              }}
-            >
-              {creating ? "Création..." : "Créer la vente"}
-            </button>
-          </section>
+              {/* 👉 Conteneur scroll horizontal */}
+              <div style={{ overflowX: "auto" }}>
+                <table
+                  style={{
+                    width: "100%",
+                    borderCollapse: "collapse",
+                    marginBottom: 10,
+                    minWidth: 500, // 👈 important pour forcer le scroll sur mobile
+                  }}
+                >
+                  <thead>
+                    <tr style={{ backgroundColor: " #04AA6D" }}>
+                      <th>Produit</th>
+                      <th>Quantité</th>
+                      <th>Prix (GNF)</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {lignesVente.map((ligne, i) => (
+                      <tr key={i}>
+                        <td
+                          style={{
+                            textAlign: "center",
+                            border: "1px solid #ddd",
+                            padding: "8px",
+                          }}
+                        >
+                          {ligne.produitNom}
+                        </td>
+                        <td
+                          style={{
+                            textAlign: "center",
+                            border: "1px solid #ddd",
+                            padding: "8px",
+                          }}
+                        >
+                          {ligne.quantite}
+                        </td>
+                        <td
+                          style={{
+                            textAlign: "center",
+                            border: "1px solid #ddd",
+                            padding: "8px",
+                          }}
+                        >
+                          {formatPrix(ligne.prix_vente)}
+                        </td>
+                        <td
+                          style={{
+                            textAlign: "center",
+                            border: "1px solid #ddd",
+                            padding: "8px",
+                          }}
+                        >
+                          <button
+                            onClick={() => ouvrirModal(i)}
+                            style={{
+                              marginRight: 8,
+                              marginBottom: 10,
+                              backgroundColor: "#2196f3",
+                              color: "white",
+                              border: "none",
+                              padding: "5px 10px",
+                              borderRadius: 4,
+                            }}
+                          >
+                            Modifier
+                          </button>
+                          <button
+                            onClick={() => supprimerLigneTemp(i)}
+                            style={{
+                              backgroundColor: "#f44336",
+                              color: "white",
+                              border: "none",
+                              padding: "5px 10px",
+                              borderRadius: 4,
+                            }}
+                          >
+                            Supprimer
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              <button
+                onClick={ouvrirConfirmationModal}
+                disabled={creating}
+                style={{
+                  padding: "10px 8px",
+                  backgroundColor: "#4caf50",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: 4,
+                  cursor: creating ? "not-allowed" : "pointer",
+                }}
+              >
+                {creating ? "Création..." : "Créer la vente"}
+              </button>
+            </section>
+          )}
 
           <div style={{ display: "flex", justifyContent: "center" }}>
             <div
@@ -1030,7 +1052,7 @@ export default function VentesPage() {
                                   : "text-red-600"
                               }`}
                             >
-                              {vente.status === 'VALIDER'?'VALIDÉ':''} {" "}
+                              {vente.status === "VALIDER" ? "VALIDÉ" : ""}{" "}
                               {vente.nomPersonneAnnuler === null
                                 ? ""
                                 : `${"(" + vente.nomPersonneAnnuler + ")"}`}
@@ -1076,7 +1098,6 @@ export default function VentesPage() {
                                         <th className="px-3 py-2 border">
                                           Bénéfice
                                         </th>
-                                      
                                       </tr>
                                     </thead>
                                     <tbody>
@@ -1115,7 +1136,6 @@ export default function VentesPage() {
                                                   (ligne?.prix_achat ?? 0)
                                             )}
                                           </td>
-                                        
                                         </tr>
                                       ))}
                                     </tbody>
@@ -1301,18 +1321,18 @@ export default function VentesPage() {
 
             {/* Choix du client si crédit */}
             {/* {venteType === "CREDIT" && ( */}
-              <select
-                value={clientId ?? ""}
-                onChange={(e) => setClientId(Number(e.target.value))}
-                className="border w-full p-3 rounded mb-3"
-              >
-                <option value="">-- Sélectionner un client --</option>
-                {clientsData.map((client) => (
-                  <option key={client.id} value={client.id}>
-                    {client.nom}
-                  </option>
-                ))}
-              </select>
+            <select
+              value={clientId ?? ""}
+              onChange={(e) => setClientId(Number(e.target.value))}
+              className="border w-full p-3 rounded mb-3"
+            >
+              <option value="">-- Sélectionner un client --</option>
+              {clientsData.map((client) => (
+                <option key={client.id} value={client.id}>
+                  {client.nom}
+                </option>
+              ))}
+            </select>
             {/* )} */}
 
             {/* Boutons */}

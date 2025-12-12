@@ -19,6 +19,10 @@ interface Client {
   createdAt?: string;
 }
 
+interface Utilisateur {
+  role: string;
+}
+
 export default function ClientPage() {
   const router = useRouter();
 
@@ -31,6 +35,8 @@ export default function ClientPage() {
     telephone: 0,
     utilisateurId: "",
   });
+
+  const [utilisateur, setUtilisateur] = useState<Utilisateur | null>(null);
 
   // 🟢 Affichage des notifications
   const [notification, setNotification] = useState<{
@@ -48,6 +54,14 @@ export default function ClientPage() {
 
   // ✅ Vérification de l’authentification + chargement initial
   useEffect(() => {
+    const user = localStorage.getItem("utilisateur");
+    if (user) {
+      try {
+        const parsedUser = JSON.parse(user);
+        // console.log(parsedUser);
+        setUtilisateur(parsedUser);
+      } catch {}
+    }
     const isAuthenticated = localStorage.getItem("isAuthenticated");
     if (!isAuthenticated) {
       router.push("/login");
@@ -182,33 +196,35 @@ export default function ClientPage() {
     }
   };
 
-   if (loading) {
-        return (
-          <DashboardLayout title="Chargement...">
-            <div className="flex justify-center items-center h-64 text-gray-500">
-              Chargement des données...
-            </div>
-          </DashboardLayout>
-        );
-      }
+  if (loading) {
+    return (
+      <DashboardLayout title="Chargement...">
+        <div className="flex justify-center items-center h-64 text-gray-500">
+          Chargement des données...
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout title="Liste des clients">
       <div className="space-y-6">
         {/* 🔹 Header */}
-        <div className="flex items-center justify-between">
-          {/* <h2 className="text-2xl font-bold text-gray-900">
-            Gestion des clients
-          </h2> */}
-          <button
-            onClick={() => handleOpenModal()}
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
-          >
-            <i className="ri-add-line"></i>
-            <span>Ajouter un client</span>
-          </button>
-        </div>
-
+        <>
+          {utilisateur?.role !== "ADMIN" ? (
+            <div className="flex items-center justify-between">
+              <button
+                onClick={() => handleOpenModal()}
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+              >
+                <i className="ri-add-line"></i>
+                <span>Ajouter un client</span>
+              </button>
+            </div>
+          ) : (
+            ""
+          )}
+        </>
         {/* 🧾 Tableau */}
         <ClientTable
           clients={clients}
@@ -224,7 +240,7 @@ export default function ClientPage() {
         {/* 🪟 Modal */}
         {isModalOpen && (
           <ClientModal
-          isEditing={!!selectedClient}
+            isEditing={!!selectedClient}
             formData={formData}
             setFormData={setFormData}
             onClose={() => setIsModalOpen(false)}

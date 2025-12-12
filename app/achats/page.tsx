@@ -625,154 +625,155 @@ export default function AchatPage() {
           }}
         >
           {/* section d'ajout de ligne */}
-          <section
-            style={{
-              background: "#f4f4f4",
-              padding: 10,
-              borderRadius: 8,
-              marginBottom: 30,
-            }}
-          >
-            <button
-              onClick={() => ouvrirModal()}
+          {utilisateur?.role !== "ADMIN" && (
+            <section
               style={{
-                padding: "10px 8px",
-                backgroundColor: "#4caf50",
-                color: "#fff",
-                border: "none",
-                borderRadius: 4,
-                marginBottom: 10,
-                cursor: creating ? "not-allowed" : "pointer",
+                background: "#f4f4f4",
+                padding: 10,
+                borderRadius: 8,
+                marginBottom: 30,
               }}
             >
-              + Ajouter une ligne
-            </button>
-
-            {/* 👇 Conteneur scroll horizontal */}
-            <div style={{ overflowX: "auto" }}>
-              <table
+              <button
+                onClick={() => ouvrirModal()}
                 style={{
-                  width: "100%",
-                  borderCollapse: "collapse",
+                  padding: "10px 8px",
+                  backgroundColor: "#4caf50",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: 4,
                   marginBottom: 10,
-                  minWidth: 700, // 👈 garantit le scroll sur petit écran
+                  cursor: creating ? "not-allowed" : "pointer",
                 }}
               >
-                <thead>
-                  <tr style={{ backgroundColor: " #04AA6D" }}>
-                    <th>Nom fournissseur</th>
-                    <th>Nom produit</th>
-                    <th>Quantité</th>
-                    <th>Prix d'achat (GNF)</th>
-                    <th>Prix de vente (GNF)</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {lignesAchat.map((ligne, i) => (
-                    <tr key={i}>
-                      <td
-                        style={{
-                          textAlign: "center",
-                          border: "1px solid #ddd",
-                          padding: "8px",
-                        }}
-                      >
-                        {ligne.fournisseurNom}
-                      </td>
-                      <td
-                        style={{
-                          textAlign: "center",
-                          border: "1px solid #ddd",
-                          padding: "8px",
-                        }}
-                      >
-                        {ligne.produitNom}
-                      </td>
-                      <td
-                        style={{
-                          textAlign: "center",
-                          border: "1px solid #ddd",
-                          padding: "8px",
-                        }}
-                      >
-                        {ligne.quantite}
-                      </td>
-                      <td
-                        style={{
-                          textAlign: "center",
-                          border: "1px solid #ddd",
-                          padding: "8px",
-                        }}
-                      >
-                        {formatPrix(ligne.prix_achat)}
-                      </td>
-                      <td
-                        style={{
-                          textAlign: "center",
-                          border: "1px solid #ddd",
-                          padding: "8px",
-                        }}
-                      >
-                        {formatPrix(ligne.prix_vente)}
-                      </td>
-                      <td
-                        style={{
-                          textAlign: "center",
-                          border: "1px solid #ddd",
-                          padding: "8px",
-                        }}
-                      >
-                        <button
-                          onClick={() => ouvrirModal(i)}
-                          style={{
-                            marginRight: 8,
-                            marginBottom: 10,
-                            margin: 8,
-                            backgroundColor: "#2196f3",
-                            color: "white",
-                            border: "none",
-                            padding: "5px 10px",
-                            borderRadius: 4,
-                          }}
-                        >
-                          Modifier
-                        </button>
-                        <button
-                          onClick={() => supprimerLigneTemp(i)}
-                          style={{
-                            backgroundColor: "#f44336",
-                            color: "white",
-                            border: "none",
-                            padding: "5px 10px",
-                            borderRadius: 4,
-                          }}
-                        >
-                          Supprimer
-                        </button>
-                      </td>
+                + Ajouter une ligne
+              </button>
+
+              {/* 👇 Conteneur scroll horizontal */}
+              <div style={{ overflowX: "auto" }}>
+                <table
+                  style={{
+                    width: "100%",
+                    borderCollapse: "collapse",
+                    marginBottom: 10,
+                    minWidth: 700, // 👈 garantit le scroll sur petit écran
+                  }}
+                >
+                  <thead>
+                    <tr style={{ backgroundColor: " #04AA6D" }}>
+                      <th>Nom fournissseur</th>
+                      <th>Nom produit</th>
+                      <th>Quantité</th>
+                      <th>Prix d'achat (GNF)</th>
+                      <th>Prix de vente (GNF)</th>
+                      <th>Actions</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody>
+                    {lignesAchat.map((ligne, i) => (
+                      <tr key={i}>
+                        <td
+                          style={{
+                            textAlign: "center",
+                            border: "1px solid #ddd",
+                            padding: "8px",
+                          }}
+                        >
+                          {ligne.fournisseurNom}
+                        </td>
+                        <td
+                          style={{
+                            textAlign: "center",
+                            border: "1px solid #ddd",
+                            padding: "8px",
+                          }}
+                        >
+                          {ligne.produitNom}
+                        </td>
+                        <td
+                          style={{
+                            textAlign: "center",
+                            border: "1px solid #ddd",
+                            padding: "8px",
+                          }}
+                        >
+                          {ligne.quantite}
+                        </td>
+                        <td
+                          style={{
+                            textAlign: "center",
+                            border: "1px solid #ddd",
+                            padding: "8px",
+                          }}
+                        >
+                          {formatPrix(ligne.prix_achat)}
+                        </td>
+                        <td
+                          style={{
+                            textAlign: "center",
+                            border: "1px solid #ddd",
+                            padding: "8px",
+                          }}
+                        >
+                          {formatPrix(ligne.prix_vente)}
+                        </td>
+                        <td
+                          style={{
+                            textAlign: "center",
+                            border: "1px solid #ddd",
+                            padding: "8px",
+                          }}
+                        >
+                          <button
+                            onClick={() => ouvrirModal(i)}
+                            style={{
+                              marginRight: 8,
+                              marginBottom: 10,
+                              margin: 8,
+                              backgroundColor: "#2196f3",
+                              color: "white",
+                              border: "none",
+                              padding: "5px 10px",
+                              borderRadius: 4,
+                            }}
+                          >
+                            Modifier
+                          </button>
+                          <button
+                            onClick={() => supprimerLigneTemp(i)}
+                            style={{
+                              backgroundColor: "#f44336",
+                              color: "white",
+                              border: "none",
+                              padding: "5px 10px",
+                              borderRadius: 4,
+                            }}
+                          >
+                            Supprimer
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
 
-            <button
-              onClick={ouvrirConfirmationModal}
-              disabled={creating}
-              style={{
-                padding: "10px 20px",
-                backgroundColor: "#4caf50",
-                color: "#fff",
-                border: "none",
-                borderRadius: 4,
-                cursor: creating ? "not-allowed" : "pointer",
-              }}
-            >
-              {creating ? "Création..." : "Confirmer l'achat"}
-            </button>
-          </section>
-
+              <button
+                onClick={ouvrirConfirmationModal}
+                disabled={creating}
+                style={{
+                  padding: "10px 20px",
+                  backgroundColor: "#4caf50",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: 4,
+                  cursor: creating ? "not-allowed" : "pointer",
+                }}
+              >
+                {creating ? "Création..." : "Confirmer l'achat"}
+              </button>
+            </section>
+          )}
           <div style={{ display: "flex", justifyContent: "center" }}>
             <div
               style={{
@@ -946,7 +947,7 @@ export default function AchatPage() {
                                   : "text-red-600"
                               }`}
                             >
-                              {vente.status === 'VALIDER'?'VALIDÉ':''} {" "}
+                              {vente.status === "VALIDER" ? "VALIDÉ" : ""}{" "}
                               {vente.nomPersonneAnnuler === null
                                 ? ""
                                 : `${"(" + vente.nomPersonneAnnuler + ")"}`}
@@ -1183,7 +1184,7 @@ export default function AchatPage() {
                     const raw = e.target.value.replace(/\s/g, "");
                     setLigneTemp({
                       ...ligneTemp,
-                     prix_achat: String(Number(raw) || 0)
+                      prix_achat: String(Number(raw) || 0),
                     });
                   }}
                   className="w-full p-3 border rounded-lg mb-4"
@@ -1206,7 +1207,7 @@ export default function AchatPage() {
                     const raw = e.target.value.replace(/\s/g, "");
                     setLigneTemp({
                       ...ligneTemp,
-                      prix_vente: String((raw) || 0),
+                      prix_vente: String(raw || 0),
                     });
                   }}
                   className="w-full p-3 border rounded-lg mb-6"
