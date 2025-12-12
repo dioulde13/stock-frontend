@@ -345,7 +345,7 @@ export default function AchatPage() {
       }, 0);
   }, [filteredVentes]);
 
-  console.log(filteredVentes);
+  // console.log(filteredVentes);
 
   // Pagination
   const indexDerniereVente = currentPage * ventesParPage;
@@ -406,7 +406,7 @@ export default function AchatPage() {
       lignes: lignesFormattees,
     };
 
-    console.log(payload);
+    // console.log(payload);
     setCreating(true);
 
     try {

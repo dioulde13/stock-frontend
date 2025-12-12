@@ -155,8 +155,8 @@ export default function ProductsPage() {
         utilisateurId = parsedUser.id ? String(parsedUser.id) : "";
 
         // Vérifier si l'utilisateur est VENDEUR et récupérer son id de boutique
-        if (parsedUser.role === "VENDEUR" && parsedUser.boutiques?.length > 0) {
-          boutiqueId = parsedUser.boutiques[0].id; // si plusieurs boutiques, prendre la première
+        if (parsedUser.role === "VENDEUR" && parsedUser.boutique) {
+          boutiqueId = parsedUser.boutique.id; // boutique unique
         }
       } catch (error) {
         console.error("Erreur lors de la lecture de l'utilisateur :", error);

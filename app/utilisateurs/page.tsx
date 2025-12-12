@@ -85,6 +85,7 @@ export default function UtilisateurPage() {
       if (!res.ok)
         throw new Error("Erreur lors du chargement des utilisateurs");
       const data = await res.json();
+      console.log(data);
       setUtilisateurs(data);
     } catch (error) {
       console.error("Erreur lors du fetch des utilisateurs:", error);

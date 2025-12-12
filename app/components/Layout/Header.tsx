@@ -76,26 +76,27 @@ export default function Header({
   }, [caisses?.CAISSE, prevCaisse]);
 
   // === Récupérer utilisateur ===
-  useEffect(() => {
-    const user = localStorage.getItem("utilisateur");
-    if (user) {
-      try {
-        const parsed = JSON.parse(user);
-        setUtilisateur(parsed);
-        if (parsed.id) setUtilisateurId(Number(parsed.id));
+useEffect(() => {
+  const user = localStorage.getItem("utilisateur");
+  if (user) {
+    try {
+      const parsed = JSON.parse(user);
+      console.log(parsed);
+      setUtilisateur(parsed);
+      if (parsed.id) setUtilisateurId(Number(parsed.id));
 
-        // Récupération du nom de la boutique
-        if (parsed.boutiques && parsed.boutiques.length > 0) {
-          const noms = parsed.boutiques.map((b: any) => b.nom).join(", ");
-          setBoutiqueNom(noms);
-        } else {
-          setBoutiqueNom("Pas de boutique");
-        }
-      } catch (err) {
-        console.error("Erreur lecture utilisateur:", err);
+      // Récupération du nom de la boutique
+      if (parsed.boutique) {
+        setBoutiqueNom(parsed.boutique.nom);
+      } else {
+        setBoutiqueNom(""); // pas de boutique → ne rien afficher
       }
+    } catch (err) {
+      console.error("Erreur lecture utilisateur:", err);
     }
-  }, []);
+  }
+}, []);
+
 
   // === Notifications ===
   useEffect(() => {
